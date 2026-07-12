@@ -158,7 +158,14 @@ app.get('/checkout', requireLogin, async (req, res, next) => {
     if (!(req.session.cart || []).length) return res.redirect('/cart');
     const user = await User.findById(req.session.user.id).lean();
     const subtotal = req.session.cart.reduce((sum, i) => sum + i.price * i.quantity, 0);
-    res.render('checkout', { title: 'Checkout', user, subtotal, deliveryFee: subtotal >= 3000 ? 0 : 80 });
+    res.render('checkout', {
+  title: 'Checkout',
+  user,
+  subtotal,
+  deliveryFee: subtotal >= 3000 ? 0 : 80,
+  bkashNumber: process.env.BKASH_NUMBER || '',
+  nagadNumber: process.env.NAGAD_NUMBER || ''
+});
   } catch (e) { next(e); }
 });
 
@@ -178,14 +185,56 @@ app.post('/checkout', requireLogin, async (req, res, next) => {
     const user = await User.findById(req.session.user.id);
     const subtotal = items.reduce((sum, i) => sum + i.lineTotal, 0);
     const deliveryFee = subtotal >= 3000 ? 0 : 80;
-    const paymentMethod = ['COD', 'bKash', 'Nagad'].includes(req.body.paymentMethod) ? req.body.paymentMethod : 'COD';
-    if (paymentMethod !== 'COD' && !String(req.body.transactionId || '').trim()) throw new Error('Transaction ID is required for bKash or Nagad.');
+   const paymentMethod = ['COD', 'bKash', 'Nagad'].includes(
+  req.body.paymentMethod
+)
+  ? req.body.paymentMethod
+  : 'COD';
+
+const senderNumber = String(req.body.senderNumber || '').trim();
+const transactionId = String(req.body.transactionId || '').trim();
+
+if (paymentMethod !== 'COD') {
+  if (!senderNumber) {
+    throw new Error('Sender bKash/Nagad number is required.');
+  }
+
+  if (!/^01\d{9}$/.test(senderNumber)) {
+    throw new Error('Enter a valid 11-digit sender number.');
+  }
+
+  if (!transactionId) {
+    throw new Error('Transaction ID is required.');
+  }
+}
     const order = await Order.create({
       orderNumber: makeOrderNumber(), customer: user._id,
       customerSnapshot: { name: user.name, email: user.email, phone: req.body.phone || user.phone },
       items, shippingAddress: { address: req.body.address, city: req.body.city, postalCode: req.body.postalCode || '' },
       subtotal, deliveryFee, total: subtotal + deliveryFee, paymentMethod,
-      transactionId: req.body.transactionId || '', paymentStatus: 'Pending', statusHistory: [{ status: 'Pending', note: 'Order placed by customer.' }], notes: req.body.notes || ''
+
+senderNumber:
+  paymentMethod === 'COD'
+    ? ''
+    : senderNumber,
+
+transactionId:
+  paymentMethod === 'COD'
+    ? ''
+    : transactionId,
+
+paymentStatus:
+  paymentMethod === 'COD'
+    ? 'Pending'
+    : 'Submitted', statusHistory: [
+  {
+    status: 'Pending',
+    note:
+      paymentMethod === 'COD'
+        ? 'Cash on Delivery order placed.'
+        : `${paymentMethod} payment submitted for manual verification.`
+  }
+],
     });
     await Promise.all(items.map(i => Product.updateOne({ _id: i.product, stock: { $gte: i.quantity } }, { $inc: { stock: -i.quantity, soldCount: i.quantity } })));
     req.session.cart = [];
