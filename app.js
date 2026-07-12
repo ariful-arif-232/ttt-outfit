@@ -48,6 +48,7 @@ app.use(session({
 
 app.use((req, res, next) => {
   res.locals.currentUser = req.session.user || null;
+  res.locals.currentPath = req.path;
   res.locals.cart = req.session.cart || [];
   res.locals.cartCount = (req.session.cart || []).reduce((sum, item) => sum + item.quantity, 0);
   res.locals.flash = req.session.flash || null;
