@@ -85,33 +85,34 @@ document.addEventListener('DOMContentLoaded', () => {
   showSlide(0);
   startSlider();
 
-  const revealElements =
-    document.querySelectorAll('.reveal');
+const revealElements =
+  document.querySelectorAll('.reveal');
+
 revealElements.forEach(element => {
   element.classList.add('reveal-ready');
 });
-  if ('IntersectionObserver' in window) {
-    const revealObserver =
-      new IntersectionObserver(
-        entries => {
-          entries.forEach(entry => {
-            if (entry.isIntersecting) {
-              entry.target.classList.add('visible');
-              revealObserver.unobserve(entry.target);
-            }
-          });
-        },
-        {
-          threshold: 0.12
-        }
-      );
 
-    revealElements.forEach(element => {
-      revealObserver.observe(element);
-    });
-  } else {
-    revealElements.forEach(element => {
-      element.classList.add('visible');
-    });
-  }
+if ('IntersectionObserver' in window) {
+  const revealObserver = new IntersectionObserver(
+    entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    },
+    {
+      threshold: 0.08
+    }
+  );
+
+  revealElements.forEach(element => {
+    revealObserver.observe(element);
+  });
+} else {
+  revealElements.forEach(element => {
+    element.classList.add('visible');
+  });
+}
 });
