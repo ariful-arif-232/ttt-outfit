@@ -133,121 +133,117 @@
   </div>
 </section>
 
-<section class="section" id="categories">
+<section class="section category-section" id="categories">
   <div class="container">
 
     <div class="section-title reveal">
       <span class="section-kicker">
-        SHOP BY STYLE
+        SHOP BY COLLECTION
       </span>
 
-      <h2>Explore categories</h2>
+      <h2>Find your style</h2>
 
       <p>
-        Find your perfect look from our growing
-        clothing collection.
+        Explore premium everyday fashion from
+        TTT Outfit.
       </p>
     </div>
 
-    <div class="category-grid">
+    <div class="premium-category-grid">
 
       <a
-        class="category-card category-large reveal"
+        class="premium-category-card reveal"
         href="/shop?category=T-Shirts"
       >
         <img
-          src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=1000&q=85"
-          alt="T-Shirts"
+          src="/category-tshirt.jpg"
+          alt="TTT Outfit T-Shirts"
         >
 
-        <div class="category-overlay">
-          <span>Everyday Essentials</span>
+        <div class="premium-category-overlay">
+          <span class="category-label">
+            TTT ESSENTIALS
+          </span>
+
           <h3>T-Shirts</h3>
-          <strong>Shop now →</strong>
+
+          <span class="category-shop-link">
+            Shop collection
+            <strong>→</strong>
+          </span>
         </div>
       </a>
 
       <a
-        class="category-card reveal"
+        class="premium-category-card reveal"
         href="/shop?category=Polo"
       >
         <img
-          src="https://images.unsplash.com/photo-1586790170083-2f9ceadc732d?auto=format&fit=crop&w=900&q=85"
-          alt="Polo Shirts"
+          src="/category-polo.jpg"
+          alt="TTT Outfit Polo Shirts"
         >
 
-        <div class="category-overlay">
-          <span>Smart Casual</span>
+        <div class="premium-category-overlay">
+          <span class="category-label">
+            SMART CASUAL
+          </span>
+
           <h3>Polo Shirts</h3>
-          <strong>Shop now →</strong>
+
+          <span class="category-shop-link">
+            Shop collection
+            <strong>→</strong>
+          </span>
         </div>
       </a>
 
       <a
-        class="category-card reveal"
+  class="premium-category-card reveal"
+  href="/shop?category=Drop%20Shoulder"
+>
+    <img
+      src="/category-drop-shoulder.jpg"
+      alt="TTT Outfit Drop Shoulder"
+    >
+
+    <div class="premium-category-overlay">
+      <span class="category-label">
+        STREETWEAR
+      </span>
+
+      <h3>Drop Shoulder</h3>
+
+      <span class="category-shop-link">
+        Shop collection
+        <strong>→</strong>
+      </span>
+    </div>
+</a>
+
+      <a
+        class="premium-category-card reveal"
         href="/shop?category=Jackets"
       >
         <img
-          src="https://images.unsplash.com/photo-1551028719-00167b16eac5?auto=format&fit=crop&w=900&q=85"
-          alt="Jackets"
+          src="/category-jacket.jpg"
+          alt="TTT Outfit Jackets"
         >
 
-        <div class="category-overlay">
-          <span>Modern Layers</span>
+        <div class="premium-category-overlay">
+          <span class="category-label">
+            URBAN LAYERS
+          </span>
+
           <h3>Jackets</h3>
-          <strong>Shop now →</strong>
+
+          <span class="category-shop-link">
+            Shop collection
+            <strong>→</strong>
+          </span>
         </div>
       </a>
 
     </div>
-  </div>
-</section>
-
-<section class="section products-section">
-  <div class="container">
-
-    <div class="section-head reveal">
-      <div>
-        <span class="section-kicker">
-          CURATED FOR YOU
-        </span>
-
-        <h2>Featured products</h2>
-      </div>
-
-      <a class="view-all-link" href="/shop">
-        View all products →
-      </a>
-    </div>
-
-    <% if (featured.length) { %>
-
-      <div class="grid product-grid">
-        <% featured.forEach((p, index) => { %>
-
-          <div
-            class="reveal"
-            style="transition-delay:
-              <%= Math.min(index * 80, 400) %>ms;"
-          >
-            <%- include('partials/product-card', { p }) %>
-          </div>
-
-        <% }) %>
-      </div>
-
-    <% } else { %>
-
-      <div class="empty-products reveal">
-        <h3>New products coming soon</h3>
-
-        <p>
-          Visit the admin panel to add products
-          to your store.
-        </p>
-      </div>
-
-    <% } %>
 
   </div>
 </section>
