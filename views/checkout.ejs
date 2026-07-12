@@ -1,1 +1,124 @@
-<%- include('partials/header') %><section class="section"><div class="container two-col"><form class="panel" method="post"><h1>Checkout</h1><div class="field"><label>Phone *</label><input name="phone" value="<%= user.phone %>" required></div><div class="field"><label>Address *</label><textarea name="address" required><%= user.addresses?.find(a=>a.isDefault)?.address || '' %></textarea></div><div class="field"><label>City *</label><input name="city" value="<%= user.addresses?.find(a=>a.isDefault)?.city || '' %>" required></div><div class="field"><label>Postal code</label><input name="postalCode"></div><div class="field"><label>Payment method</label><select name="paymentMethod"><option value="COD">Cash on Delivery</option><option>bKash</option><option>Nagad</option></select></div><div class="field"><label>Transaction ID (required only for bKash/Nagad)</label><input name="transactionId"></div><div class="field"><label>Order note</label><textarea name="notes"></textarea></div><button class="btn">Place order</button></form><aside class="panel"><h2>Order total</h2><p>Subtotal <strong style="float:right">৳<%= money(subtotal) %></strong></p><p>Delivery <strong style="float:right">৳<%= money(deliveryFee) %></strong></p><hr><p class="price">Total <strong style="float:right">৳<%= money(subtotal+deliveryFee) %></strong></p></aside></div></section><%- include('partials/footer') %>
+<%- include('partials/header') %><section class="section"><div class="container two-col"><form class="panel" method="post"><h1>Checkout</h1><div class="field"><label>Phone *</label><input name="phone" value="<%= user.phone %>" required></div><div class="field"><label>Address *</label><textarea name="address" required><%= user.addresses?.find(a=>a.isDefault)?.address || '' %></textarea></div><div class="field"><label>City *</label><input name="city" value="<%= user.addresses?.find(a=>a.isDefault)?.city || '' %>" required></div><div class="field"><label>Postal code</label><input name="postalCode"></div><div class="field"><label>Payment method</label><label for="paymentMethod">Payment Method</label>
+
+<select id="paymentMethod" name="paymentMethod" required>
+  <option value="COD">Cash on Delivery</option>
+  <option value="bKash">bKash Manual Payment</option>
+  <option value="Nagad">Nagad Manual Payment</option>
+</select>
+
+<div
+  id="manualPaymentBox"
+  style="display: none; margin-top: 16px;"
+>
+  <div class="payment-instructions">
+    <h3 id="paymentTitle">Manual Payment</h3>
+
+    <p>
+      Send the exact order amount using
+      <strong>Send Money</strong>.
+    </p>
+
+    <p>
+      Payment number:
+      <strong id="paymentNumber"></strong>
+    </p>
+
+    <p>
+      Amount:
+      <strong>
+        ৳<%= money(subtotal + deliveryFee) %>
+      </strong>
+    </p>
+
+    <p>
+      After sending money, enter your sender number
+      and Transaction ID.
+    </p>
+  </div>
+
+  <label for="senderNumber">
+    Your Sender Number
+  </label>
+
+  <input
+    id="senderNumber"
+    type="text"
+    name="senderNumber"
+    maxlength="11"
+    placeholder="01XXXXXXXXX"
+  >
+
+  <label for="transactionId">
+    Transaction ID
+  </label>
+
+  <input
+    id="transactionId"
+    type="text"
+    name="transactionId"
+    placeholder="Example: 9AB12CD34E"
+  >
+</div><option value="COD">Cash on Delivery</option><option>bKash</option><option>Nagad</option></select></div><div class="field"><label>Transaction ID (required only for bKash/Nagad)</label><input name="transactionId"></div><div class="field"><label>Order note</label><textarea name="notes"></textarea></div><button class="btn">Place order</button></form><aside class="panel"><h2>Order total</h2><p>Subtotal <strong style="float:right">৳<%= money(subtotal) %></strong></p><p>Delivery <strong style="float:right">৳<%= money(deliveryFee) %></strong></p><hr><p class="price">Total <strong style="float:right">৳<%= money(subtotal+deliveryFee) %></strong></p></aside></div></section><script>
+  const paymentMethod =
+    document.getElementById('paymentMethod');
+
+  const manualPaymentBox =
+    document.getElementById('manualPaymentBox');
+
+  const paymentTitle =
+    document.getElementById('paymentTitle');
+
+  const paymentNumber =
+    document.getElementById('paymentNumber');
+
+  const senderNumber =
+    document.getElementById('senderNumber');
+
+  const transactionId =
+    document.getElementById('transactionId');
+
+  const bkashNumber =
+    <%- JSON.stringify(bkashNumber) %>;
+
+  const nagadNumber =
+    <%- JSON.stringify(nagadNumber) %>;
+
+  function updatePaymentFields() {
+    const method = paymentMethod.value;
+
+    const isManual =
+      method === 'bKash' || method === 'Nagad';
+
+    manualPaymentBox.style.display =
+      isManual ? 'block' : 'none';
+
+    senderNumber.required = isManual;
+    transactionId.required = isManual;
+
+    if (method === 'bKash') {
+      paymentTitle.textContent = 'Pay with bKash';
+
+      paymentNumber.textContent =
+        bkashNumber || 'Number not configured';
+    }
+
+    if (method === 'Nagad') {
+      paymentTitle.textContent = 'Pay with Nagad';
+
+      paymentNumber.textContent =
+        nagadNumber || 'Number not configured';
+    }
+
+    if (!isManual) {
+      senderNumber.value = '';
+      transactionId.value = '';
+    }
+  }
+
+  paymentMethod.addEventListener(
+    'change',
+    updatePaymentFields
+  );
+
+  updatePaymentFields();
+</script><%- include('partials/footer') %>
