@@ -1,4 +1,4 @@
-<%- include('partials/header') %><section class="section"><div class="container two-col"><form class="panel" method="post"><h1>Checkout</h1><div class="field"><label>Phone *</label><input name="phone" value="<%= user.phone %>" required></div><div class="field"><label>Address *</label><textarea name="address" required><%= user.addresses?.find(a=>a.isDefault)?.address || '' %></textarea></div><div class="field"><label>City *</label><input name="city" value="<%= user.addresses?.find(a=>a.isDefault)?.city || '' %>" required></div><div class="field"><label>Postal code</label><input name="postalCode"></div><div class="field"><label>Payment method</label><label for="paymentMethod">Payment Method</label>
+<%- include('partials/header') %><section class="section"><div class="container two-col"><form class="panel" method="post"><h1>Checkout</h1><div class="field"><label>Phone *</label><input name="phone" value="<%= user.phone %>" required></div><div class="field"><label>Address *</label><textarea name="address" required><%= user.addresses?.find(a=>a.isDefault)?.address || '' %></textarea></div><div class="field"><label>City *</label><input name="city" value="<%= user.addresses?.find(a=>a.isDefault)?.city || '' %>" required></div><div class="field"><label>Postal code</label><input name="postalCode"></div><div class="field"><label for="paymentMethod">Payment Method</label>
 
 <select id="paymentMethod" name="paymentMethod" required>
   <option value="COD">Cash on Delivery</option>
@@ -58,7 +58,7 @@
     name="transactionId"
     placeholder="Example: 9AB12CD34E"
   >
-</div><option value="COD">Cash on Delivery</option><option>bKash</option><option>Nagad</option></select></div><div class="field"><label>Transaction ID (required only for bKash/Nagad)</label><input name="transactionId"></div><div class="field"><label>Order note</label><textarea name="notes"></textarea></div><button class="btn">Place order</button></form><aside class="panel"><h2>Order total</h2><p>Subtotal <strong style="float:right">৳<%= money(subtotal) %></strong></p><p>Delivery <strong style="float:right">৳<%= money(deliveryFee) %></strong></p><hr><p class="price">Total <strong style="float:right">৳<%= money(subtotal+deliveryFee) %></strong></p></aside></div></section><script>
+</div><option value="COD">Cash on Delivery</option><option>bKash</option><option>Nagad</option></select></div><div class="field"><label>Order note</label><textarea name="notes"></textarea></div><button class="btn">Place order</button></form><aside class="panel"><h2>Order total</h2><p>Subtotal <strong style="float:right">৳<%= money(subtotal) %></strong></p><p>Delivery <strong style="float:right">৳<%= money(deliveryFee) %></strong></p><hr><p class="price">Total <strong style="float:right">৳<%= money(subtotal+deliveryFee) %></strong></p></aside></div></section><script>
   const paymentMethod =
     document.getElementById('paymentMethod');
 
