@@ -1,1 +1,362 @@
-<%- include('partials/header') %><section class="hero"><div class="container"><span class="badge">NEW COLLECTION</span><h1>Wear your identity.</h1><p>Modern essentials, quality fabrics and confident fits from TTT Outfit.</p><a class="btn secondary" href="/shop">Shop the collection</a></div></section><section class="section"><div class="container"><div class="section-head"><h2>Featured products</h2><a href="/shop">View all →</a></div><div class="grid"><% featured.forEach(p=>{ %><%- include('partials/product-card',{p}) %><% }) %></div></div></section><%- include('partials/footer') %>
+<%- include('partials/header') %>
+
+<section class="hero-slider">
+
+  <div
+    class="hero-slide active"
+    style="background-image:
+      linear-gradient(
+        90deg,
+        rgba(0,0,0,.82),
+        rgba(0,0,0,.20)
+      ),
+      url('https://images.unsplash.com/photo-1445205170230-053b83016050?auto=format&fit=crop&w=1800&q=90');"
+  >
+    <div class="container hero-content">
+      <span class="hero-kicker">
+        TTT OUTFIT — NEW COLLECTION
+      </span>
+
+      <h1>
+        Wear your
+        <em>identity.</em>
+      </h1>
+
+      <p>
+        Premium fabrics, confident fits and modern
+        everyday fashion made for your lifestyle.
+      </p>
+
+      <div class="hero-actions">
+        <a class="btn gold-btn" href="/shop">
+          Shop Collection
+        </a>
+
+        <a class="btn outline-btn" href="#categories">
+          Explore Categories
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div
+    class="hero-slide"
+    style="background-image:
+      linear-gradient(
+        90deg,
+        rgba(0,0,0,.80),
+        rgba(0,0,0,.15)
+      ),
+      url('https://images.unsplash.com/photo-1523381210434-271e8be1f52b?auto=format&fit=crop&w=1800&q=90');"
+  >
+    <div class="container hero-content">
+      <span class="hero-kicker">
+        PREMIUM EVERYDAY ESSENTIALS
+      </span>
+
+      <h1>
+        Style that
+        <em>speaks.</em>
+      </h1>
+
+      <p>
+        Discover T-shirts, polos, shirts, jackets,
+        pants and more from TTT Outfit.
+      </p>
+
+      <div class="hero-actions">
+        <a class="btn gold-btn" href="/shop">
+          Shop Now
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <button
+    class="hero-arrow hero-prev"
+    type="button"
+    aria-label="Previous slide"
+  >
+    &#10094;
+  </button>
+
+  <button
+    class="hero-arrow hero-next"
+    type="button"
+    aria-label="Next slide"
+  >
+    &#10095;
+  </button>
+
+  <div class="hero-dots">
+    <button class="hero-dot active" type="button"></button>
+    <button class="hero-dot" type="button"></button>
+  </div>
+
+</section>
+
+<section class="benefits-strip">
+  <div class="container benefits-grid">
+
+    <div class="benefit-item reveal">
+      <span class="benefit-icon">✦</span>
+      <div>
+        <strong>Premium Quality</strong>
+        <small>Carefully selected fabrics</small>
+      </div>
+    </div>
+
+    <div class="benefit-item reveal">
+      <span class="benefit-icon">৳</span>
+      <div>
+        <strong>Secure Payment</strong>
+        <small>COD, bKash and Nagad</small>
+      </div>
+    </div>
+
+    <div class="benefit-item reveal">
+      <span class="benefit-icon">✓</span>
+      <div>
+        <strong>Easy Ordering</strong>
+        <small>Simple and fast checkout</small>
+      </div>
+    </div>
+
+    <div class="benefit-item reveal">
+      <span class="benefit-icon">↻</span>
+      <div>
+        <strong>Order Support</strong>
+        <small>Track orders from your account</small>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section class="section" id="categories">
+  <div class="container">
+
+    <div class="section-title reveal">
+      <span class="section-kicker">
+        SHOP BY STYLE
+      </span>
+
+      <h2>Explore categories</h2>
+
+      <p>
+        Find your perfect look from our growing
+        clothing collection.
+      </p>
+    </div>
+
+    <div class="category-grid">
+
+      <a
+        class="category-card category-large reveal"
+        href="/shop?category=T-Shirts"
+      >
+        <img
+          src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=1000&q=85"
+          alt="T-Shirts"
+        >
+
+        <div class="category-overlay">
+          <span>Everyday Essentials</span>
+          <h3>T-Shirts</h3>
+          <strong>Shop now →</strong>
+        </div>
+      </a>
+
+      <a
+        class="category-card reveal"
+        href="/shop?category=Polo"
+      >
+        <img
+          src="https://images.unsplash.com/photo-1586790170083-2f9ceadc732d?auto=format&fit=crop&w=900&q=85"
+          alt="Polo Shirts"
+        >
+
+        <div class="category-overlay">
+          <span>Smart Casual</span>
+          <h3>Polo Shirts</h3>
+          <strong>Shop now →</strong>
+        </div>
+      </a>
+
+      <a
+        class="category-card reveal"
+        href="/shop?category=Jackets"
+      >
+        <img
+          src="https://images.unsplash.com/photo-1551028719-00167b16eac5?auto=format&fit=crop&w=900&q=85"
+          alt="Jackets"
+        >
+
+        <div class="category-overlay">
+          <span>Modern Layers</span>
+          <h3>Jackets</h3>
+          <strong>Shop now →</strong>
+        </div>
+      </a>
+
+    </div>
+  </div>
+</section>
+
+<section class="section products-section">
+  <div class="container">
+
+    <div class="section-head reveal">
+      <div>
+        <span class="section-kicker">
+          CURATED FOR YOU
+        </span>
+
+        <h2>Featured products</h2>
+      </div>
+
+      <a class="view-all-link" href="/shop">
+        View all products →
+      </a>
+    </div>
+
+    <% if (featured.length) { %>
+
+      <div class="grid product-grid">
+        <% featured.forEach((p, index) => { %>
+
+          <div
+            class="reveal"
+            style="transition-delay:
+              <%= Math.min(index * 80, 400) %>ms;"
+          >
+            <%- include('partials/product-card', { p }) %>
+          </div>
+
+        <% }) %>
+      </div>
+
+    <% } else { %>
+
+      <div class="empty-products reveal">
+        <h3>New products coming soon</h3>
+
+        <p>
+          Visit the admin panel to add products
+          to your store.
+        </p>
+      </div>
+
+    <% } %>
+
+  </div>
+</section>
+
+<section class="promo-banner">
+  <div class="container promo-content reveal">
+
+    <div>
+      <span class="section-kicker gold-text">
+        TTT OUTFIT
+      </span>
+
+      <h2>
+        Fashion created for
+        <em>confidence.</em>
+      </h2>
+
+      <p>
+        Build your everyday wardrobe with premium
+        clothing designed for comfort and style.
+      </p>
+    </div>
+
+    <a class="btn gold-btn" href="/shop">
+      Discover the Collection
+    </a>
+
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+
+    <div class="section-title reveal">
+      <span class="section-kicker">
+        WHY TTT OUTFIT
+      </span>
+
+      <h2>Designed around you</h2>
+    </div>
+
+    <div class="why-grid">
+
+      <article class="why-card reveal">
+        <span>01</span>
+        <h3>Quality Fabrics</h3>
+        <p>
+          Materials selected for everyday comfort,
+          durability and a premium feel.
+        </p>
+      </article>
+
+      <article class="why-card reveal">
+        <span>02</span>
+        <h3>Modern Design</h3>
+        <p>
+          Clean, confident styles that work across
+          casual and smart-casual occasions.
+        </p>
+      </article>
+
+      <article class="why-card reveal">
+        <span>03</span>
+        <h3>Bangladesh Delivery</h3>
+        <p>
+          Convenient ordering and nationwide courier
+          delivery support.
+        </p>
+      </article>
+
+    </div>
+
+  </div>
+</section>
+
+<section class="newsletter-section">
+  <div class="container newsletter reveal">
+
+    <div>
+      <span class="section-kicker gold-text">
+        STAY UPDATED
+      </span>
+
+      <h2>Join the TTT community</h2>
+
+      <p>
+        Get updates about new collections,
+        promotions and exclusive offers.
+      </p>
+    </div>
+
+    <form
+      class="newsletter-form"
+      onsubmit="event.preventDefault();"
+    >
+      <input
+        type="email"
+        placeholder="Enter your email address"
+        required
+      >
+
+      <button class="btn gold-btn" type="submit">
+        Subscribe
+      </button>
+    </form>
+
+  </div>
+</section>
+
+<script src="/js/main.js"></script>
+
+<%- include('partials/footer') %>
