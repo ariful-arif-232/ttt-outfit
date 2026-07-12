@@ -1,1 +1,126 @@
-<%- include('../partials/header') %><div class="container admin-layout"><%- include('../partials/admin-nav') %><section><h1>Orders</h1><form class="filters"><select name="status"><option value="">All statuses</option><% ['Pending','Confirmed','Processing','Shipped','Delivered','Cancelled','Returned'].forEach(s=>{ %><option <%= selectedStatus===s?'selected':'' %>><%= s %></option><% }) %></select><button class="btn">Filter</button></form><% orders.forEach(o=>{ %><div class="order-card"><strong><a href="/orders/<%= o._id %>"><%= o.orderNumber %></a></strong><span style="float:right">৳<%= money(o.total) %></span><p><%= o.customer?.name || o.customerSnapshot.name %> · <%= o.customerSnapshot.phone %></p><form method="post" action="/admin/orders/<%= o._id %>/update" class="filters"><select name="status"><% ['Pending','Confirmed','Processing','Shipped','Delivered','Cancelled','Returned'].forEach(s=>{ %><option <%= o.status===s?'selected':'' %>><%= s %></option><% }) %></select><select name="paymentStatus"><% ['Pending','Paid','Failed','Refunded'].forEach(s=>{ %><option <%= o.paymentStatus===s?'selected':'' %>><%= s %></option><% }) %></select><input name="note" placeholder="Optional note"><button class="btn">Update</button></form></div><% }) %></section></div><%- include('../partials/footer') %>
+<%- include('../partials/header') %>
+
+<div class="container admin-layout">
+  <%- include('../partials/admin-nav') %>
+
+  <section>
+    <h1>Orders</h1>
+
+    <form class="filters" method="get">
+      <select name="status">
+        <option value="">All statuses</option>
+
+        <% ['Pending', 'Confirmed', 'Processing', 'Shipped', 'Delivered', 'Cancelled', 'Returned'].forEach(s => { %>
+          <option
+            value="<%= s %>"
+            <%= selectedStatus === s ? 'selected' : '' %>
+          >
+            <%= s %>
+          </option>
+        <% }) %>
+      </select>
+
+      <button class="btn">
+        Filter
+      </button>
+    </form>
+
+    <% orders.forEach(order => { %>
+      <div class="order-card">
+        <strong>
+          <a href="/orders/<%= order._id %>">
+            <%= order.orderNumber %>
+          </a>
+        </strong>
+
+        <span style="float: right;">
+          ৳<%= money(order.total) %>
+        </span>
+
+        <p>
+          <strong>Customer:</strong>
+          <%= order.customer?.name || order.customerSnapshot?.name || 'Unknown' %>
+        </p>
+
+        <p>
+          <strong>Phone:</strong>
+          <%= order.customer?.phone || order.customerSnapshot?.phone || 'Not provided' %>
+        </p>
+
+        <hr>
+
+        <h3>Payment Information</h3>
+
+        <p>
+          <strong>Payment Method:</strong>
+          <%= order.paymentMethod %>
+        </p>
+
+        <% if (order.paymentMethod !== 'COD') { %>
+          <p>
+            <strong>Sender Number:</strong>
+            <%= order.senderNumber || 'Not provided' %>
+          </p>
+
+          <p>
+            <strong>Transaction ID:</strong>
+            <%= order.transactionId || 'Not provided' %>
+          </p>
+        <% } %>
+
+        <p>
+          <strong>Payment Status:</strong>
+          <%= order.paymentStatus %>
+        </p>
+
+        <form
+          method="post"
+          action="/admin/orders/<%= order._id %>/update"
+        >
+          <div class="filters">
+            <label>
+              Order Status
+            </label>
+
+            <select name="status">
+              <% ['Pending', 'Confirmed', 'Processing', 'Shipped', 'Delivered', 'Cancelled', 'Returned'].forEach(s => { %>
+                <option
+                  value="<%= s %>"
+                  <%= order.status === s ? 'selected' : '' %>
+                >
+                  <%= s %>
+                </option>
+              <% }) %>
+            </select>
+
+            <label>
+              Payment Status
+            </label>
+
+            <select name="paymentStatus">
+              <% ['Pending', 'Submitted', 'Paid', 'Rejected', 'Refunded'].forEach(s => { %>
+                <option
+                  value="<%= s %>"
+                  <%= order.paymentStatus === s ? 'selected' : '' %>
+                >
+                  <%= s %>
+                </option>
+              <% }) %>
+            </select>
+
+            <input
+              name="note"
+              placeholder="Optional note"
+            >
+
+            <button class="btn">
+              Update
+            </button>
+          </div>
+        </form>
+      </div>
+    <% }) %>
+  </section>
+</div>
+
+<%- include('../partials/footer') %>
