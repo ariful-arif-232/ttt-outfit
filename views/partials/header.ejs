@@ -72,83 +72,116 @@
       <span></span>
     </button>
 
-    <nav class="nav-links" id="navLinks">
+<nav class="nav-links" id="navLinks">
 
+  <div class="mobile-menu-title">
+    <span>MENU</span>
+    <small>TTT OUTFIT</small>
+  </div>
+
+  <a
+    href="/"
+    class="<%= currentPath === '/' ? 'active-nav' : '' %>"
+  >
+    <span class="nav-item-left">
+      <span class="nav-icon">🏠</span>
+      <span>Home</span>
+    </span>
+    <span class="nav-arrow">›</span>
+  </a>
+
+  <a
+    href="/shop"
+    class="<%= currentPath.startsWith('/shop') || currentPath.startsWith('/product') ? 'active-nav' : '' %>"
+  >
+    <span class="nav-item-left">
+      <span class="nav-icon">🛍️</span>
+      <span>Shop</span>
+    </span>
+    <span class="nav-arrow">›</span>
+  </a>
+
+  <a
+    href="/cart"
+    class="cart-link <%= currentPath.startsWith('/cart') ? 'active-nav' : '' %>"
+  >
+    <span class="nav-item-left">
+      <span class="nav-icon">🛒</span>
+      <span>Cart</span>
+    </span>
+
+    <span class="cart-count">
+      <%= cartCount %>
+    </span>
+  </a>
+
+  <% if (currentUser) { %>
+
+    <a
+      href="/orders"
+      class="<%= currentPath.startsWith('/orders') ? 'active-nav' : '' %>"
+    >
+      <span class="nav-item-left">
+        <span class="nav-icon">📦</span>
+        <span>My Orders</span>
+      </span>
+      <span class="nav-arrow">›</span>
+    </a>
+
+    <a
+      href="/account"
+      class="<%= currentPath.startsWith('/account') ? 'active-nav' : '' %>"
+    >
+      <span class="nav-item-left">
+        <span class="nav-icon">👤</span>
+        <span>Account</span>
+      </span>
+      <span class="nav-arrow">›</span>
+    </a>
+
+    <% if (currentUser.role === 'admin') { %>
       <a
-        href="/"
-        class="<%= currentPath === '/' ? 'active-nav' : '' %>"
+        href="/admin"
+        class="admin-link <%= currentPath.startsWith('/admin') ? 'active-nav' : '' %>"
       >
-        Home
-      </a>
-
-      <a
-        href="/shop"
-        class="<%= currentPath.startsWith('/shop') || currentPath.startsWith('/product') ? 'active-nav' : '' %>"
-      >
-        Shop
-      </a>
-
-      <a
-        class="cart-link <%= currentPath.startsWith('/cart') ? 'active-nav' : '' %>"
-        href="/cart"
-      >
-        Cart
-
-        <span class="cart-count">
-          <%= cartCount %>
+        <span class="nav-item-left">
+          <span class="nav-icon">⚙️</span>
+          <span>Admin</span>
         </span>
+        <span class="nav-arrow">›</span>
       </a>
+    <% } %>
 
-      <% if (currentUser) { %>
+    <form action="/logout" method="post">
+      <button class="link-btn logout-btn" type="submit">
+        <span>↪ Logout</span>
+      </button>
+    </form>
 
-        <a
-          href="/orders"
-          class="<%= currentPath.startsWith('/orders') ? 'active-nav' : '' %>"
-        >
-          My Orders
-        </a>
+  <% } else { %>
 
-        <a
-          href="/account"
-          class="<%= currentPath.startsWith('/account') ? 'active-nav' : '' %>"
-        >
-          Account
-        </a>
+    <a
+      href="/login"
+      class="<%= currentPath.startsWith('/login') ? 'active-nav' : '' %>"
+    >
+      <span class="nav-item-left">
+        <span class="nav-icon">👤</span>
+        <span>Login</span>
+      </span>
+      <span class="nav-arrow">›</span>
+    </a>
 
-        <% if (currentUser.role === 'admin') { %>
-          <a
-            class="admin-link <%= currentPath.startsWith('/admin') ? 'active-nav' : '' %>"
-            href="/admin"
-          >
-            Admin
-          </a>
-        <% } %>
+    <a class="nav-register" href="/register">
+      <span>✦ Create Account</span>
+    </a>
 
-        <form action="/logout" method="post">
-          <button class="link-btn logout-btn" type="submit">
-            Logout
-          </button>
-        </form>
+  <% } %>
 
-      <% } else { %>
+  <div class="mobile-menu-footer">
+    Premium fashion for Bangladesh
+  </div>
 
-        <a
-          href="/login"
-          class="<%= currentPath.startsWith('/login') ? 'active-nav' : '' %>"
-        >
-          Login
-        </a>
-
-        <a
-          class="nav-register"
-          href="/register"
-        >
-          Register
-        </a>
-
-      <% } %>
-
-    </nav>
+</nav>
 
   </div>
 </header>
