@@ -87,7 +87,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const revealElements =
     document.querySelectorAll('.reveal');
-
+revealElements.forEach(element => {
+  element.classList.add('reveal-ready');
+});
   if ('IntersectionObserver' in window) {
     const revealObserver =
       new IntersectionObserver(
