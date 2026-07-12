@@ -113,7 +113,7 @@ if (menuButton && navLinks) {
 
     sliderTimer = setInterval(() => {
       showSlide(currentSlide + 1);
-    }, 6000);
+    }, 1300);
   }
 
   previousButton?.addEventListener('click', () => {
