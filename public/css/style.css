@@ -1179,3 +1179,34 @@ h3 {
     height: 40px;
   }
 }
+body.menu-open {
+  overflow: hidden;
+}
+
+@media (max-width: 950px) {
+  .site-header {
+    overflow: visible;
+  }
+
+  .nav {
+    position: relative;
+  }
+
+  .nav-links {
+    z-index: 9999;
+    top: 100%;
+  }
+
+  .nav-links.active {
+    display: flex;
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+
+  .mobile-menu-button {
+    position: relative;
+    z-index: 10000;
+  }
+}
