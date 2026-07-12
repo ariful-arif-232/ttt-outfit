@@ -1,1 +1,119 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title><%= title %> | TTT Outfit</title><link rel="stylesheet" href="/css/style.css"></head><body><header class="site-header"><div class="container nav"><a class="brand" href="/"><img class="brand-logo" src="/ttt-logo.jpeg" alt="TTT Outfit logo"><span>TTT OUTFIT</span></a><nav class="nav-links"><a href="/shop">Shop</a><a href="/cart">Cart (<%= cartCount %>)</a><% if(currentUser){ %><a href="/orders">My Orders</a><a href="/account">Account</a><% if(currentUser.role==='admin'){ %><a href="/admin">Admin</a><% } %><form action="/logout" method="post"><button class="link-btn">Logout</button></form><% } else { %><a href="/login">Login</a><a href="/register">Register</a><% } %></nav></div></header><main><% if(flash){ %><div class="container flash <%= flash.type %>"><%= flash.message %></div><% } %>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1"
+  >
+
+  <title><%= title %> | TTT Outfit</title>
+
+  <meta
+    name="description"
+    content="TTT Outfit — Premium fashion and everyday clothing for Bangladesh."
+  >
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap"
+    rel="stylesheet"
+  >
+
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+
+<div class="announcement-bar">
+  <div class="announcement-track">
+    <span>FREE DELIVERY ON ORDERS OVER ৳3,000</span>
+    <span>PREMIUM QUALITY CLOTHING</span>
+    <span>MANUAL BKASH & NAGAD PAYMENT</span>
+    <span>NEW COLLECTION AVAILABLE NOW</span>
+
+    <span>FREE DELIVERY ON ORDERS OVER ৳3,000</span>
+    <span>PREMIUM QUALITY CLOTHING</span>
+    <span>MANUAL BKASH & NAGAD PAYMENT</span>
+    <span>NEW COLLECTION AVAILABLE NOW</span>
+  </div>
+</div>
+
+<header class="site-header">
+  <div class="container nav">
+
+    <a class="brand" href="/">
+      <img
+        class="brand-logo"
+        src="/ttt-logo.jpeg"
+        alt="TTT Outfit logo"
+      >
+
+      <span>
+        TTT <strong>OUTFIT</strong>
+      </span>
+    </a>
+
+    <button
+      class="mobile-menu-button"
+      id="mobileMenuButton"
+      type="button"
+      aria-label="Open menu"
+    >
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+
+    <nav class="nav-links" id="navLinks">
+      <a href="/">Home</a>
+      <a href="/shop">Shop</a>
+
+      <a class="cart-link" href="/cart">
+        Cart
+        <span class="cart-count">
+          <%= cartCount %>
+        </span>
+      </a>
+
+      <% if (currentUser) { %>
+
+        <a href="/orders">My Orders</a>
+        <a href="/account">Account</a>
+
+        <% if (currentUser.role === 'admin') { %>
+          <a class="admin-link" href="/admin">
+            Admin
+          </a>
+        <% } %>
+
+        <form action="/logout" method="post">
+          <button class="link-btn" type="submit">
+            Logout
+          </button>
+        </form>
+
+      <% } else { %>
+
+        <a href="/login">Login</a>
+
+        <a class="nav-register" href="/register">
+          Register
+        </a>
+
+      <% } %>
+    </nav>
+
+  </div>
+</header>
+
+<main>
+
+  <% if (flash) { %>
+    <div class="container flash <%= flash.type %>">
+      <%= flash.message %>
+    </div>
+  <% } %>
