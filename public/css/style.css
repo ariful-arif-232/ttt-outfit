@@ -1210,3 +1210,42 @@ body.menu-open {
     z-index: 10000;
   }
 }
+@media (max-width: 950px) {
+  .nav-links {
+    left: 16px !important;
+    right: 16px !important;
+    width: auto !important;
+
+    padding: 14px 18px !important;
+    gap: 2px !important;
+
+    max-height: calc(100vh - 120px);
+    overflow-y: auto;
+
+    border-radius: 0 0 16px 16px;
+  }
+
+  .nav-links > a,
+  .logout-btn {
+    min-height: 42px !important;
+    padding: 9px 8px !important;
+    font-size: 16px !important;
+  }
+
+  .nav-links > a:not(.nav-register)::after,
+  .logout-btn::after {
+    bottom: 0 !important;
+  }
+
+  .nav-register {
+    min-height: 46px !important;
+    margin-top: 8px !important;
+    padding: 11px 16px !important;
+  }
+
+  .cart-count {
+    min-width: 22px;
+    height: 22px;
+    font-size: 11px;
+  }
+}
