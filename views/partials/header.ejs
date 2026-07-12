@@ -30,19 +30,21 @@
 
 <div class="announcement-bar">
   <div class="announcement-track">
+
     <span>FREE DELIVERY ON ORDERS OVER ৳3,000</span>
     <span>PREMIUM QUALITY CLOTHING</span>
-    <span>MANUAL BKASH & NAGAD PAYMENT</span>
+    <span>MANUAL BKASH &amp; NAGAD PAYMENT</span>
     <span>NEW COLLECTION AVAILABLE NOW</span>
 
     <span>FREE DELIVERY ON ORDERS OVER ৳3,000</span>
     <span>PREMIUM QUALITY CLOTHING</span>
-    <span>MANUAL BKASH & NAGAD PAYMENT</span>
+    <span>MANUAL BKASH &amp; NAGAD PAYMENT</span>
     <span>NEW COLLECTION AVAILABLE NOW</span>
+
   </div>
 </div>
 
-<header class="site-header">
+<header class="site-header" id="siteHeader">
   <div class="container nav">
 
     <a class="brand" href="/">
@@ -61,7 +63,9 @@
       class="mobile-menu-button"
       id="mobileMenuButton"
       type="button"
-      aria-label="Open menu"
+      aria-label="Open navigation menu"
+      aria-expanded="false"
+      aria-controls="navLinks"
     >
       <span></span>
       <span></span>
@@ -69,11 +73,27 @@
     </button>
 
     <nav class="nav-links" id="navLinks">
-      <a href="/">Home</a>
-      <a href="/shop">Shop</a>
 
-      <a class="cart-link" href="/cart">
+      <a
+        href="/"
+        class="<%= currentPath === '/' ? 'active-nav' : '' %>"
+      >
+        Home
+      </a>
+
+      <a
+        href="/shop"
+        class="<%= currentPath.startsWith('/shop') || currentPath.startsWith('/product') ? 'active-nav' : '' %>"
+      >
+        Shop
+      </a>
+
+      <a
+        class="cart-link <%= currentPath.startsWith('/cart') ? 'active-nav' : '' %>"
+        href="/cart"
+      >
         Cart
+
         <span class="cart-count">
           <%= cartCount %>
         </span>
@@ -81,30 +101,53 @@
 
       <% if (currentUser) { %>
 
-        <a href="/orders">My Orders</a>
-        <a href="/account">Account</a>
+        <a
+          href="/orders"
+          class="<%= currentPath.startsWith('/orders') ? 'active-nav' : '' %>"
+        >
+          My Orders
+        </a>
+
+        <a
+          href="/account"
+          class="<%= currentPath.startsWith('/account') ? 'active-nav' : '' %>"
+        >
+          Account
+        </a>
 
         <% if (currentUser.role === 'admin') { %>
-          <a class="admin-link" href="/admin">
+          <a
+            class="admin-link <%= currentPath.startsWith('/admin') ? 'active-nav' : '' %>"
+            href="/admin"
+          >
             Admin
           </a>
         <% } %>
 
         <form action="/logout" method="post">
-          <button class="link-btn" type="submit">
+          <button class="link-btn logout-btn" type="submit">
             Logout
           </button>
         </form>
 
       <% } else { %>
 
-        <a href="/login">Login</a>
+        <a
+          href="/login"
+          class="<%= currentPath.startsWith('/login') ? 'active-nav' : '' %>"
+        >
+          Login
+        </a>
 
-        <a class="nav-register" href="/register">
+        <a
+          class="nav-register"
+          href="/register"
+        >
           Register
         </a>
 
       <% } %>
+
     </nav>
 
   </div>
