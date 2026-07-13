@@ -279,32 +279,262 @@ app.get('/admin/products', requireAdmin, async (req, res, next) => { try { const
 app.get('/admin/products/new', requireAdmin, (req, res) => res.render('admin/product-form', { title: 'Add product', product: null, cloudinaryReady: cloudinaryReady() }));
 app.get('/admin/products/:id/edit', requireAdmin, async (req, res, next) => { try { const product = await Product.findById(req.params.id).lean(); res.render('admin/product-form', { title: 'Edit product', product, cloudinaryReady: cloudinaryReady() }); } catch (e) { next(e); } });
 
-async function productPayload(req, existing = null) {
-  const images = existing?.images ? [...existing.images] : [];
-  if (req.file) {
-    const result = await uploadBuffer(req.file.buffer);
-    images.unshift({ url: result.secure_url, publicId: result.public_id });
-  } else if (req.body.imageUrl && (!existing || req.body.imageUrl !== existing.images?.[0]?.url)) {
-    images.unshift({ url: req.body.imageUrl.trim(), publicId: '' });
+function splitCommaValues(value) {
+  return String(value || '')
+    .split(',')
+    .map(item => item.trim())
+    .filter(Boolean);
+}
+
+function getVariantFiles(req, index) {
+  return (req.files || []).filter(
+    file => file.fieldname === `variantImages_${index}`
+  );
+}
+
+async function uploadVariantFiles(files) {
+  const uploadedImages = [];
+
+  for (const file of files.slice(0, 6)) {
+    const result = await uploadBuffer(file.buffer);
+
+    uploadedImages.push({
+      url: result.secure_url || result.url,
+      publicId: result.public_id || ''
+    });
   }
+
+  return uploadedImages;
+}
+
+async function productPayload(req, existing = null) {
+  const variantCount =
+    Math.max(1, Number(req.body.variantCount) || 1);
+
+  const existingVariants =
+    Array.isArray(existing?.variants)
+      ? existing.variants
+      : [];
+
+  const variants = [];
+
+  for (let index = 0; index < variantCount; index += 1) {
+    const color = String(
+      req.body[`variantColor_${index}`] || ''
+    ).trim();
+
+    /*
+      Removed rows create missing indexes.
+      Skip any index that has no color.
+    */
+    if (!color) continue;
+
+    const colorHex = String(
+      req.body[`variantHex_${index}`] || '#cccccc'
+    ).trim();
+
+    const stock = Math.max(
+      0,
+      Number(req.body[`variantStock_${index}`]) || 0
+    );
+
+    const sizes = splitCommaValues(
+      req.body[`variantSizes_${index}`]
+    );
+
+    const oldVariant =
+      existingVariants[index] || null;
+
+    let images = oldVariant?.images
+      ? oldVariant.images.map(image => ({
+          url: image.url,
+          publicId: image.publicId || ''
+        }))
+      : [];
+
+    const files =
+      getVariantFiles(req, index);
+
+    if (files.length) {
+      const newImages =
+        await uploadVariantFiles(files);
+
+      const shouldReplace =
+        req.body[
+          `replaceVariantImages_${index}`
+        ] === 'on';
+
+      images = shouldReplace
+        ? newImages
+        : [...images, ...newImages];
+    }
+
+    const fallbackUrl = String(
+      req.body[`variantImageUrl_${index}`] || ''
+    ).trim();
+
+    if (
+      fallbackUrl &&
+      !images.some(image => image.url === fallbackUrl)
+    ) {
+      images.push({
+        url: fallbackUrl,
+        publicId: ''
+      });
+    }
+
+    variants.push({
+      color,
+      colorHex,
+      stock,
+      sizes,
+      images
+    });
+  }
+
+  if (!variants.length) {
+    throw new Error(
+      'Add at least one product color.'
+    );
+  }
+
+  const colors =
+    variants.map(variant => variant.color);
+
+  const sizes = [
+    ...new Set(
+      variants.flatMap(variant => variant.sizes)
+    )
+  ];
+
+  const stock =
+    variants.reduce(
+      (total, variant) => total + variant.stock,
+      0
+    );
+
+  const images =
+    variants.flatMap(variant => variant.images);
+
+  if (!images.length) {
+    throw new Error(
+      'Upload at least one product image.'
+    );
+  }
+
   return {
-    name: req.body.name, slug: slugify(req.body.slug || req.body.name), sku: req.body.sku,
-    description: req.body.description, category: req.body.category, gender: req.body.gender,
-    material: req.body.material || '', price: Number(req.body.price), compareAtPrice: Number(req.body.compareAtPrice || 0),
-    stock: Number(req.body.stock), sizes: String(req.body.sizes || '').split(',').map(s => s.trim()).filter(Boolean),
-    colors: String(req.body.colors || '').split(',').map(s => s.trim()).filter(Boolean), images,
-    featured: req.body.featured === 'on', active: req.body.active === 'on'
+    name: String(req.body.name || '').trim(),
+
+    slug: slugify(
+      req.body.slug || req.body.name
+    ),
+
+    sku: String(req.body.sku || '')
+      .trim()
+      .toUpperCase(),
+
+    description:
+      String(req.body.description || '').trim(),
+
+    category:
+      String(req.body.category || '').trim(),
+
+    gender:
+      req.body.gender || 'Unisex',
+
+    material:
+      String(req.body.material || '').trim(),
+
+    price:
+      Number(req.body.price),
+
+    compareAtPrice:
+      Number(req.body.compareAtPrice || 0),
+
+    stock,
+    sizes,
+    colors,
+    images,
+    variants,
+
+    featured:
+      req.body.featured === 'on',
+
+    active:
+      req.body.active === 'on'
   };
 }
 
-app.post('/admin/products', requireAdmin, upload.single('image'), async (req, res) => {
-  try { await Product.create(await productPayload(req)); req.session.flash = { type: 'success', message: 'Product added.' }; res.redirect('/admin/products'); }
-  catch (e) { req.session.flash = { type: 'error', message: e.message }; res.redirect('/admin/products/new'); }
-});
-app.post('/admin/products/:id', requireAdmin, upload.single('image'), async (req, res) => {
-  try { const existing = await Product.findById(req.params.id); Object.assign(existing, await productPayload(req, existing)); await existing.save(); req.session.flash = { type: 'success', message: 'Product updated.' }; res.redirect('/admin/products'); }
-  catch (e) { req.session.flash = { type: 'error', message: e.message }; res.redirect(`/admin/products/${req.params.id}/edit`); }
-});
+app.post(
+  '/admin/products',
+  requireAdmin,
+  upload.any(),
+  async (req, res) => {
+    try {
+      const payload =
+        await productPayload(req);
+
+      await Product.create(payload);
+
+      req.session.flash = {
+        type: 'success',
+        message: 'Product added successfully.'
+      };
+
+      res.redirect('/admin/products');
+    } catch (error) {
+      console.error(error);
+
+      req.session.flash = {
+        type: 'error',
+        message: error.message
+      };
+
+      res.redirect('/admin/products/new');
+    }
+  }
+);
+
+app.post(
+  '/admin/products/:id',
+  requireAdmin,
+  upload.any(),
+  async (req, res) => {
+    try {
+      const existing =
+        await Product.findById(req.params.id);
+
+      if (!existing) {
+        throw new Error('Product not found.');
+      }
+
+      const payload =
+        await productPayload(req, existing);
+
+      Object.assign(existing, payload);
+
+      await existing.save();
+
+      req.session.flash = {
+        type: 'success',
+        message: 'Product updated successfully.'
+      };
+
+      res.redirect('/admin/products');
+    } catch (error) {
+      console.error(error);
+
+      req.session.flash = {
+        type: 'error',
+        message: error.message
+      };
+
+      res.redirect(
+        `/admin/products/${req.params.id}/edit`
+      );
+    }
+  }
+);
 app.post('/admin/products/:id/delete', requireAdmin, async (req, res, next) => { try { await Product.findByIdAndUpdate(req.params.id, { active: false }); res.redirect('/admin/products'); } catch (e) { next(e); } });
 
 app.get('/admin/orders', requireAdmin, async (req, res, next) => { try { const filter = req.query.status ? { status: req.query.status } : {}; const orders = await Order.find(filter).sort({ createdAt: -1 }).populate('customer', 'name email phone').lean(); res.render('admin/orders', { title: 'Manage orders', orders, selectedStatus: req.query.status || '' }); } catch (e) { next(e); } });
