@@ -1,1 +1,562 @@
-<%- include('partials/header') %><section class="section"><div class="container product-page"><div><img class="main-image" src="<%= product.images?.[0]?.url || 'https://via.placeholder.com/800x1000' %>" alt="<%= product.name %>"></div><div><span class="badge"><%= product.category %></span><h1><%= product.name %></h1><p><span class="price">৳<%= money(product.price) %></span><% if(product.compareAtPrice>product.price){ %><span class="old-price">৳<%= money(product.compareAtPrice) %></span><% } %></p><p><%= product.description %></p><p class="small">SKU: <%= product.sku %> · Material: <%= product.material || 'Not specified' %> · Stock: <%= product.stock %></p><form method="post" action="/cart/add"><input type="hidden" name="productId" value="<%= product._id %>"><div class="field"><label>Size</label><select name="size"><% (product.sizes.length?product.sizes:['One Size']).forEach(s=>{ %><option><%= s %></option><% }) %></select></div><div class="field"><label>Color</label><select name="color"><% (product.colors.length?product.colors:['Default']).forEach(c=>{ %><option><%= c %></option><% }) %></select></div><div class="field"><label>Quantity</label><input type="number" name="quantity" value="1" min="1" max="<%= product.stock %>"></div><button class="btn" <%= product.stock<1?'disabled':'' %>><%= product.stock<1?'Out of stock':'Add to cart' %></button></form></div></div></section><%- include('partials/footer') %>
+<%
+  const fallbackImage =
+    'https://via.placeholder.com/800x1000?text=TTT+Outfit';
+
+  const variants =
+    product.variants?.length
+      ? product.variants
+      : [
+          {
+            color:
+              product.colors?.[0] || 'Default',
+            colorHex: '#cccccc',
+            stock: product.stock || 0,
+            sizes:
+              product.sizes?.length
+                ? product.sizes
+                : ['One Size'],
+            images:
+              product.images?.length
+                ? product.images
+                : [{ url: fallbackImage }]
+          }
+        ];
+
+  const firstVariant = variants[0];
+
+  const variantJson =
+    JSON.stringify(variants)
+      .replace(/</g, '\\u003c');
+%>
+
+<%- include('partials/header') %>
+
+<section class="section professional-product-page">
+
+  <div class="container">
+
+    <nav class="product-breadcrumb">
+      <a href="/">Home</a>
+      <span>›</span>
+      <a href="/shop">Shop</a>
+      <span>›</span>
+      <a
+        href="/shop?category=<%= encodeURIComponent(product.category) %>"
+      >
+        <%= product.category %>
+      </a>
+      <span>›</span>
+      <strong><%= product.name %></strong>
+    </nav>
+
+    <div class="product-detail-layout">
+
+      <div class="product-gallery">
+
+        <div class="product-thumbnail-list"
+             id="productThumbnailList">
+
+          <% firstVariant.images.forEach((image, index) => { %>
+            <button
+              class="product-thumbnail
+                <%= index === 0 ? 'active' : '' %>"
+              type="button"
+              data-image="<%= image.url %>"
+              aria-label="View image <%= index + 1 %>"
+            >
+              <img
+                src="<%= image.url %>"
+                alt="<%= product.name %>"
+              >
+            </button>
+          <% }) %>
+
+        </div>
+
+        <div class="product-main-image-wrap">
+          <img
+            class="main-image"
+            id="productMainImage"
+            src="<%= firstVariant.images?.[0]?.url || fallbackImage %>"
+            alt="<%= product.name %>"
+          >
+
+          <% if (
+            product.compareAtPrice > product.price
+          ) { %>
+            <span class="product-detail-sale">
+              SALE
+            </span>
+          <% } %>
+        </div>
+
+      </div>
+
+      <div class="product-detail-info">
+
+        <span class="section-kicker">
+          <%= product.category %>
+        </span>
+
+        <h1><%= product.name %></h1>
+
+        <div class="product-detail-price">
+          <strong>
+            ৳<%= money(product.price) %>
+          </strong>
+
+          <% if (
+            product.compareAtPrice > product.price
+          ) { %>
+            <del>
+              ৳<%= money(product.compareAtPrice) %>
+            </del>
+          <% } %>
+        </div>
+
+        <div class="product-description">
+          <p><%= product.description %></p>
+        </div>
+
+        <div class="product-meta">
+          <span>
+            <strong>SKU:</strong>
+            <%= product.sku %>
+          </span>
+
+          <span>
+            <strong>Material:</strong>
+            <%= product.material || 'Not specified' %>
+          </span>
+        </div>
+
+        <form
+          method="post"
+          action="/cart/add"
+          id="productCartForm"
+        >
+
+          <input
+            type="hidden"
+            name="productId"
+            value="<%= product._id %>"
+          >
+
+          <input
+            type="hidden"
+            name="color"
+            id="selectedColor"
+            value="<%= firstVariant.color %>"
+          >
+
+          <div class="product-option-group">
+
+            <div class="product-option-heading">
+              <strong>Color</strong>
+
+              <span id="selectedColorLabel">
+                <%= firstVariant.color %>
+              </span>
+            </div>
+
+            <div class="product-color-options">
+
+              <% variants.forEach((variant, index) => { %>
+                <button
+                  class="product-color-option
+                    <%= index === 0 ? 'active' : '' %>"
+                  type="button"
+                  data-variant-index="<%= index %>"
+                  title="<%= variant.color %>"
+                  aria-label="<%= variant.color %>"
+                >
+                  <span
+                    style="background:
+                      <%= variant.colorHex || '#cccccc' %>;"
+                  ></span>
+
+                  <small><%= variant.color %></small>
+                </button>
+              <% }) %>
+
+            </div>
+
+          </div>
+
+          <div class="product-option-group">
+
+            <div class="product-option-heading">
+              <strong>Size</strong>
+            </div>
+
+            <div
+              class="product-size-options"
+              id="productSizeOptions"
+            ></div>
+
+            <input
+              type="hidden"
+              name="size"
+              id="selectedSize"
+              value="<%= firstVariant.sizes?.[0] || 'One Size' %>"
+            >
+
+          </div>
+
+          <div class="product-stock-message">
+            <span id="variantStockDot"></span>
+
+            <span id="variantStockText">
+              <%= firstVariant.stock %> available
+            </span>
+          </div>
+
+          <div class="product-buy-row">
+
+            <div class="quantity-control">
+              <button
+                type="button"
+                id="decreaseQuantity"
+              >
+                −
+              </button>
+
+              <input
+                type="number"
+                name="quantity"
+                id="productQuantity"
+                value="1"
+                min="1"
+                max="<%= firstVariant.stock %>"
+              >
+
+              <button
+                type="button"
+                id="increaseQuantity"
+              >
+                +
+              </button>
+            </div>
+
+            <button
+              class="btn gold-btn product-add-button"
+              id="productAddButton"
+              type="submit"
+              <%= firstVariant.stock < 1
+                ? 'disabled'
+                : ''
+              %>
+            >
+              <%= firstVariant.stock < 1
+                ? 'Out of stock'
+                : 'Add to cart'
+              %>
+            </button>
+
+          </div>
+
+        </form>
+
+        <div class="product-service-grid">
+
+          <div>
+            <strong>Nationwide delivery</strong>
+            <small>Delivery across Bangladesh</small>
+          </div>
+
+          <div>
+            <strong>Manual payment</strong>
+            <small>COD, bKash and Nagad</small>
+          </div>
+
+          <div>
+            <strong>Order support</strong>
+            <small>Track orders from your account</small>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+<script
+  type="application/json"
+  id="productVariantData"
+><%- variantJson %></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const variants = JSON.parse(
+      document.getElementById(
+        'productVariantData'
+      ).textContent
+    );
+
+    const mainImage =
+      document.getElementById('productMainImage');
+
+    const thumbnails =
+      document.getElementById(
+        'productThumbnailList'
+      );
+
+    const colorInput =
+      document.getElementById('selectedColor');
+
+    const colorLabel =
+      document.getElementById(
+        'selectedColorLabel'
+      );
+
+    const sizeInput =
+      document.getElementById('selectedSize');
+
+    const sizeOptions =
+      document.getElementById(
+        'productSizeOptions'
+      );
+
+    const stockText =
+      document.getElementById(
+        'variantStockText'
+      );
+
+    const stockDot =
+      document.getElementById(
+        'variantStockDot'
+      );
+
+    const quantityInput =
+      document.getElementById(
+        'productQuantity'
+      );
+
+    const addButton =
+      document.getElementById(
+        'productAddButton'
+      );
+
+    const colorButtons =
+      document.querySelectorAll(
+        '.product-color-option'
+      );
+
+    let currentVariant = variants[0];
+
+    function setMainImage(url, clickedButton) {
+      if (!url || !mainImage) return;
+
+      mainImage.classList.add('changing');
+
+      setTimeout(() => {
+        mainImage.src = url;
+        mainImage.classList.remove('changing');
+      }, 120);
+
+      thumbnails
+        ?.querySelectorAll('.product-thumbnail')
+        .forEach(button => {
+          button.classList.toggle(
+            'active',
+            button === clickedButton
+          );
+        });
+    }
+
+    function renderThumbnails(variant) {
+      if (!thumbnails) return;
+
+      thumbnails.innerHTML = '';
+
+      const images =
+        variant.images?.length
+          ? variant.images
+          : [{
+              url:
+                'https://via.placeholder.com/800x1000?text=TTT+Outfit'
+            }];
+
+      images.forEach((image, index) => {
+        const button =
+          document.createElement('button');
+
+        button.type = 'button';
+
+        button.className =
+          `product-thumbnail ${
+            index === 0 ? 'active' : ''
+          }`;
+
+        button.innerHTML =
+          `<img src="${image.url}" alt="">`;
+
+        button.addEventListener('click', () => {
+          setMainImage(image.url, button);
+        });
+
+        thumbnails.appendChild(button);
+      });
+
+      setMainImage(
+        images[0].url,
+        thumbnails.firstElementChild
+      );
+    }
+
+    function renderSizes(variant) {
+      if (!sizeOptions || !sizeInput) return;
+
+      sizeOptions.innerHTML = '';
+
+      const sizes =
+        variant.sizes?.length
+          ? variant.sizes
+          : ['One Size'];
+
+      sizes.forEach((size, index) => {
+        const button =
+          document.createElement('button');
+
+        button.type = 'button';
+        button.textContent = size;
+
+        button.className =
+          `product-size-option ${
+            index === 0 ? 'active' : ''
+          }`;
+
+        button.addEventListener('click', () => {
+          sizeOptions
+            .querySelectorAll(
+              '.product-size-option'
+            )
+            .forEach(item => {
+              item.classList.remove('active');
+            });
+
+          button.classList.add('active');
+          sizeInput.value = size;
+        });
+
+        sizeOptions.appendChild(button);
+      });
+
+      sizeInput.value = sizes[0];
+    }
+
+    function updateStock(variant) {
+      const stock =
+        Number(variant.stock || 0);
+
+      quantityInput.max =
+        String(Math.max(stock, 1));
+
+      quantityInput.value = '1';
+
+      if (stock > 0) {
+        stockText.textContent =
+          `${stock} available`;
+
+        stockDot.classList.remove(
+          'out-of-stock'
+        );
+
+        addButton.disabled = false;
+        addButton.textContent =
+          'Add to cart';
+      } else {
+        stockText.textContent =
+          'Out of stock';
+
+        stockDot.classList.add(
+          'out-of-stock'
+        );
+
+        addButton.disabled = true;
+        addButton.textContent =
+          'Out of stock';
+      }
+    }
+
+    function selectVariant(index) {
+      const variant = variants[index];
+
+      if (!variant) return;
+
+      currentVariant = variant;
+
+      colorInput.value = variant.color;
+      colorLabel.textContent = variant.color;
+
+      renderThumbnails(variant);
+      renderSizes(variant);
+      updateStock(variant);
+
+      colorButtons.forEach((button, itemIndex) => {
+        button.classList.toggle(
+          'active',
+          itemIndex === index
+        );
+      });
+    }
+
+    colorButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        selectVariant(
+          Number(button.dataset.variantIndex)
+        );
+      });
+    });
+
+    thumbnails?.addEventListener(
+      'click',
+      event => {
+        const button =
+          event.target.closest(
+            '.product-thumbnail'
+          );
+
+        if (!button) return;
+
+        setMainImage(
+          button.dataset.image,
+          button
+        );
+      }
+    );
+
+    document
+      .getElementById('decreaseQuantity')
+      ?.addEventListener('click', () => {
+        quantityInput.value = String(
+          Math.max(
+            1,
+            Number(quantityInput.value) - 1
+          )
+        );
+      });
+
+    document
+      .getElementById('increaseQuantity')
+      ?.addEventListener('click', () => {
+        const max =
+          Number(currentVariant.stock || 1);
+
+        quantityInput.value = String(
+          Math.min(
+            max,
+            Number(quantityInput.value) + 1
+          )
+        );
+      });
+
+    selectVariant(0);
+  });
+</script>
+
+<%- include('partials/footer') %>
