@@ -127,20 +127,119 @@ app.post('/login', async (req, res, next) => {
 
 app.post('/logout', (req, res) => req.session.destroy(() => res.redirect('/')));
 
-app.post('/cart/add', async (req, res, next) => {
+app.post('/cart/add', async (req, res) => {
   try {
-    const product = await Product.findById(req.body.productId).lean();
-    if (!product || !product.active || product.stock < 1) throw new Error('This product is unavailable.');
-    const quantity = Math.max(1, Math.min(Number(req.body.quantity) || 1, product.stock));
-    const size = req.body.size || product.sizes[0] || 'One Size';
-    const color = req.body.color || product.colors[0] || 'Default';
+    const product =
+      await Product.findById(req.body.productId)
+        .lean();
+
+    if (!product || !product.active) {
+      throw new Error(
+        'This product is unavailable.'
+      );
+    }
+
+    const requestedColor =
+      String(req.body.color || '').trim();
+
+    const variant =
+      product.variants?.find(
+        item => item.color === requestedColor
+      ) ||
+      product.variants?.[0] ||
+      null;
+
+    const availableStock =
+      variant
+        ? Number(variant.stock || 0)
+        : Number(product.stock || 0);
+
+    if (availableStock < 1) {
+      throw new Error(
+        'This color is currently out of stock.'
+      );
+    }
+
+    const availableSizes =
+      variant?.sizes?.length
+        ? variant.sizes
+        : product.sizes || [];
+
+    const requestedSize =
+      String(req.body.size || '').trim();
+
+    const size =
+      availableSizes.includes(requestedSize)
+        ? requestedSize
+        : availableSizes[0] || 'One Size';
+
+    const color =
+      variant?.color ||
+      requestedColor ||
+      product.colors?.[0] ||
+      'Default';
+
+    const quantity = Math.max(
+      1,
+      Math.min(
+        Number(req.body.quantity) || 1,
+        availableStock
+      )
+    );
+
+    const selectedImage =
+      variant?.images?.[0]?.url ||
+      product.images?.[0]?.url ||
+      '';
+
     req.session.cart ||= [];
-    const existing = req.session.cart.find(i => i.productId === product._id.toString() && i.size === size && i.color === color);
-    if (existing) existing.quantity = Math.min(existing.quantity + quantity, product.stock);
-    else req.session.cart.push({ productId: product._id.toString(), name: product.name, slug: product.slug, image: product.images[0]?.url || '', price: product.price, size, color, quantity });
-    req.session.flash = { type: 'success', message: `${product.name} added to cart.` };
-    res.redirect(req.get('referer') || '/cart');
-  } catch (e) { req.session.flash = { type: 'error', message: e.message }; res.redirect('/shop'); }
+
+    const existing =
+      req.session.cart.find(item =>
+        item.productId === product._id.toString() &&
+        item.size === size &&
+        item.color === color
+      );
+
+    if (existing) {
+      existing.quantity = Math.min(
+        existing.quantity + quantity,
+        availableStock
+      );
+
+      existing.image = selectedImage;
+    } else {
+      req.session.cart.push({
+        productId: product._id.toString(),
+        name: product.name,
+        slug: product.slug,
+        image: selectedImage,
+        price: product.price,
+        size,
+        color,
+        quantity
+      });
+    }
+
+    req.session.flash = {
+      type: 'success',
+      message:
+        `${product.name} (${color}, ${size}) added to cart.`
+    };
+
+    res.redirect(
+      req.get('referer') || '/cart'
+    );
+  } catch (error) {
+    req.session.flash = {
+      type: 'error',
+      message: error.message
+    };
+
+    res.redirect(
+      req.get('referer') || '/shop'
+    );
+  }
 });
 
 app.get('/cart', (req, res) => {
