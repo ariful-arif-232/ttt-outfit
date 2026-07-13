@@ -1,93 +1,185 @@
 <%- include('partials/header') %>
 
-<section class="hero-slider">
+<!-- =====================================
+     HERO SLIDER
+===================================== -->
 
-  <div
-    class="hero-slide active"
+<section class="hero-slider" aria-label="Promotional collections">
 
-      linear-gradient(
-  90deg,
-  rgba(0, 0, 0, 0.82) 0%,
-  rgba(0, 0, 0, 0.58) 38%,
-  rgba(0, 0, 0, 0.12) 75%
-),
-url('/hero-1.jpg');
+  <!-- Slide 1 -->
+  <article
+    class="hero-slide hero-slide-one active"
+    aria-hidden="false"
   >
-<div class="hero-slide hero-slide-one active">
- <div class="hero-content-wrap">
-  <div class="container">
-    <div class="hero-text">
+    <div class="hero-content-wrap">
+      <div class="container">
+        <div class="hero-text">
 
-      <span class="hero-kicker">
-        TTT OUTFIT — NEW COLLECTION
-      </span>
+          <span class="hero-kicker">
+            SUMMER COLLECTION
+          </span>
 
-      <h1>
-        Wear your
-        <em>identity.</em>
-      </h1>
+          <h1>
+            Up to <em>30% Off</em>
+          </h1>
 
-      <p>
-        Premium fabrics, confident fits and modern
-        everyday fashion made for your lifestyle.
-      </p>
+          <p>
+            Upgrade your everyday wardrobe with premium
+            summer essentials from TTT Outfit.
+          </p>
 
-      <div class="hero-actions">
-        <a class="btn gold-btn" href="/shop">
-          Shop Collection
-        </a>
+          <div class="hero-actions">
+            <a class="btn gold-btn" href="/shop">
+              Shop Now
+            </a>
 
-        <a class="btn outline-btn" href="#categories">
-          Explore Categories
-        </a>
+            <a class="btn outline-btn" href="#categories">
+              Explore Categories
+            </a>
+          </div>
+
+        </div>
       </div>
-
     </div>
-  </div>
-</div>
+  </article>
 
-  <div
-    class="hero-slide"
-
-      linear-gradient(
-        90deg,
-        rgba(0,0,0,.80),
-        rgba(0,0,0,.15)
-      ),
-url('/hero-2.jpg');
+  <!-- Slide 2 -->
+  <article
+    class="hero-slide hero-slide-two"
+    aria-hidden="true"
   >
-<div class="hero-slide hero-slide-two">
-<div class="hero-content-wrap">
-  <div class="container">
-    <div class="hero-text">
+    <div class="hero-content-wrap">
+      <div class="container">
+        <div class="hero-text">
 
-      <span class="hero-kicker">
-        TTT OUTFIT — NEW COLLECTION
-      </span>
+          <span class="hero-kicker">
+            NEW ARRIVALS
+          </span>
 
-      <h1>
-        Wear your
-        <em>identity.</em>
-      </h1>
+          <h1>
+            Fresh <em>Drop</em>
+          </h1>
 
-      <p>
-        Premium fabrics, confident fits and modern
-        everyday fashion made for your lifestyle.
-      </p>
+          <p>
+            Discover our latest casual fashion,
+            confident fits and premium everyday styles.
+          </p>
 
-      <div class="hero-actions">
-        <a class="btn gold-btn" href="/shop">
-          Shop Collection
-        </a>
+          <div class="hero-actions">
+            <a class="btn gold-btn" href="/shop">
+              Explore Collection
+            </a>
+          </div>
 
-        <a class="btn outline-btn" href="#categories">
-          Explore Categories
-        </a>
+        </div>
       </div>
-
     </div>
-  </div>
-</div>
+  </article>
+
+  <!-- Slide 3 -->
+  <article
+    class="hero-slide hero-slide-three"
+    aria-hidden="true"
+  >
+    <div class="hero-content-wrap">
+      <div class="container">
+        <div class="hero-text">
+
+          <span class="hero-kicker">
+            STREETWEAR EDIT
+          </span>
+
+          <h1>
+            Drop <em>Shoulder</em>
+          </h1>
+
+          <p>
+            Relaxed silhouettes and modern streetwear
+            designed for effortless everyday style.
+          </p>
+
+          <div class="hero-actions">
+            <a
+              class="btn gold-btn"
+              href="/shop?category=Drop%20Shoulder"
+            >
+              Shop Streetwear
+            </a>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- Slide 4 -->
+  <article
+    class="hero-slide hero-slide-four"
+    aria-hidden="true"
+  >
+    <div class="hero-content-wrap">
+      <div class="container">
+        <div class="hero-text">
+
+          <span class="hero-kicker">
+            SMART CASUAL
+          </span>
+
+          <h1>
+            Classic <em>Polo</em>
+          </h1>
+
+          <p>
+            Clean, refined polo shirts made for
+            comfort, confidence and every occasion.
+          </p>
+
+          <div class="hero-actions">
+            <a
+              class="btn gold-btn"
+              href="/shop?category=Polo"
+            >
+              Shop Polo
+            </a>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- Slide 5 -->
+  <article
+    class="hero-slide hero-slide-five"
+    aria-hidden="true"
+  >
+    <div class="hero-content-wrap">
+      <div class="container">
+        <div class="hero-text">
+
+          <span class="hero-kicker">
+            LIMITED OFFER
+          </span>
+
+          <h1>
+            Premium <em>Essentials</em>
+          </h1>
+
+          <p>
+            Limited-time prices on selected TTT Outfit
+            products while stocks last.
+          </p>
+
+          <div class="hero-actions">
+            <a class="btn gold-btn" href="/shop">
+              View Offers
+            </a>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </article>
 
   <button
     class="hero-arrow hero-prev"
@@ -105,64 +197,79 @@ url('/hero-2.jpg');
     &#10095;
   </button>
 
-  <div class="hero-dots">
-  <button
-    class="hero-dot active"
-    type="button"
-    aria-label="Go to slide 1"
-  ></button>
+  <div class="hero-dots" aria-label="Choose a slide">
 
-  <button
-    class="hero-dot"
-    type="button"
-    aria-label="Go to slide 2"
-  ></button>
-</div>
+    <% for (let i = 0; i < 5; i++) { %>
+      <button
+        class="hero-dot <%= i === 0 ? 'active' : '' %>"
+        type="button"
+        aria-label="Go to slide <%= i + 1 %>"
+      ></button>
+    <% } %>
+
+  </div>
 
 </section>
+
+
+<!-- =====================================
+     BENEFITS
+===================================== -->
 
 <section class="benefits-strip">
   <div class="container benefits-grid">
 
-    <div class="benefit-item reveal">
+    <article class="benefit-item reveal">
       <span class="benefit-icon">✦</span>
+
       <div>
         <strong>Premium Quality</strong>
         <small>Carefully selected fabrics</small>
       </div>
-    </div>
+    </article>
 
-    <div class="benefit-item reveal">
+    <article class="benefit-item reveal">
       <span class="benefit-icon">৳</span>
+
       <div>
-        <strong>Secure Payment</strong>
+        <strong>Easy Payment</strong>
         <small>COD, bKash and Nagad</small>
       </div>
-    </div>
+    </article>
 
-    <div class="benefit-item reveal">
+    <article class="benefit-item reveal">
       <span class="benefit-icon">✓</span>
-      <div>
-        <strong>Easy Ordering</strong>
-        <small>Simple and fast checkout</small>
-      </div>
-    </div>
 
-    <div class="benefit-item reveal">
+      <div>
+        <strong>Simple Ordering</strong>
+        <small>Quick and secure checkout</small>
+      </div>
+    </article>
+
+    <article class="benefit-item reveal">
       <span class="benefit-icon">↻</span>
+
       <div>
         <strong>Order Support</strong>
         <small>Track orders from your account</small>
       </div>
-    </div>
+    </article>
 
   </div>
 </section>
 
-<section class="section category-section" id="categories">
+
+<!-- =====================================
+     CATEGORIES
+===================================== -->
+
+<section
+  class="section category-section"
+  id="categories"
+>
   <div class="container">
 
-    <div class="section-title reveal">
+    <header class="section-title reveal">
       <span class="section-kicker">
         SHOP BY COLLECTION
       </span>
@@ -170,10 +277,10 @@ url('/hero-2.jpg');
       <h2>Find your style</h2>
 
       <p>
-        Explore premium everyday fashion from
-        TTT Outfit.
+        Explore premium everyday fashion created
+        for comfort, confidence and modern life.
       </p>
-    </div>
+    </header>
 
     <div class="premium-category-grid">
 
@@ -184,6 +291,7 @@ url('/hero-2.jpg');
         <img
           src="/category-tshirt.jpg"
           alt="TTT Outfit T-Shirts"
+          loading="lazy"
         >
 
         <div class="premium-category-overlay">
@@ -207,6 +315,7 @@ url('/hero-2.jpg');
         <img
           src="/category-polo.jpg"
           alt="TTT Outfit Polo Shirts"
+          loading="lazy"
         >
 
         <div class="premium-category-overlay">
@@ -224,27 +333,28 @@ url('/hero-2.jpg');
       </a>
 
       <a
-  class="premium-category-card reveal"
-  href="/shop?category=Drop%20Shoulder"
->
-    <img
-      src="/category-drop-shoulder.jpg"
-      alt="TTT Outfit Drop Shoulder"
-    >
+        class="premium-category-card reveal"
+        href="/shop?category=Drop%20Shoulder"
+      >
+        <img
+          src="/category-drop-shoulder.jpg"
+          alt="TTT Outfit Drop Shoulder"
+          loading="lazy"
+        >
 
-    <div class="premium-category-overlay">
-      <span class="category-label">
-        STREETWEAR
-      </span>
+        <div class="premium-category-overlay">
+          <span class="category-label">
+            STREETWEAR
+          </span>
 
-      <h3>Drop Shoulder</h3>
+          <h3>Drop Shoulder</h3>
 
-      <span class="category-shop-link">
-        Shop collection
-        <strong>→</strong>
-      </span>
-    </div>
-</a>
+          <span class="category-shop-link">
+            Shop collection
+            <strong>→</strong>
+          </span>
+        </div>
+      </a>
 
       <a
         class="premium-category-card reveal"
@@ -253,6 +363,7 @@ url('/hero-2.jpg');
         <img
           src="/category-jacket.jpg"
           alt="TTT Outfit Jackets"
+          loading="lazy"
         >
 
         <div class="premium-category-overlay">
@@ -274,6 +385,69 @@ url('/hero-2.jpg');
   </div>
 </section>
 
+
+<!-- =====================================
+     FEATURED PRODUCTS
+===================================== -->
+
+<section class="section products-section">
+  <div class="container">
+
+    <header class="section-head reveal">
+      <div>
+        <span class="section-kicker">
+          CURATED FOR YOU
+        </span>
+
+        <h2>Featured products</h2>
+      </div>
+
+      <a class="view-all-link" href="/shop">
+        View all products →
+      </a>
+    </header>
+
+    <% if (featured && featured.length) { %>
+
+      <div class="grid product-grid">
+        <% featured.forEach((p, index) => { %>
+
+          <div
+            class="reveal"
+            style="transition-delay:
+              <%= Math.min(index * 70, 350) %>ms;"
+          >
+            <%- include('partials/product-card', { p }) %>
+          </div>
+
+        <% }) %>
+      </div>
+
+    <% } else { %>
+
+      <div class="empty-products reveal">
+        <h3>New products coming soon</h3>
+
+        <p>
+          Add featured products from your admin panel
+          to display them here.
+        </p>
+
+        <a class="btn" href="/shop">
+          Browse Shop
+        </a>
+      </div>
+
+    <% } %>
+
+  </div>
+</section>
+
+
+<!-- =====================================
+     PROMO BANNER
+===================================== -->
+
 <section class="promo-banner">
   <div class="container promo-content reveal">
 
@@ -294,49 +468,60 @@ url('/hero-2.jpg');
     </div>
 
     <a class="btn gold-btn" href="/shop">
-      Discover the Collection
+      Discover Collection
     </a>
 
   </div>
 </section>
 
+
+<!-- =====================================
+     WHY CHOOSE US
+===================================== -->
+
 <section class="section">
   <div class="container">
 
-    <div class="section-title reveal">
+    <header class="section-title reveal">
       <span class="section-kicker">
         WHY TTT OUTFIT
       </span>
 
       <h2>Designed around you</h2>
-    </div>
+    </header>
 
     <div class="why-grid">
 
       <article class="why-card reveal">
         <span>01</span>
+
         <h3>Quality Fabrics</h3>
+
         <p>
-          Materials selected for everyday comfort,
+          Selected materials for everyday comfort,
           durability and a premium feel.
         </p>
       </article>
 
       <article class="why-card reveal">
         <span>02</span>
+
         <h3>Modern Design</h3>
+
         <p>
-          Clean, confident styles that work across
-          casual and smart-casual occasions.
+          Clean and confident styles for casual,
+          streetwear and smart-casual occasions.
         </p>
       </article>
 
       <article class="why-card reveal">
         <span>03</span>
-        <h3>Bangladesh Delivery</h3>
+
+        <h3>Nationwide Delivery</h3>
+
         <p>
-          Convenient ordering and nationwide courier
-          delivery support.
+          Convenient ordering and dependable delivery
+          support across Bangladesh.
         </p>
       </article>
 
@@ -344,6 +529,11 @@ url('/hero-2.jpg');
 
   </div>
 </section>
+
+
+<!-- =====================================
+     NEWSLETTER
+===================================== -->
 
 <section class="newsletter-section">
   <div class="container newsletter reveal">
@@ -363,11 +553,17 @@ url('/hero-2.jpg');
 
     <form
       class="newsletter-form"
-      onsubmit="event.preventDefault();"
+      onsubmit="
+        event.preventDefault();
+        this.reset();
+        alert('Thank you for subscribing!');
+      "
     >
       <input
         type="email"
+        name="newsletterEmail"
         placeholder="Enter your email address"
+        aria-label="Email address"
         required
       >
 
@@ -378,6 +574,5 @@ url('/hero-2.jpg');
 
   </div>
 </section>
-
 
 <%- include('partials/footer') %>
