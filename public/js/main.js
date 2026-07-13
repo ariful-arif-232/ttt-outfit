@@ -66,11 +66,13 @@ if (menuButton && navLinks) {
 
   updateHeaderOnScroll();
 
- const slides =
-  Array.from(document.querySelectorAll('.hero-slide'));
+const slides = Array.from(
+  document.querySelectorAll('.hero-slide')
+);
 
-const dots =
-  Array.from(document.querySelectorAll('.hero-dot'));
+const dots = Array.from(
+  document.querySelectorAll('.hero-dot')
+);
 
 const previousButton =
   document.querySelector('.hero-prev');
@@ -82,18 +84,15 @@ let currentSlide = 0;
 let sliderTimer = null;
 
 function showSlide(index) {
-  if (slides.length === 0) return;
+  if (slides.length < 1) return;
 
   currentSlide =
     (index + slides.length) % slides.length;
 
   slides.forEach((slide, slideIndex) => {
-    const isActive = slideIndex === currentSlide;
-
-    slide.classList.toggle('active', isActive);
-    slide.setAttribute(
-      'aria-hidden',
-      String(!isActive)
+    slide.classList.toggle(
+      'active',
+      slideIndex === currentSlide
     );
   });
 
@@ -105,15 +104,8 @@ function showSlide(index) {
   });
 }
 
-function stopSlider() {
-  if (sliderTimer) {
-    clearInterval(sliderTimer);
-    sliderTimer = null;
-  }
-}
-
 function startSlider() {
-  stopSlider();
+  clearInterval(sliderTimer);
 
   if (slides.length < 2) return;
 
@@ -139,48 +131,8 @@ dots.forEach((dot, index) => {
   });
 });
 
-const heroSlider =
-  document.querySelector('.hero-slider');
-
-heroSlider?.addEventListener(
-  'mouseenter',
-  stopSlider
-);
-
-heroSlider?.addEventListener(
-  'mouseleave',
-  startSlider
-);
-
-document.addEventListener(
-  'visibilitychange',
-  () => {
-    if (document.hidden) {
-      stopSlider();
-    } else {
-      startSlider();
-    }
-  }
-);
-
 showSlide(0);
 startSlider();
-  });
-
-  nextButton?.addEventListener('click', () => {
-    showSlide(currentSlide + 1);
-    startSlider();
-  });
-
-  dots.forEach((dot, index) => {
-    dot.addEventListener('click', () => {
-      showSlide(index);
-      startSlider();
-    });
-  });
-
-  showSlide(0);
-  startSlider();
 
   const revealElements =
     document.querySelectorAll('.reveal');
