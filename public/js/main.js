@@ -116,9 +116,9 @@ function startSlider() {
 
   if (slides.length < 2) return;
 
-  sliderTimer = setInterval(() => {
-    showSlide(currentSlide + 1);
-  }, 2000);
+sliderTimer = setInterval(() => {
+  showSlide(currentSlide + 1);
+}, 2500);
 }
 
 previousButton?.addEventListener('click', () => {
