@@ -1,1 +1,237 @@
-<article class="product-card"><a href="/product/<%= p.slug %>"><img src="<%= p.images?.[0]?.url || 'https://via.placeholder.com/600x750?text=TTT+Outfit' %>" alt="<%= p.name %>"></a><div class="product-info"><span class="badge"><%= p.category %></span><h3><a href="/product/<%= p.slug %>"><%= p.name %></a></h3><span class="price">৳<%= money(p.price) %></span><% if(p.compareAtPrice>p.price){ %><span class="old-price">৳<%= money(p.compareAtPrice) %></span><% } %><p class="small"><%= p.stock>0 ? `${p.stock} in stock` : 'Out of stock' %></p></div></article>
+<%
+  const mainImage =
+    p.images?.[0]?.url ||
+    'https://via.placeholder.com/700x875?text=TTT+Outfit';
+
+  const secondImage =
+    p.images?.[1]?.url || mainImage;
+
+  const hasDiscount =
+    Number(p.compareAtPrice) > Number(p.price);
+
+  const discountPercent = hasDiscount
+    ? Math.round(
+        ((p.compareAtPrice - p.price) /
+          p.compareAtPrice) * 100
+      )
+    : 0;
+
+  const productSizes =
+    Array.isArray(p.sizes) ? p.sizes : [];
+
+  const productColors =
+    Array.isArray(p.colors) ? p.colors : [];
+%>
+
+<article class="professional-product-card">
+
+  <div class="product-image-wrap">
+
+    <a
+      class="product-image-link"
+      href="/product/<%= p.slug %>"
+      aria-label="View <%= p.name %>"
+    >
+
+      <img
+        class="product-primary-image"
+        src="<%= mainImage %>"
+        alt="<%= p.name %>"
+        loading="lazy"
+      >
+
+      <% if (p.images?.[1]?.url) { %>
+        <img
+          class="product-secondary-image"
+          src="<%= secondImage %>"
+          alt="<%= p.name %> alternate view"
+          loading="lazy"
+        >
+      <% } %>
+
+    </a>
+
+    <div class="product-badges">
+
+      <% if (hasDiscount) { %>
+        <span class="sale-badge">
+          -<%= discountPercent %>%
+        </span>
+      <% } %>
+
+      <% if (p.stock < 1) { %>
+        <span class="sold-out-badge">
+          Sold Out
+        </span>
+      <% } else if (p.stock <= 5) { %>
+        <span class="low-stock-badge">
+          Only <%= p.stock %> left
+        </span>
+      <% } %>
+
+    </div>
+
+    <div class="product-hover-actions">
+
+      <a
+        href="/product/<%= p.slug %>"
+        aria-label="Quick view"
+        title="Quick View"
+      >
+        <span>⌕</span>
+      </a>
+
+      <a
+        href="/product/<%= p.slug %>"
+        aria-label="View product details"
+        title="Product Details"
+      >
+        <span>♡</span>
+      </a>
+
+    </div>
+
+    <% if (p.stock > 0) { %>
+
+      <form
+        class="quick-cart-form"
+        method="post"
+        action="/cart/add"
+      >
+
+        <input
+          type="hidden"
+          name="productId"
+          value="<%= p._id %>"
+        >
+
+        <input
+          type="hidden"
+          name="quantity"
+          value="1"
+        >
+
+        <input
+          type="hidden"
+          name="size"
+          value="<%= productSizes[0] || 'One Size' %>"
+        >
+
+        <input
+          type="hidden"
+          name="color"
+          value="<%= productColors[0] || 'Default' %>"
+        >
+
+        <button type="submit">
+          <span>＋</span>
+          Quick Add
+        </button>
+
+      </form>
+
+    <% } %>
+
+  </div>
+
+  <div class="professional-product-info">
+
+    <div class="product-meta-row">
+
+      <span class="product-category">
+        <%= p.category %>
+      </span>
+
+      <% if (p.gender) { %>
+        <span class="product-gender">
+          <%= p.gender %>
+        </span>
+      <% } %>
+
+    </div>
+
+    <h3>
+      <a href="/product/<%= p.slug %>">
+        <%= p.name %>
+      </a>
+    </h3>
+
+    <div class="product-price-row">
+
+      <span class="product-current-price">
+        ৳<%= money(p.price) %>
+      </span>
+
+      <% if (hasDiscount) { %>
+        <span class="product-compare-price">
+          ৳<%= money(p.compareAtPrice) %>
+        </span>
+      <% } %>
+
+    </div>
+
+    <% if (productColors.length) { %>
+
+      <div class="product-color-preview">
+
+        <% productColors.slice(0, 4).forEach(color => { %>
+          <span
+            class="product-color-dot"
+            title="<%= color %>"
+            style="--swatch-color:
+              <%= color.toLowerCase()
+                .replace(/\s+/g, '') %>;"
+          ></span>
+        <% }) %>
+
+        <% if (productColors.length > 4) { %>
+          <small>
+            +<%= productColors.length - 4 %>
+          </small>
+        <% } %>
+
+      </div>
+
+    <% } %>
+
+    <% if (productSizes.length) { %>
+
+      <div class="product-size-list">
+
+        <% productSizes.slice(0, 5).forEach(size => { %>
+          <span><%= size %></span>
+        <% }) %>
+
+        <% if (productSizes.length > 5) { %>
+          <span>
+            +<%= productSizes.length - 5 %>
+          </span>
+        <% } %>
+
+      </div>
+
+    <% } %>
+
+    <div class="product-card-footer">
+
+      <span
+        class="product-stock-status
+        <%= p.stock > 0 ? 'available' : 'unavailable' %>"
+      >
+        <i></i>
+
+        <%= p.stock > 0
+          ? 'Available'
+          : 'Out of stock'
+        %>
+      </span>
+
+      <a href="/product/<%= p.slug %>">
+        Details →
+      </a>
+
+    </div>
+
+  </div>
+
+</article>
