@@ -66,59 +66,105 @@ if (menuButton && navLinks) {
 
   updateHeaderOnScroll();
 
-  const slides =
-    Array.from(
-      document.querySelectorAll('.hero-slide')
+ const slides =
+  Array.from(document.querySelectorAll('.hero-slide'));
+
+const dots =
+  Array.from(document.querySelectorAll('.hero-dot'));
+
+const previousButton =
+  document.querySelector('.hero-prev');
+
+const nextButton =
+  document.querySelector('.hero-next');
+
+let currentSlide = 0;
+let sliderTimer = null;
+
+function showSlide(index) {
+  if (slides.length === 0) return;
+
+  currentSlide =
+    (index + slides.length) % slides.length;
+
+  slides.forEach((slide, slideIndex) => {
+    const isActive = slideIndex === currentSlide;
+
+    slide.classList.toggle('active', isActive);
+    slide.setAttribute(
+      'aria-hidden',
+      String(!isActive)
     );
+  });
 
-  const dots =
-    Array.from(
-      document.querySelectorAll('.hero-dot')
+  dots.forEach((dot, dotIndex) => {
+    dot.classList.toggle(
+      'active',
+      dotIndex === currentSlide
     );
+  });
+}
 
-  const previousButton =
-    document.querySelector('.hero-prev');
-
-  const nextButton =
-    document.querySelector('.hero-next');
-
-  let currentSlide = 0;
-  let sliderTimer;
-
-  function showSlide(index) {
-    if (!slides.length) return;
-
-    currentSlide =
-      (index + slides.length) % slides.length;
-
-    slides.forEach((slide, slideIndex) => {
-      slide.classList.toggle(
-        'active',
-        slideIndex === currentSlide
-      );
-    });
-
-    dots.forEach((dot, dotIndex) => {
-      dot.classList.toggle(
-        'active',
-        dotIndex === currentSlide
-      );
-    });
-  }
-
-  function startSlider() {
-    if (slides.length < 2) return;
-
+function stopSlider() {
+  if (sliderTimer) {
     clearInterval(sliderTimer);
-
-    sliderTimer = setInterval(() => {
-      showSlide(currentSlide + 1);
-    }, 1300);
+    sliderTimer = null;
   }
+}
 
-  previousButton?.addEventListener('click', () => {
-    showSlide(currentSlide - 1);
+function startSlider() {
+  stopSlider();
+
+  if (slides.length < 2) return;
+
+  sliderTimer = setInterval(() => {
+    showSlide(currentSlide + 1);
+  }, 2000);
+}
+
+previousButton?.addEventListener('click', () => {
+  showSlide(currentSlide - 1);
+  startSlider();
+});
+
+nextButton?.addEventListener('click', () => {
+  showSlide(currentSlide + 1);
+  startSlider();
+});
+
+dots.forEach((dot, index) => {
+  dot.addEventListener('click', () => {
+    showSlide(index);
     startSlider();
+  });
+});
+
+const heroSlider =
+  document.querySelector('.hero-slider');
+
+heroSlider?.addEventListener(
+  'mouseenter',
+  stopSlider
+);
+
+heroSlider?.addEventListener(
+  'mouseleave',
+  startSlider
+);
+
+document.addEventListener(
+  'visibilitychange',
+  () => {
+    if (document.hidden) {
+      stopSlider();
+    } else {
+      startSlider();
+    }
+  }
+);
+
+showSlide(0);
+startSlider();
   });
 
   nextButton?.addEventListener('click', () => {
