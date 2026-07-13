@@ -277,11 +277,52 @@ app.post('/checkout', requireLogin, async (req, res, next) => {
     const products = await Product.find({ _id: { $in: ids }, active: true });
     const map = new Map(products.map(p => [p._id.toString(), p]));
     const items = [];
-    for (const cartItem of cart) {
-      const product = map.get(cartItem.productId);
-      if (!product || product.stock < cartItem.quantity) throw new Error(`${cartItem.name} does not have enough stock.`);
-      items.push({ product: product._id, name: product.name, sku: product.sku, image: product.images[0]?.url || '', size: cartItem.size, color: cartItem.color, quantity: cartItem.quantity, unitPrice: product.price, lineTotal: product.price * cartItem.quantity });
-    }
+for (const cartItem of cart) {
+  const product =
+    map.get(cartItem.productId);
+
+  if (!product) {
+    throw new Error(
+      `${cartItem.name} is unavailable.`
+    );
+  }
+
+  const selectedVariant =
+    product.variants?.find(
+      variant =>
+        variant.color === cartItem.color
+    );
+
+  const availableStock =
+    selectedVariant
+      ? Number(selectedVariant.stock || 0)
+      : Number(product.stock || 0);
+
+  if (availableStock < cartItem.quantity) {
+    throw new Error(
+      `${cartItem.name} (${cartItem.color}) does not have enough stock.`
+    );
+  }
+
+  const selectedImage =
+    cartItem.image ||
+    selectedVariant?.images?.[0]?.url ||
+    product.images?.[0]?.url ||
+    '';
+
+  items.push({
+    product: product._id,
+    name: product.name,
+    sku: product.sku,
+    image: selectedImage,
+    size: cartItem.size,
+    color: cartItem.color,
+    quantity: cartItem.quantity,
+    unitPrice: product.price,
+    lineTotal:
+      product.price * cartItem.quantity
+  });
+}
     const user = await User.findById(req.session.user.id);
     const subtotal = items.reduce((sum, i) => sum + i.lineTotal, 0);
     const deliveryFee = subtotal >= 3000 ? 0 : 80;
@@ -336,7 +377,54 @@ paymentStatus:
   }
 ],
     });
-    await Promise.all(items.map(i => Product.updateOne({ _id: i.product, stock: { $gte: i.quantity } }, { $inc: { stock: -i.quantity, soldCount: i.quantity } })));
+await Promise.all(
+  items.map(async item => {
+    const product =
+      await Product.findById(item.product);
+
+    if (!product) {
+      throw new Error(
+        `${item.name} was not found.`
+      );
+    }
+
+    const variant =
+      product.variants?.find(
+        option =>
+          option.color === item.color
+      );
+
+    if (variant) {
+      if (variant.stock < item.quantity) {
+        throw new Error(
+          `${item.name} (${item.color}) does not have enough stock.`
+        );
+      }
+
+      variant.stock -= item.quantity;
+
+      product.stock =
+        product.variants.reduce(
+          (total, option) =>
+            total +
+            Number(option.stock || 0),
+          0
+        );
+    } else {
+      if (product.stock < item.quantity) {
+        throw new Error(
+          `${item.name} does not have enough stock.`
+        );
+      }
+
+      product.stock -= item.quantity;
+    }
+
+    product.soldCount += item.quantity;
+
+    await product.save();
+  })
+);
     req.session.cart = [];
     req.session.flash = { type: 'success', message: `Order ${order.orderNumber} placed successfully.` };
     res.redirect(`/orders/${order._id}`);
