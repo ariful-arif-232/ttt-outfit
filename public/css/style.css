@@ -2271,7 +2271,7 @@ th {
     top: 78px !important;
     right: -330px !important;
 
-width: min(78vw, 260px) !important;
+width: min(75vw, 250px) !important;
     height: auto !important;
     max-height: calc(100dvh - 95px) !important;
 
@@ -2436,7 +2436,7 @@ width: min(78vw, 260px) !important;
 @media (max-width: 560px) {
   .nav-links {
     top: 72px !important;
-    width: min(86vw, 286px) !important;
+width: min(75vw, 250px) !important;
     padding: 13px !important;
   }
 
