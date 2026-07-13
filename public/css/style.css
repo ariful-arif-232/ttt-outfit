@@ -2180,3 +2180,20 @@ body.menu-open {
     bottom: 22px !important;
   }
 }
+.hero-slide {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  transform: scale(1.05) !important;
+
+  transition:
+    opacity 0.9s ease,
+    visibility 0.9s ease,
+    transform 4s ease !important;
+}
+
+.hero-slide.active {
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: scale(1) !important;
+  z-index: 2 !important;
+}
