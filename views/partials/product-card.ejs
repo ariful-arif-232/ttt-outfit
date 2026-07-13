@@ -1,10 +1,16 @@
 <%
-  const mainImage =
-    p.images?.[0]?.url ||
-    'https://via.placeholder.com/700x875?text=TTT+Outfit';
+ const firstVariant =
+  p.variants?.[0] || null;
 
-  const secondImage =
-    p.images?.[1]?.url || mainImage;
+const mainImage =
+  firstVariant?.images?.[0]?.url ||
+  p.images?.[0]?.url ||
+  'https://via.placeholder.com/700x875?text=TTT+Outfit';
+
+const secondImage =
+  firstVariant?.images?.[1]?.url ||
+  p.images?.[1]?.url ||
+  mainImage;
 
   const hasDiscount =
     Number(p.compareAtPrice) > Number(p.price);
@@ -40,7 +46,10 @@
         loading="lazy"
       >
 
-      <% if (p.images?.[1]?.url) { %>
+    <% if (
+  firstVariant?.images?.[1]?.url ||
+  p.images?.[1]?.url
+) { %>
         <img
           class="product-secondary-image"
           src="<%= secondImage %>"
