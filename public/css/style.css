@@ -2197,3 +2197,259 @@ body.menu-open {
   transform: scale(1) !important;
   z-index: 2 !important;
 }
+/* =========================================
+   FINAL CLASSIC MOBILE HERO
+========================================= */
+
+@media (max-width: 700px) {
+  .hero-slider {
+    min-height: 0 !important;
+    height: 470px !important;
+  }
+
+  .hero-slide {
+    height: 470px !important;
+
+    background-size: cover !important;
+    background-repeat: no-repeat !important;
+    background-position: center center !important;
+
+    transform: scale(1.025) !important;
+
+    transition:
+      opacity 0.75s ease,
+      visibility 0.75s ease,
+      transform 3.2s ease !important;
+  }
+
+  .hero-slide.active {
+    transform: scale(1) !important;
+  }
+
+  .hero-slide-one {
+    background-image:
+      linear-gradient(
+        180deg,
+        rgba(0, 0, 0, 0.14) 0%,
+        rgba(0, 0, 0, 0.30) 42%,
+        rgba(0, 0, 0, 0.78) 100%
+      ),
+      url("/hero-1-mobile.jpg") !important;
+  }
+
+  .hero-slide-two {
+    background-image:
+      linear-gradient(
+        180deg,
+        rgba(0, 0, 0, 0.14) 0%,
+        rgba(0, 0, 0, 0.30) 42%,
+        rgba(0, 0, 0, 0.78) 100%
+      ),
+      url("/hero-2-mobile.jpg") !important;
+  }
+
+  .hero-slide-three {
+    background-image:
+      linear-gradient(
+        180deg,
+        rgba(0, 0, 0, 0.14) 0%,
+        rgba(0, 0, 0, 0.30) 42%,
+        rgba(0, 0, 0, 0.78) 100%
+      ),
+      url("/hero-3-mobile.jpg") !important;
+  }
+
+  .hero-slide-four {
+    background-image:
+      linear-gradient(
+        180deg,
+        rgba(0, 0, 0, 0.14) 0%,
+        rgba(0, 0, 0, 0.30) 42%,
+        rgba(0, 0, 0, 0.78) 100%
+      ),
+      url("/hero-4-mobile.jpg") !important;
+  }
+
+  .hero-slide-five {
+    background-image:
+      linear-gradient(
+        180deg,
+        rgba(0, 0, 0, 0.14) 0%,
+        rgba(0, 0, 0, 0.30) 42%,
+        rgba(0, 0, 0, 0.78) 100%
+      ),
+      url("/hero-5-mobile.jpg") !important;
+  }
+
+  .hero-content-wrap {
+    align-items: flex-end !important;
+
+    padding:
+      0
+      0
+      54px !important;
+  }
+
+  .hero-content-wrap .container {
+    width: min(92%, 540px) !important;
+  }
+
+  .hero-text {
+    max-width: 310px !important;
+  }
+
+  .hero-text .hero-kicker {
+    margin-bottom: 8px !important;
+
+    color: var(--gold-light) !important;
+
+    font-size: 8px !important;
+    font-weight: 800 !important;
+    letter-spacing: 1.8px !important;
+  }
+
+  .hero-text h1 {
+    margin-bottom: 10px !important;
+
+    font-size: 38px !important;
+    line-height: 0.94 !important;
+    letter-spacing: -0.7px !important;
+  }
+
+  .hero-text h1 em {
+    display: inline !important;
+  }
+
+  .hero-text p {
+    max-width: 295px !important;
+
+    font-size: 12px !important;
+    line-height: 1.45 !important;
+
+    color: rgba(255, 255, 255, 0.9) !important;
+  }
+
+  .hero-text .hero-actions {
+    width: auto !important;
+
+    flex-direction: row !important;
+    align-items: center !important;
+
+    margin-top: 14px !important;
+    gap: 8px !important;
+  }
+
+  .hero-text .hero-actions .btn {
+    width: auto !important;
+    min-height: 38px !important;
+
+    padding: 9px 14px !important;
+
+    font-size: 11px !important;
+    border-radius: 2px !important;
+  }
+
+  .hero-arrow {
+    display: none !important;
+  }
+
+  .hero-dots {
+    bottom: 14px !important;
+    gap: 6px !important;
+  }
+
+  .hero-dot {
+    width: 7px !important;
+    height: 7px !important;
+  }
+
+  .hero-dot.active {
+    width: 22px !important;
+  }
+}
+
+/* =========================================
+   SMALLER CLASSIC MOBILE HEADER
+========================================= */
+
+@media (max-width: 700px) {
+  .announcement-track {
+    padding: 7px 0 !important;
+
+    font-size: 8px !important;
+    letter-spacing: 1.4px !important;
+  }
+
+  .nav {
+    min-height: 58px !important;
+    height: 58px !important;
+  }
+
+  .brand {
+    gap: 7px !important;
+
+    font-size: 15px !important;
+    letter-spacing: 1.4px !important;
+  }
+
+  .brand-logo {
+    width: 34px !important;
+    height: 34px !important;
+  }
+
+  .mobile-menu-button {
+    width: 36px !important;
+    height: 36px !important;
+
+    border-width: 1.5px !important;
+    border-radius: 9px !important;
+  }
+
+  .mobile-menu-button span {
+    width: 20px !important;
+  }
+}
+
+/* =========================================
+   SMALLER PAGE TYPOGRAPHY
+========================================= */
+
+@media (max-width: 700px) {
+  body {
+    font-size: 13px !important;
+  }
+
+  .section {
+    padding: 38px 0 !important;
+  }
+
+  .section-kicker {
+    margin-bottom: 8px !important;
+
+    font-size: 8px !important;
+    letter-spacing: 1.8px !important;
+  }
+
+  .section-title {
+    margin-bottom: 26px !important;
+  }
+
+  .section-title h2,
+  .section-head h2 {
+    font-size: 30px !important;
+    line-height: 1 !important;
+  }
+
+  .section-title p {
+    font-size: 13px !important;
+    line-height: 1.55 !important;
+  }
+
+  .product-info h3 {
+    font-size: 14px !important;
+  }
+
+  .price {
+    font-size: 14px !important;
+  }
+}
