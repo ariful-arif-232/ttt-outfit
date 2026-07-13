@@ -84,7 +84,7 @@ let currentSlide = 0;
 let sliderTimer = null;
 
 function showSlide(index) {
-  if (slides.length < 1) return;
+  if (!slides.length) return;
 
   currentSlide =
     (index + slides.length) % slides.length;
@@ -104,8 +104,15 @@ function showSlide(index) {
   });
 }
 
+function stopSlider() {
+  if (sliderTimer) {
+    clearInterval(sliderTimer);
+    sliderTimer = null;
+  }
+}
+
 function startSlider() {
-  clearInterval(sliderTimer);
+  stopSlider();
 
   if (slides.length < 2) return;
 
@@ -131,9 +138,16 @@ dots.forEach((dot, index) => {
   });
 });
 
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) {
+    stopSlider();
+  } else {
+    startSlider();
+  }
+});
+
 showSlide(0);
 startSlider();
-
   const revealElements =
     document.querySelectorAll('.reveal');
 
