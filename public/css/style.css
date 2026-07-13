@@ -2271,7 +2271,7 @@ th {
     top: 78px !important;
     right: -330px !important;
 
-    width: min(86vw, 300px) !important;
+width: min(78vw, 260px) !important;
     height: auto !important;
     max-height: calc(100dvh - 95px) !important;
 
