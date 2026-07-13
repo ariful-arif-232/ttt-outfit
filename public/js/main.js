@@ -256,4 +256,68 @@ document.addEventListener('DOMContentLoaded', () => {
       element.classList.add('visible');
     });
   }
+  /* =========================
+   SHOP FILTER DRAWER
+========================= */
+
+const shopFilterButton =
+  document.getElementById('shopFilterButton');
+
+const shopSidebar =
+  document.getElementById('shopSidebar');
+
+const shopFilterClose =
+  document.getElementById('shopFilterClose');
+
+const shopFilterOverlay =
+  document.getElementById('shopFilterOverlay');
+
+function openShopFilters() {
+  if (!shopSidebar || !shopFilterOverlay) return;
+
+  shopSidebar.classList.add('active');
+  shopFilterOverlay.classList.add('active');
+
+  shopFilterButton?.setAttribute(
+    'aria-expanded',
+    'true'
+  );
+
+  document.body.style.overflow = 'hidden';
+}
+
+function closeShopFilters() {
+  if (!shopSidebar || !shopFilterOverlay) return;
+
+  shopSidebar.classList.remove('active');
+  shopFilterOverlay.classList.remove('active');
+
+  shopFilterButton?.setAttribute(
+    'aria-expanded',
+    'false'
+  );
+
+  document.body.style.overflow = '';
+}
+
+shopFilterButton?.addEventListener(
+  'click',
+  openShopFilters
+);
+
+shopFilterClose?.addEventListener(
+  'click',
+  closeShopFilters
+);
+
+shopFilterOverlay?.addEventListener(
+  'click',
+  closeShopFilters
+);
+
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape') {
+    closeShopFilters();
+  }
+});
 });
