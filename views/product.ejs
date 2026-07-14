@@ -225,12 +225,16 @@
           <% } %>
 
           <span class="product-viewing-proof">
-            <i></i>
-            <span id="productViewingCount">
-              8 people viewing
-            </span>
-          </span>
+  <i></i>
 
+  <span id="productViewingCount">
+    <%= viewerCount %>
+    <%= viewerCount === 1
+      ? 'person viewing'
+      : 'people viewing'
+    %>
+  </span>
+</span>
         </div>
 
 
@@ -1684,28 +1688,7 @@
       );
 
 
-    /* Dynamic viewing count */
 
-    const viewingCount =
-      document.getElementById(
-        'productViewingCount'
-      );
-
-    const viewerBase =
-      5 +
-      (
-        currentProduct.productId
-          .split('')
-          .reduce(
-            (total, character) =>
-              total +
-              character.charCodeAt(0),
-            0
-          ) % 12
-      );
-
-    viewingCount.textContent =
-      `${viewerBase} people viewing`;
 
 
     /* Recently viewed */
