@@ -5394,3 +5394,122 @@ width: min(75vw, 250px) !important;
       repeat(2, minmax(0, 1fr)) !important;
   }
 }
+/* =========================================
+   PREMIUM PRODUCT CARD TYPOGRAPHY
+========================================= */
+
+.professional-product-card{
+    padding:18px;
+    border-radius:18px;
+}
+
+.professional-product-info{
+    padding-top:14px;
+}
+
+/* Product Name */
+
+.professional-product-info h3{
+    font-size:18px;
+    font-weight:700;
+    line-height:1.35;
+    margin:10px 0 12px;
+}
+
+.professional-product-info h3 a{
+    color:#111;
+    text-decoration:none;
+    transition:.25s;
+}
+
+.professional-product-info h3 a:hover{
+    color:#c89b3c;
+}
+
+/* Category */
+
+.product-category{
+    font-size:13px;
+    font-weight:700;
+    color:#777;
+    letter-spacing:1px;
+    text-transform:uppercase;
+}
+
+/* Rating */
+
+.product-rating{
+    font-size:15px;
+    font-weight:600;
+}
+
+.product-rating span{
+    font-size:16px;
+}
+
+/* Sold */
+
+.product-sold-count{
+    font-size:13px;
+    font-weight:600;
+    color:#777;
+}
+
+/* Price */
+
+.product-current-price{
+    font-size:28px;
+    font-weight:800;
+    color:#111;
+}
+
+.product-compare-price{
+    font-size:16px;
+    margin-left:8px;
+    color:#999;
+    text-decoration:line-through;
+}
+
+/* Badges */
+
+.extra-badge{
+    font-size:12px;
+    font-weight:700;
+    padding:7px 12px;
+}
+
+/* Sizes */
+
+.product-size-list span{
+    width:38px;
+    height:38px;
+
+    font-size:13px;
+    font-weight:700;
+}
+
+/* Color */
+
+.product-color-dot{
+    width:22px;
+    height:22px;
+
+    border:2px solid #ddd;
+}
+
+/* Footer */
+
+.product-card-footer{
+    margin-top:16px;
+}
+
+.product-stock-status{
+    font-size:13px;
+    font-weight:700;
+}
+
+.product-card-footer a{
+    font-size:14px;
+    font-weight:700;
+    color:#111;
+}
