@@ -320,4 +320,9 @@ document.addEventListener('keydown', event => {
     closeShopFilters();
   }
 });
+  window.addEventListener('resize', () => {
+  if (window.innerWidth > 950) {
+    closeShopFilters();
+  }
+});
 });
