@@ -5288,3 +5288,76 @@ width: min(75vw, 250px) !important;
       repeat(2, minmax(0, 1fr));
   }
 }
+/* =========================================
+   HOME PAGE PRODUCT GRID SIZE FIX
+========================================= */
+
+.products-section .grid,
+.home-products-grid,
+.featured-products-grid {
+  display: grid !important;
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr)) !important;
+  gap: 20px !important;
+}
+
+.products-section .professional-product-card,
+.home-products-grid .professional-product-card,
+.featured-products-grid .professional-product-card {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+}
+
+.products-section .product-image-wrap,
+.home-products-grid .product-image-wrap,
+.featured-products-grid .product-image-wrap {
+  width: 100% !important;
+}
+
+.products-section .product-image-link img,
+.home-products-grid .product-image-link img,
+.featured-products-grid .product-image-link img {
+  width: 100% !important;
+  height: auto !important;
+  aspect-ratio: 4 / 5 !important;
+  object-fit: cover !important;
+}
+
+
+/* Tablet */
+
+@media (max-width: 950px) {
+  .products-section .grid,
+  .home-products-grid,
+  .featured-products-grid {
+    grid-template-columns:
+      repeat(3, minmax(0, 1fr)) !important;
+  }
+}
+
+
+/* Mobile */
+
+@media (max-width: 700px) {
+  .products-section .grid,
+  .home-products-grid,
+  .featured-products-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr)) !important;
+
+    gap: 16px 10px !important;
+  }
+}
+
+
+/* Very small phone */
+
+@media (max-width: 380px) {
+  .products-section .grid,
+  .home-products-grid,
+  .featured-products-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr)) !important;
+  }
+}
