@@ -14,6 +14,7 @@ const Product = require('./models/Product');
 const Order = require('./models/Order');
 const { requireLogin, requireAdmin } = require('./middleware/auth');
 const { slugify, money, makeOrderNumber } = require('./utils/helpers');
+const Review = require('./models/Review');
 
 const app = express();
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 * 1024 * 1024 } });
@@ -80,12 +81,149 @@ app.get('/shop', async (req, res, next) => {
 
 app.get('/product/:slug', async (req, res, next) => {
   try {
-    const product = await Product.findOne({ slug: req.params.slug, active: true }).lean();
-    if (!product) return res.status(404).render('message', { title: 'Not found', message: 'Product not found.' });
-    const related = await Product.find({ _id: { $ne: product._id }, category: product.category, active: true }).limit(4).lean();
-    res.render('product', { title: product.name, product, related });
-  } catch (e) { next(e); }
+    const product = await Product.findOne({
+      slug: req.params.slug,
+      active: true
+    }).lean();
+
+    if (!product) {
+      return res.status(404).render('message', {
+        title: 'Not found',
+        message: 'Product not found.'
+      });
+    }
+
+    const [reviews, relatedProducts] = await Promise.all([
+      Review.find({
+        product: product._id,
+        approved: true
+      })
+        .sort({ createdAt: -1 })
+        .lean(),
+
+      Product.find({
+        _id: { $ne: product._id },
+        category: product.category,
+        active: true
+      })
+        .sort({
+          featured: -1,
+          soldCount: -1,
+          createdAt: -1
+        })
+        .limit(4)
+        .lean()
+    ]);
+
+    res.render('product', {
+      title: product.name,
+      product,
+      reviews,
+      relatedProducts
+    });
+  } catch (error) {
+    next(error);
+  }
 });
+
+
+app.post(
+  '/product/:id/reviews',
+  requireLogin,
+  async (req, res) => {
+    try {
+      const product =
+        await Product.findById(req.params.id);
+
+      if (!product) {
+        throw new Error('Product not found.');
+      }
+
+      const rating =
+        Number(req.body.rating);
+
+      const comment =
+        String(req.body.comment || '').trim();
+
+      if (
+        !Number.isInteger(rating) ||
+        rating < 1 ||
+        rating > 5
+      ) {
+        throw new Error(
+          'Rating must be between 1 and 5.'
+        );
+      }
+
+      if (!comment) {
+        throw new Error(
+          'Please write a review.'
+        );
+      }
+
+      await Review.findOneAndUpdate(
+        {
+          product: product._id,
+          user: req.session.user.id
+        },
+        {
+          name: req.session.user.name,
+          rating,
+          comment,
+          approved: true
+        },
+        {
+          upsert: true,
+          new: true,
+          runValidators: true,
+          setDefaultsOnInsert: true
+        }
+      );
+
+      const reviewStats =
+        await Review.aggregate([
+          {
+            $match: {
+              product: product._id,
+              approved: true
+            }
+          },
+          {
+            $group: {
+              _id: '$product',
+              average: {
+                $avg: '$rating'
+              }
+            }
+          }
+        ]);
+
+      product.ratingAverage =
+        reviewStats[0]?.average || 0;
+
+      await product.save();
+
+      req.session.flash = {
+        type: 'success',
+        message:
+          'Review submitted successfully.'
+      };
+
+      res.redirect(
+        `/product/${product.slug}`
+      );
+    } catch (error) {
+      req.session.flash = {
+        type: 'error',
+        message: error.message
+      };
+
+      res.redirect(
+        req.get('referer') || '/shop'
+      );
+    }
+  }
+);
 
 app.get('/register', (req, res) => res.render('register', { title: 'Create account' }));
 app.post('/register', async (req, res, next) => {
@@ -227,9 +365,15 @@ app.post('/cart/add', async (req, res) => {
         `${product.name} (${color}, ${size}) added to cart.`
     };
 
-    res.redirect(
-      req.get('referer') || '/cart'
-    );
+const requestedRedirect =
+  String(req.body.redirectTo || '').trim();
+
+const safeRedirect =
+  requestedRedirect === '/checkout'
+    ? '/checkout'
+    : req.get('referer') || '/cart';
+
+res.redirect(safeRedirect);
   } catch (error) {
     req.session.flash = {
       type: 'error',
