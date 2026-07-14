@@ -8,7 +8,7 @@
     <nav class="shop-breadcrumb" aria-label="Breadcrumb">
       <a href="/">Home</a>
       <span>›</span>
-      <strong>Shop</strong>
+      <a href="/shop">Shop</a>
 
       <% if (filters.category) { %>
         <span>›</span>
@@ -16,16 +16,17 @@
       <% } %>
     </nav>
 
-    <!-- Page Header -->
+
+    <!-- Shop Heading -->
     <header class="shop-header">
 
-      <div>
+      <div class="shop-heading-content">
         <span class="section-kicker">
           TTT OUTFIT COLLECTION
         </span>
 
         <h1>
-          <%= filters.category || 'Shop' %>
+          <%= filters.category || 'Shop All' %>
         </h1>
 
         <p>
@@ -36,25 +37,30 @@
 
       <div class="shop-result-count">
         <strong><%= products.length %></strong>
+
         <span>
-          <%= products.length === 1 ? 'product' : 'products' %>
+          <%= products.length === 1
+            ? 'Product'
+            : 'Products'
+          %>
         </span>
       </div>
 
     </header>
 
-    <!-- Mobile Controls -->
+
+    <!-- Mobile Filter and Sort -->
     <div class="shop-mobile-controls">
 
       <button
         class="shop-filter-button"
         id="shopFilterButton"
         type="button"
-        aria-controls="shopSidebar"
         aria-expanded="false"
+        aria-controls="shopSidebar"
       >
         <span>☰</span>
-        Filters
+        Filter
       </button>
 
       <form method="get" class="mobile-sort-form">
@@ -82,30 +88,42 @@
         >
           <option
             value="newest"
-            <%= filters.sort === 'newest' ? 'selected' : '' %>
+            <%= filters.sort === 'newest'
+              ? 'selected'
+              : ''
+            %>
           >
             Newest
           </option>
 
           <option
             value="price_low"
-            <%= filters.sort === 'price_low' ? 'selected' : '' %>
+            <%= filters.sort === 'price_low'
+              ? 'selected'
+              : ''
+            %>
           >
             Price: Low to High
           </option>
 
           <option
             value="price_high"
-            <%= filters.sort === 'price_high' ? 'selected' : '' %>
+            <%= filters.sort === 'price_high'
+              ? 'selected'
+              : ''
+            %>
           >
             Price: High to Low
           </option>
 
           <option
             value="popular"
-            <%= filters.sort === 'popular' ? 'selected' : '' %>
+            <%= filters.sort === 'popular'
+              ? 'selected'
+              : ''
+            %>
           >
-            Most Popular
+            Popular
           </option>
         </select>
 
@@ -113,43 +131,48 @@
 
     </div>
 
+
     <div class="shop-layout">
 
-      <!-- Sidebar -->
+      <!-- Filter Sidebar -->
       <aside
         class="shop-sidebar"
         id="shopSidebar"
       >
 
         <div class="shop-sidebar-header">
+
           <div>
-            <span>SHOP FILTERS</span>
+            <span>FILTER PRODUCTS</span>
             <strong>Find your style</strong>
           </div>
 
           <button
-            id="shopFilterClose"
             class="shop-filter-close"
+            id="shopFilterClose"
             type="button"
-            aria-label="Close filters"
+            aria-label="Close filter"
           >
             ×
           </button>
+
         </div>
 
+
         <!-- Search -->
-        <form class="shop-search-form" method="get">
+        <form method="get" class="shop-search-form">
 
           <label for="shopSearch">
             Search products
           </label>
 
           <div class="shop-search-box">
+
             <input
               id="shopSearch"
               type="search"
               name="q"
-              placeholder="Search by name..."
+              placeholder="Search by product name"
               value="<%= filters.q || '' %>"
             >
 
@@ -169,19 +192,24 @@
               >
             <% } %>
 
-            <button type="submit" aria-label="Search">
+            <button
+              type="submit"
+              aria-label="Search"
+            >
               ⌕
             </button>
+
           </div>
 
         </form>
 
-        <!-- Category -->
+
+        <!-- Categories -->
         <div class="shop-filter-group">
 
           <div class="shop-filter-heading">
             <strong>Categories</strong>
-            <span>+</span>
+            <span>＋</span>
           </div>
 
           <div class="shop-category-list">
@@ -198,7 +226,10 @@
 
               <a
                 href="/shop?category=<%= encodeURIComponent(category) %>&sort=<%= filters.sort || 'newest' %>"
-                class="<%= filters.category === category ? 'active' : '' %>"
+                class="<%= filters.category === category
+                  ? 'active'
+                  : ''
+                %>"
               >
                 <span><%= category %></span>
                 <span>›</span>
@@ -210,20 +241,45 @@
 
         </div>
 
-        <!-- Shopping information -->
+
+        <!-- Size Preview -->
+        <div class="shop-filter-group">
+
+          <div class="shop-filter-heading">
+            <strong>Popular Sizes</strong>
+          </div>
+
+          <div class="shop-size-preview">
+            <span>S</span>
+            <span>M</span>
+            <span>L</span>
+            <span>XL</span>
+            <span>XXL</span>
+          </div>
+
+          <p class="shop-filter-note">
+            Choose the exact size from the product page.
+          </p>
+
+        </div>
+
+
+        <!-- Store Information -->
         <div class="shop-info-card">
 
           <span class="shop-info-icon">✦</span>
 
           <div>
             <strong>Premium Quality</strong>
+
             <p>
-              Carefully selected clothing with
-              reliable delivery across Bangladesh.
+              Carefully selected fashion with delivery
+              support across Bangladesh.
             </p>
           </div>
 
         </div>
+
 
         <div class="shop-sidebar-links">
 
@@ -241,7 +297,8 @@
 
       </aside>
 
-      <!-- Products Area -->
+
+      <!-- Product Area -->
       <main class="shop-products-area">
 
         <!-- Desktop Toolbar -->
@@ -268,6 +325,7 @@
             <% } %>
 
           </div>
+
 
           <form method="get" class="shop-sort-form">
 
@@ -298,30 +356,42 @@
             >
               <option
                 value="newest"
-                <%= filters.sort === 'newest' ? 'selected' : '' %>
+                <%= filters.sort === 'newest'
+                  ? 'selected'
+                  : ''
+                %>
               >
-                Newest arrivals
+                Newest Arrivals
               </option>
 
               <option
                 value="price_low"
-                <%= filters.sort === 'price_low' ? 'selected' : '' %>
+                <%= filters.sort === 'price_low'
+                  ? 'selected'
+                  : ''
+                %>
               >
-                Price: low to high
+                Price: Low to High
               </option>
 
               <option
                 value="price_high"
-                <%= filters.sort === 'price_high' ? 'selected' : '' %>
+                <%= filters.sort === 'price_high'
+                  ? 'selected'
+                  : ''
+                %>
               >
-                Price: high to low
+                Price: High to Low
               </option>
 
               <option
                 value="popular"
-                <%= filters.sort === 'popular' ? 'selected' : '' %>
+                <%= filters.sort === 'popular'
+                  ? 'selected'
+                  : ''
+                %>
               >
-                Most popular
+                Most Popular
               </option>
             </select>
 
@@ -329,6 +399,8 @@
 
         </div>
 
+
+        <!-- Products -->
         <% if (products.length) { %>
 
           <div class="shop-product-grid">
@@ -340,7 +412,10 @@
                 style="transition-delay:
                   <%= Math.min(index * 50, 300) %>ms;"
               >
-                <%- include('partials/product-card', { p }) %>
+                <%- include(
+                  'partials/product-card',
+                  { p }
+                ) %>
               </div>
 
             <% }) %>
@@ -356,8 +431,8 @@
             <h2>No products found</h2>
 
             <p>
-              Try another keyword or remove the
-              selected category filter.
+              Try another search keyword or remove
+              the selected category filter.
             </p>
 
             <a class="btn gold-btn" href="/shop">
@@ -376,6 +451,8 @@
 
 </section>
 
+
+<!-- Mobile Filter Overlay -->
 <div
   class="shop-filter-overlay"
   id="shopFilterOverlay"
