@@ -161,7 +161,11 @@ const secondImage =
       <% } %>
 
     </div>
-
+<h3>
+  <a href="/product/<%= p.slug %>">
+    <%= p.name %>
+  </a>
+</h3>
 <div class="product-rating-row">
 
   <div
@@ -183,31 +187,37 @@ const secondImage =
 
 </div>
 
-    <div class="product-price-row">
+<div class="product-price-row">
 
-      <span class="product-current-price">
-        ৳<%= money(p.price) %>
-      </span>
+  <span class="product-current-price">
+    ৳<%= money(p.price) %>
+  </span>
 
-      <% if (hasDiscount) { %>
-        <span class="product-compare-price">
-          ৳<%= money(p.compareAtPrice) %>
-        </span>
-      <% } %>
-
-    </div>
-<div class="product-extra-badges">
-    <span class="extra-badge">🚚 Cash on Delivery</span>
-</div>
-
-  <% if (Number(p.price) >= 3000) { %>
-    <span title="Free delivery available">
-      Free Delivery
+  <% if (hasDiscount) { %>
+    <span class="product-compare-price">
+      ৳<%= money(p.compareAtPrice) %>
     </span>
   <% } %>
 
 </div>
 
+<div class="product-extra-badges">
+
+  <span class="extra-badge">
+    🚚 Cash on Delivery
+  </span>
+
+  <span class="extra-badge">
+    🔄 Easy Return
+  </span>
+
+  <% if (Number(p.price) >= 3000) { %>
+    <span class="extra-badge">
+      ✓ Free Delivery
+    </span>
+  <% } %>
+
+</div>
     <% if (productColors.length) { %>
 
       <div class="product-color-preview">
