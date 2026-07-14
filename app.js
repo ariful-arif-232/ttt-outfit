@@ -15,6 +15,9 @@ const Order = require('./models/Order');
 const { requireLogin, requireAdmin } = require('./middleware/auth');
 const { slugify, money, makeOrderNumber } = require('./utils/helpers');
 const Review = require('./models/Review');
+const Coupon = require('./models/Coupon');
+const ProductView =
+  require('./models/ProductView');
 
 const app = express();
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 * 1024 * 1024 } });
@@ -92,7 +95,37 @@ app.get('/product/:slug', async (req, res, next) => {
         message: 'Product not found.'
       });
     }
+const viewWindowStart =
+  new Date(
+    Date.now() -
+    15 * 60 * 1000
+  );
 
+await ProductView.findOneAndUpdate(
+  {
+    product:
+      product._id,
+
+    sessionId:
+      req.sessionID,
+
+    viewedAt: {
+      $gte:
+        viewWindowStart
+    }
+  },
+  {
+    $set: {
+      viewedAt:
+        new Date()
+    }
+  },
+  {
+    upsert: true,
+    new: true,
+    setDefaultsOnInsert: true
+  }
+);
     const [reviews, relatedProducts] = await Promise.all([
       Review.find({
         product: product._id,
@@ -114,13 +147,29 @@ app.get('/product/:slug', async (req, res, next) => {
         .limit(4)
         .lean()
     ]);
+const recentViewerSessions =
+  await ProductView.distinct(
+    'sessionId',
+    {
+      product:
+        product._id,
 
+      viewedAt: {
+        $gte:
+          viewWindowStart
+      }
+    }
+  );
+
+const viewerCount =
+  recentViewerSessions.length;
     res.render('product', {
-      title: product.name,
-      product,
-      reviews,
-      relatedProducts
-    });
+  title: product.name,
+  product,
+  reviews,
+  relatedProducts,
+  viewerCount
+});
   } catch (error) {
     next(error);
   }
@@ -396,23 +445,221 @@ app.post('/cart/update', (req, res) => {
   res.redirect('/cart');
 });
 app.post('/cart/remove', (req, res) => { req.session.cart?.splice(Number(req.body.index), 1); res.redirect('/cart'); });
+app.post(
+  '/coupon/apply',
+  requireLogin,
+  async (req, res) => {
+    try {
+      const cart =
+        req.session.cart || [];
 
-app.get('/checkout', requireLogin, async (req, res, next) => {
-  try {
-    if (!(req.session.cart || []).length) return res.redirect('/cart');
-    const user = await User.findById(req.session.user.id).lean();
-    const subtotal = req.session.cart.reduce((sum, i) => sum + i.price * i.quantity, 0);
-    res.render('checkout', {
-  title: 'Checkout',
-  user,
-  subtotal,
-  deliveryFee: subtotal >= 3000 ? 0 : 80,
-  bkashNumber: process.env.BKASH_NUMBER || '',
-  nagadNumber: process.env.NAGAD_NUMBER || ''
-});
-  } catch (e) { next(e); }
-});
+      if (!cart.length) {
+        throw new Error(
+          'Your cart is empty.'
+        );
+      }
 
+      const code =
+        String(req.body.code || '')
+          .trim()
+          .toUpperCase();
+
+      if (!code) {
+        throw new Error(
+          'Enter a coupon code.'
+        );
+      }
+
+      const coupon =
+        await Coupon.findOne({
+          code,
+          active: true
+        }).lean();
+
+      if (!coupon) {
+        throw new Error(
+          'Invalid coupon code.'
+        );
+      }
+
+      if (
+        coupon.expiresAt &&
+        new Date(coupon.expiresAt) <
+          new Date()
+      ) {
+        throw new Error(
+          'This coupon has expired.'
+        );
+      }
+
+      const subtotal =
+        cart.reduce(
+          (sum, item) =>
+            sum +
+            Number(item.price || 0) *
+            Number(item.quantity || 0),
+          0
+        );
+
+      if (
+        subtotal <
+        Number(
+          coupon.minimumOrder || 0
+        )
+      ) {
+        throw new Error(
+          `Minimum order amount is ৳${money(
+            coupon.minimumOrder
+          )}.`
+        );
+      }
+
+      req.session.coupon = {
+        code:
+          coupon.code,
+
+        type:
+          coupon.type,
+
+        value:
+          Number(coupon.value || 0),
+
+        minimumOrder:
+          Number(
+            coupon.minimumOrder || 0
+          )
+      };
+
+      req.session.flash = {
+        type: 'success',
+        message:
+          `Coupon ${coupon.code} applied successfully.`
+      };
+
+      res.redirect('/checkout');
+    } catch (error) {
+      delete req.session.coupon;
+
+      req.session.flash = {
+        type: 'error',
+        message: error.message
+      };
+
+      res.redirect('/checkout');
+    }
+  }
+);
+
+
+app.post(
+  '/coupon/remove',
+  requireLogin,
+  (req, res) => {
+    delete req.session.coupon;
+
+    req.session.flash = {
+      type: 'success',
+      message:
+        'Coupon removed.'
+    };
+
+    res.redirect('/checkout');
+  }
+);
+app.get(
+  '/checkout',
+  requireLogin,
+  async (req, res, next) => {
+    try {
+      const cart =
+        req.session.cart || [];
+
+      if (!cart.length) {
+        return res.redirect('/cart');
+      }
+
+      const user =
+        await User.findById(
+          req.session.user.id
+        ).lean();
+
+      const subtotal =
+        cart.reduce(
+          (sum, item) =>
+            sum +
+            Number(item.price || 0) *
+            Number(item.quantity || 0),
+          0
+        );
+
+      const deliveryFee =
+        subtotal >= 3000
+          ? 0
+          : 80;
+
+      const coupon =
+        req.session.coupon || null;
+
+      let discount = 0;
+
+      if (
+        coupon &&
+        subtotal >=
+          Number(
+            coupon.minimumOrder || 0
+          )
+      ) {
+        if (
+          coupon.type ===
+          'percentage'
+        ) {
+          discount =
+            Math.round(
+              subtotal *
+              Number(
+                coupon.value || 0
+              ) /
+              100
+            );
+        } else if (
+          coupon.type === 'fixed'
+        ) {
+          discount =
+            Number(
+              coupon.value || 0
+            );
+        }
+      }
+
+      discount =
+        Math.min(
+          Math.max(discount, 0),
+          subtotal
+        );
+
+      const total =
+        subtotal +
+        deliveryFee -
+        discount;
+
+      res.render('checkout', {
+        title: 'Checkout',
+        user,
+        subtotal,
+        deliveryFee,
+        discount,
+        total,
+        coupon,
+        bkashNumber:
+          process.env.BKASH_NUMBER || '',
+        nagadNumber:
+          process.env.NAGAD_NUMBER || ''
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
 app.post('/checkout', requireLogin, async (req, res, next) => {
   try {
     const cart = req.session.cart || [];
@@ -470,6 +717,51 @@ for (const cartItem of cart) {
     const user = await User.findById(req.session.user.id);
     const subtotal = items.reduce((sum, i) => sum + i.lineTotal, 0);
     const deliveryFee = subtotal >= 3000 ? 0 : 80;
+
+    const coupon =
+  req.session.coupon || null;
+
+let discount = 0;
+
+if (
+  coupon &&
+  subtotal >=
+    Number(
+      coupon.minimumOrder || 0
+    )
+) {
+  if (
+    coupon.type === 'percentage'
+  ) {
+    discount =
+      Math.round(
+        subtotal *
+        Number(
+          coupon.value || 0
+        ) /
+        100
+      );
+  } else if (
+    coupon.type === 'fixed'
+  ) {
+    discount =
+      Number(
+        coupon.value || 0
+      );
+  }
+}
+
+discount =
+  Math.min(
+    Math.max(discount, 0),
+    subtotal
+  );
+
+const total =
+  subtotal +
+  deliveryFee -
+  discount;
+    
    const paymentMethod = ['COD', 'bKash', 'Nagad'].includes(
   req.body.paymentMethod
 )
@@ -496,8 +788,13 @@ if (paymentMethod !== 'COD') {
       orderNumber: makeOrderNumber(), customer: user._id,
       customerSnapshot: { name: user.name, email: user.email, phone: req.body.phone || user.phone },
       items, shippingAddress: { address: req.body.address, city: req.body.city, postalCode: req.body.postalCode || '' },
-      subtotal, deliveryFee, total: subtotal + deliveryFee, paymentMethod,
-
+   subtotal,
+deliveryFee,
+discount,
+couponCode:
+  coupon?.code || '',
+total,
+paymentMethod,
 senderNumber:
   paymentMethod === 'COD'
     ? ''
@@ -570,6 +867,7 @@ await Promise.all(
   })
 );
     req.session.cart = [];
+    delete req.session.coupon;
     req.session.flash = { type: 'success', message: `Order ${order.orderNumber} placed successfully.` };
     res.redirect(`/orders/${order._id}`);
   } catch (e) {
