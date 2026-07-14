@@ -90,13 +90,16 @@ const secondImage =
         <span>⌕</span>
       </a>
 
-      <a
-        href="/product/<%= p.slug %>"
-        aria-label="View product details"
-        title="Product Details"
-      >
-        <span>♡</span>
-      </a>
+<button
+  class="product-wishlist-button"
+  type="button"
+  data-product-id="<%= p._id %>"
+  data-product-name="<%= p.name %>"
+  aria-label="Add <%= p.name %> to wishlist"
+  title="Add to Wishlist"
+>
+  <span>♡</span>
+</button>
 
     </div>
 
@@ -159,11 +162,26 @@ const secondImage =
 
     </div>
 
-    <h3>
-      <a href="/product/<%= p.slug %>">
-        <%= p.name %>
-      </a>
-    </h3>
+<div class="product-rating-row">
+
+  <div
+    class="product-rating"
+    aria-label="<%= Number(p.ratingAverage || 0).toFixed(1) %> out of 5"
+  >
+    <span>★</span>
+
+    <strong>
+      <%= Number(p.ratingAverage || 0).toFixed(1) %>
+    </strong>
+  </div>
+
+  <% if (Number(p.soldCount || 0) > 0) { %>
+    <span class="product-sold-count">
+      <%= p.soldCount %> sold
+    </span>
+  <% } %>
+
+</div>
 
     <div class="product-price-row">
 
@@ -178,6 +196,19 @@ const secondImage =
       <% } %>
 
     </div>
+<div class="product-service-badges">
+
+  <span title="Cash on Delivery available">
+    COD
+  </span>
+
+  <% if (Number(p.price) >= 3000) { %>
+    <span title="Free delivery available">
+      Free Delivery
+    </span>
+  <% } %>
+
+</div>
 
     <% if (productColors.length) { %>
 
