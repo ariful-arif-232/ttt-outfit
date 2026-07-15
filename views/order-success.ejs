@@ -1,0 +1,81 @@
+<%- include('partials/header') %>
+
+<section class="section">
+
+<div class="container">
+
+<div class="panel" style="max-width:700px;margin:auto;text-align:center;padding:40px;">
+
+<h1 style="color:#198754;">
+✅ Order Placed Successfully
+</h1>
+
+<p>
+
+Thank you.
+
+Your order has been received.
+
+</p>
+
+<h2>
+
+Order Number
+
+<br>
+
+<%= order.orderNumber %>
+
+</h2>
+
+<p>
+
+We will contact you soon.
+
+</p>
+
+<hr>
+
+<% if(!currentUser){ %>
+
+<p>
+
+Want to track your order?
+
+</p>
+
+<p>
+
+Login or Register using the same phone number.
+
+</p>
+
+<a href="/login" class="btn btn-primary">
+
+Login / Register
+
+</a>
+
+<% } else { %>
+
+<a
+
+href="/orders/<%= order._id %>"
+
+class="btn btn-primary"
+
+>
+
+View My Order
+
+</a>
+
+<% } %>
+
+</div>
+
+</div>
+
+</section>
+
+<%- include('partials/footer') %>
