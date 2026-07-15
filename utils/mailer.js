@@ -16,6 +16,22 @@ const transporter = nodemailer.createTransport({
   greetingTimeout: 20000,
   socketTimeout: 30000
 });
+async function verifyMailConnection() {
+  try {
+    await transporter.verify();
+
+    console.log(
+      'SMTP connection is ready.'
+    );
+  } catch (error) {
+    console.error(
+      'SMTP verification failed:',
+      error
+    );
+  }
+}
+
+verifyMailConnection();
 
 async function sendAdminOrderEmail(order) {
   await transporter.sendMail({
