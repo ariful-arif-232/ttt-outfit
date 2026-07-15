@@ -608,8 +608,23 @@ app.post('/api/wishlist/cards', async (req, res) => {
     });
   }
 });
+app.get('/auth', (req, res) => {
+  const selectedTab =
+    req.query.tab === 'register'
+      ? 'register'
+      : 'login';
 
-app.get('/register', (req, res) => res.render('register', { title: 'Create account' }));
+  res.render('auth', {
+    title: 'Login / Register',
+    tab: selectedTab
+  });
+});
+app.get('/register', (req, res) => {
+  res.render('auth', {
+    title: 'Create Account',
+    tab: 'register'
+  });
+});
 app.post('/register', async (req, res, next) => {
   try {
     const { name, email, phone, password, confirmPassword, address, city } = req.body;
@@ -626,11 +641,16 @@ app.post('/register', async (req, res, next) => {
     res.redirect('/account');
   } catch (e) {
     req.session.flash = { type: 'error', message: e.message };
-    res.redirect('/register');
+res.redirect('/auth?tab=register');
   }
 });
 
-app.get('/login', (req, res) => res.render('login', { title: 'Login' }));
+app.get('/login', (req, res) => {
+  res.render('auth', {
+    title: 'Login',
+    tab: 'login'
+  });
+});
 app.post('/login', async (req, res, next) => {
   try {
     const identity = String(req.body.identity || '').trim();
@@ -643,7 +663,7 @@ app.post('/login', async (req, res, next) => {
     res.redirect(destination);
   } catch (e) {
     req.session.flash = { type: 'error', message: e.message };
-    res.redirect('/login');
+res.redirect('/auth?tab=login');
   }
 });
 
