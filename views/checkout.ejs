@@ -1,124 +1,746 @@
-<%- include('partials/header') %><section class="section"><div class="container two-col"><form class="panel" method="post"><h1>Checkout</h1><div class="field"><label>Phone *</label><input name="phone" value="<%= user.phone %>" required></div><div class="field"><label>Address *</label><textarea name="address" required><%= user.addresses?.find(a=>a.isDefault)?.address || '' %></textarea></div><div class="field"><label>City *</label><input name="city" value="<%= user.addresses?.find(a=>a.isDefault)?.city || '' %>" required></div><div class="field"><label>Postal code</label><input name="postalCode"></div><div class="field"><label for="paymentMethod">Payment Method</label>
+<%- include('partials/header') %>
 
-<select id="paymentMethod" name="paymentMethod" required>
-  <option value="COD">Cash on Delivery</option>
-  <option value="bKash">bKash Manual Payment</option>
-  <option value="Nagad">Nagad Manual Payment</option>
-</select>
+<%
+  const defaultAddress =
+    user?.addresses?.find(address => address.isDefault) ||
+    user?.addresses?.[0] ||
+    null;
 
-<div
-  id="manualPaymentBox"
-  style="display: none; margin-top: 16px;"
->
-  <div class="payment-instructions">
-    <h3 id="paymentTitle">Manual Payment</h3>
+  const finalDiscount = Number(discount || 0);
 
-    <p>
-      Send the exact order amount using
-      <strong>Send Money</strong>.
-    </p>
+  const finalTotal =
+    typeof total !== 'undefined'
+      ? Number(total)
+      : Number(subtotal || 0) +
+        Number(deliveryFee || 0) -
+        finalDiscount;
+%>
 
-    <p>
-      Payment number:
-      <strong id="paymentNumber"></strong>
-    </p>
+<section class="section checkout-page-section">
 
-    <p>
-      Amount:
-      <strong>
-        ৳<%= money(subtotal + deliveryFee) %>
-      </strong>
-    </p>
+  <div class="container">
 
-    <p>
-      After sending money, enter your sender number
-      and Transaction ID.
-    </p>
+    <div class="checkout-page-heading">
+      <div>
+        <span class="section-kicker">
+          SECURE CHECKOUT
+        </span>
+
+        <h1>Complete Your Order</h1>
+
+        <p>
+          No account is required. Enter your delivery
+          information and place your order securely.
+        </p>
+      </div>
+
+      <% if (!currentUser) { %>
+        <a class="checkout-login-link" href="/login">
+          Already registered? Login
+        </a>
+      <% } %>
+    </div>
+
+    <div class="checkout-professional-layout">
+
+      <!-- =====================================
+           LEFT SIDE: CHECKOUT FORM
+      ====================================== -->
+
+      <form
+        class="checkout-main-form"
+        method="post"
+        action="/checkout"
+      >
+
+        <!-- SHIPPING ADDRESS -->
+
+        <section class="checkout-card checkout-address-card">
+
+          <header class="checkout-card-header">
+            <div class="checkout-step-number">1</div>
+
+            <div>
+              <h2>Shipping Address</h2>
+
+              <p>
+                Enter the address where you want to
+                receive your order.
+              </p>
+            </div>
+          </header>
+
+          <div class="checkout-form-grid">
+
+            <div class="field">
+              <label for="customerName">
+                Recipient Name
+                <span class="required-mark">*</span>
+              </label>
+
+              <input
+                id="customerName"
+                type="text"
+                name="name"
+                value="<%= user?.name || '' %>"
+                placeholder="Full Name"
+                autocomplete="name"
+                required
+              >
+            </div>
+
+            <div class="field">
+              <label for="customerPhone">
+                Contact Number
+                <span class="required-mark">*</span>
+              </label>
+
+              <input
+                id="customerPhone"
+                type="tel"
+                name="phone"
+                value="<%= user?.phone || '' %>"
+                placeholder="01XXXXXXXXX"
+                maxlength="11"
+                inputmode="numeric"
+                autocomplete="tel"
+                pattern="01[0-9]{9}"
+                required
+              >
+
+              <small class="field-help">
+                Enter a valid 11-digit Bangladeshi number.
+              </small>
+            </div>
+
+            <div class="field">
+              <label for="customerEmail">
+                Email Address
+              </label>
+
+              <input
+                id="customerEmail"
+                type="email"
+                name="email"
+                value="<%= user?.email || '' %>"
+                placeholder="example@email.com"
+                autocomplete="email"
+              >
+
+              <small class="field-help">
+                Order confirmation will be sent to this email.
+              </small>
+            </div>
+
+            <div class="field">
+              <label for="country">
+                Country
+              </label>
+
+              <select
+                id="country"
+                name="country"
+                autocomplete="country-name"
+              >
+                <option value="Bangladesh" selected>
+                  Bangladesh
+                </option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="city">
+                District / City
+                <span class="required-mark">*</span>
+              </label>
+
+              <input
+                id="city"
+                type="text"
+                name="city"
+                value="<%= defaultAddress?.city || '' %>"
+                placeholder="Search or select District / City"
+                list="bangladeshDistricts"
+                autocomplete="address-level1"
+                required
+              >
+
+              <datalist id="bangladeshDistricts">
+                <option value="Bagerhat">
+                <option value="Bandarban">
+                <option value="Barguna">
+                <option value="Barishal">
+                <option value="Bhola">
+                <option value="Bogura">
+                <option value="Brahmanbaria">
+                <option value="Chandpur">
+                <option value="Chapai Nawabganj">
+                <option value="Chattogram">
+                <option value="Chuadanga">
+                <option value="Cox's Bazar">
+                <option value="Cumilla">
+                <option value="Dhaka">
+                <option value="Dinajpur">
+                <option value="Faridpur">
+                <option value="Feni">
+                <option value="Gaibandha">
+                <option value="Gazipur">
+                <option value="Gopalganj">
+                <option value="Habiganj">
+                <option value="Jamalpur">
+                <option value="Jashore">
+                <option value="Jhalokathi">
+                <option value="Jhenaidah">
+                <option value="Joypurhat">
+                <option value="Khagrachhari">
+                <option value="Khulna">
+                <option value="Kishoreganj">
+                <option value="Kurigram">
+                <option value="Kushtia">
+                <option value="Lakshmipur">
+                <option value="Lalmonirhat">
+                <option value="Madaripur">
+                <option value="Magura">
+                <option value="Manikganj">
+                <option value="Meherpur">
+                <option value="Moulvibazar">
+                <option value="Munshiganj">
+                <option value="Mymensingh">
+                <option value="Naogaon">
+                <option value="Narail">
+                <option value="Narayanganj">
+                <option value="Narsingdi">
+                <option value="Natore">
+                <option value="Netrokona">
+                <option value="Nilphamari">
+                <option value="Noakhali">
+                <option value="Pabna">
+                <option value="Panchagarh">
+                <option value="Patuakhali">
+                <option value="Pirojpur">
+                <option value="Rajbari">
+                <option value="Rajshahi">
+                <option value="Rangamati">
+                <option value="Rangpur">
+                <option value="Satkhira">
+                <option value="Shariatpur">
+                <option value="Sherpur">
+                <option value="Sirajganj">
+                <option value="Sunamganj">
+                <option value="Sylhet">
+                <option value="Tangail">
+                <option value="Thakurgaon">
+              </datalist>
+            </div>
+
+            <div class="field">
+              <label for="area">
+                Area / Thana / Upazila
+                <span class="required-mark">*</span>
+              </label>
+
+              <input
+                id="area"
+                type="text"
+                name="area"
+                placeholder="Area / Thana / Upazila"
+                autocomplete="address-level2"
+                required
+              >
+            </div>
+
+            <div class="field checkout-full-field">
+              <label for="shippingAddress">
+                Full Address
+                <span class="required-mark">*</span>
+              </label>
+
+              <textarea
+                id="shippingAddress"
+                name="address"
+                placeholder="House / Building / Road / Street"
+                autocomplete="street-address"
+                required
+              ><%= defaultAddress?.address || '' %></textarea>
+            </div>
+
+            <div class="field">
+              <label for="postalCode">
+                Postal Code
+              </label>
+
+              <input
+                id="postalCode"
+                type="text"
+                name="postalCode"
+                placeholder="Optional"
+                autocomplete="postal-code"
+              >
+            </div>
+
+            <div class="field">
+              <label>
+                Address Type
+                <span class="required-mark">*</span>
+              </label>
+
+              <div class="delivery-type-options">
+
+                <label class="delivery-type-option">
+                  <input
+                    type="radio"
+                    name="deliveryType"
+                    value="Home"
+                    checked
+                  >
+
+                  <span class="delivery-type-box">
+                    <strong>🏠 Home</strong>
+                    <small>Deliver to home address</small>
+                  </span>
+                </label>
+
+                <label class="delivery-type-option">
+                  <input
+                    type="radio"
+                    name="deliveryType"
+                    value="Office"
+                  >
+
+                  <span class="delivery-type-box">
+                    <strong>🏢 Office</strong>
+                    <small>Deliver to office address</small>
+                  </span>
+                </label>
+
+              </div>
+            </div>
+
+          </div>
+
+        </section>
+
+
+        <!-- PAYMENT METHOD -->
+
+        <section class="checkout-card">
+
+          <header class="checkout-card-header">
+            <div class="checkout-step-number">2</div>
+
+            <div>
+              <h2>Payment Method</h2>
+
+              <p>
+                Select your preferred payment option.
+              </p>
+            </div>
+          </header>
+
+          <div class="checkout-card-body">
+
+            <div class="field">
+              <label for="paymentMethod">
+                Select Payment Method
+                <span class="required-mark">*</span>
+              </label>
+
+              <select
+                id="paymentMethod"
+                name="paymentMethod"
+                required
+              >
+                <option value="COD">
+                  Cash on Delivery
+                </option>
+
+                <option value="bKash">
+                  bKash Manual Payment
+                </option>
+
+                <option value="Nagad">
+                  Nagad Manual Payment
+                </option>
+              </select>
+            </div>
+
+            <div
+              id="manualPaymentBox"
+              class="manual-payment-box"
+              hidden
+            >
+
+              <div class="payment-instructions">
+
+                <div class="payment-instruction-icon">
+                  ৳
+                </div>
+
+                <div>
+                  <h3 id="paymentTitle">
+                    Manual Payment
+                  </h3>
+
+                  <p>
+                    Send the exact order amount using
+                    <strong>Send Money</strong>.
+                  </p>
+
+                  <div class="manual-payment-detail">
+                    <span>Payment Number</span>
+
+                    <strong id="paymentNumber"></strong>
+                  </div>
+
+                  <div class="manual-payment-detail">
+                    <span>Payable Amount</span>
+
+                    <strong>
+                      ৳<%= money(finalTotal) %>
+                    </strong>
+                  </div>
+                </div>
+
+              </div>
+
+              <div class="checkout-form-grid manual-payment-fields">
+
+                <div class="field">
+                  <label for="senderNumber">
+                    Sender Number
+                    <span class="required-mark">*</span>
+                  </label>
+
+                  <input
+                    id="senderNumber"
+                    type="tel"
+                    name="senderNumber"
+                    maxlength="11"
+                    placeholder="01XXXXXXXXX"
+                    inputmode="numeric"
+                  >
+                </div>
+
+                <div class="field">
+                  <label for="transactionId">
+                    Transaction ID
+                    <span class="required-mark">*</span>
+                  </label>
+
+                  <input
+                    id="transactionId"
+                    type="text"
+                    name="transactionId"
+                    placeholder="Example: 9AB12CD34E"
+                  >
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </section>
+
+
+        <!-- ORDER NOTE -->
+
+        <section class="checkout-card">
+
+          <header class="checkout-card-header">
+            <div class="checkout-step-number">3</div>
+
+            <div>
+              <h2>Order Note</h2>
+
+              <p>
+                Add any special delivery instructions.
+              </p>
+            </div>
+          </header>
+
+          <div class="checkout-card-body">
+
+            <div class="field">
+              <label for="orderNotes">
+                Note for your order
+              </label>
+
+              <textarea
+                id="orderNotes"
+                name="notes"
+                maxlength="500"
+                placeholder="Example: Please call before delivery."
+              ></textarea>
+            </div>
+
+          </div>
+
+        </section>
+
+
+        <button
+          class="btn checkout-place-order-button"
+          type="submit"
+        >
+          <span>Place Order</span>
+          <strong>৳<%= money(finalTotal) %></strong>
+        </button>
+
+        <p class="checkout-policy-note">
+          By placing this order, you confirm that the
+          information provided is correct.
+        </p>
+
+      </form>
+
+
+      <!-- =====================================
+           RIGHT SIDE: ORDER SUMMARY
+      ====================================== -->
+
+      <aside class="checkout-summary-column">
+
+        <div class="checkout-card checkout-summary-card">
+
+          <header class="checkout-card-header">
+            <div>
+              <h2>Order Summary</h2>
+
+              <p>
+                <%= cartCount %>
+                <%= cartCount === 1 ? 'item' : 'items' %>
+                in your cart
+              </p>
+            </div>
+          </header>
+
+          <div class="checkout-summary-products">
+
+            <% cart.forEach(item => { %>
+
+              <article class="checkout-summary-product">
+
+                <img
+                  src="<%= item.image || 'https://via.placeholder.com/160x200?text=TTT' %>"
+                  alt="<%= item.name %>"
+                >
+
+                <div>
+                  <h3><%= item.name %></h3>
+
+                  <p>
+                    <%= item.color %>
+                    ·
+                    <%= item.size %>
+                  </p>
+
+                  <small>
+                    Quantity: <%= item.quantity %>
+                  </small>
+                </div>
+
+                <strong>
+                  ৳<%= money(
+                    Number(item.price) *
+                    Number(item.quantity)
+                  ) %>
+                </strong>
+
+              </article>
+
+            <% }) %>
+
+          </div>
+
+          <!-- COUPON -->
+
+          <div class="checkout-coupon-area">
+
+            <% if (coupon) { %>
+
+              <div class="applied-coupon-box">
+                <div>
+                  <span>Coupon applied</span>
+                  <strong><%= coupon.code %></strong>
+                </div>
+
+                <form
+                  action="/coupon/remove"
+                  method="post"
+                >
+                  <button
+                    type="submit"
+                    class="remove-coupon-button"
+                  >
+                    Remove
+                  </button>
+                </form>
+              </div>
+
+            <% } else { %>
+
+              <form
+                class="checkout-coupon-form"
+                action="/coupon/apply"
+                method="post"
+              >
+                <input
+                  type="text"
+                  name="code"
+                  placeholder="Coupon code"
+                  autocomplete="off"
+                >
+
+                <button type="submit">
+                  Apply
+                </button>
+              </form>
+
+            <% } %>
+
+          </div>
+
+          <!-- TOTALS -->
+
+          <div class="checkout-total-list">
+
+            <div>
+              <span>Subtotal</span>
+              <strong>৳<%= money(subtotal) %></strong>
+            </div>
+
+            <div>
+              <span>Delivery Fee</span>
+
+              <strong>
+                <% if (Number(deliveryFee) === 0) { %>
+                  Free
+                <% } else { %>
+                  ৳<%= money(deliveryFee) %>
+                <% } %>
+              </strong>
+            </div>
+
+            <% if (finalDiscount > 0) { %>
+              <div class="checkout-discount-row">
+                <span>Discount</span>
+
+                <strong>
+                  − ৳<%= money(finalDiscount) %>
+                </strong>
+              </div>
+            <% } %>
+
+            <div class="checkout-grand-total">
+              <span>Total</span>
+
+              <strong>
+                ৳<%= money(finalTotal) %>
+              </strong>
+            </div>
+
+          </div>
+
+          <div class="checkout-trust-list">
+
+            <span>🔒 Secure checkout</span>
+            <span>🚚 Cash on delivery</span>
+            <span>🔄 Easy return support</span>
+
+          </div>
+
+        </div>
+
+      </aside>
+
+    </div>
+
   </div>
 
-  <label for="senderNumber">
-    Your Sender Number
-  </label>
+</section>
 
-  <input
-    id="senderNumber"
-    type="text"
-    name="senderNumber"
-    maxlength="11"
-    placeholder="01XXXXXXXXX"
-  >
 
-  <label for="transactionId">
-    Transaction ID
-  </label>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const paymentMethod =
+      document.getElementById('paymentMethod');
 
-  <input
-    id="transactionId"
-    type="text"
-    name="transactionId"
-    placeholder="Example: 9AB12CD34E"
-  >
-</div><option value="COD">Cash on Delivery</option><option>bKash</option><option>Nagad</option></select></div><div class="field"><label>Order note</label><textarea name="notes"></textarea></div><button class="btn">Place order</button></form><aside class="panel"><h2>Order total</h2><p>Subtotal <strong style="float:right">৳<%= money(subtotal) %></strong></p><p>Delivery <strong style="float:right">৳<%= money(deliveryFee) %></strong></p><hr><p class="price">Total <strong style="float:right">৳<%= money(subtotal+deliveryFee) %></strong></p></aside></div></section><script>
-  const paymentMethod =
-    document.getElementById('paymentMethod');
+    const manualPaymentBox =
+      document.getElementById('manualPaymentBox');
 
-  const manualPaymentBox =
-    document.getElementById('manualPaymentBox');
+    const paymentTitle =
+      document.getElementById('paymentTitle');
 
-  const paymentTitle =
-    document.getElementById('paymentTitle');
+    const paymentNumber =
+      document.getElementById('paymentNumber');
 
-  const paymentNumber =
-    document.getElementById('paymentNumber');
+    const senderNumber =
+      document.getElementById('senderNumber');
 
-  const senderNumber =
-    document.getElementById('senderNumber');
+    const transactionId =
+      document.getElementById('transactionId');
 
-  const transactionId =
-    document.getElementById('transactionId');
+    const bkashNumber =
+      <%- JSON.stringify(bkashNumber || '') %>;
 
-  const bkashNumber =
-    <%- JSON.stringify(bkashNumber) %>;
+    const nagadNumber =
+      <%- JSON.stringify(nagadNumber || '') %>;
 
-  const nagadNumber =
-    <%- JSON.stringify(nagadNumber) %>;
+    function updatePaymentFields() {
+      if (
+        !paymentMethod ||
+        !manualPaymentBox ||
+        !senderNumber ||
+        !transactionId
+      ) {
+        return;
+      }
 
-  function updatePaymentFields() {
-    const method = paymentMethod.value;
+      const method = paymentMethod.value;
 
-    const isManual =
-      method === 'bKash' || method === 'Nagad';
+      const isManual =
+        method === 'bKash' ||
+        method === 'Nagad';
 
-    manualPaymentBox.style.display =
-      isManual ? 'block' : 'none';
+      manualPaymentBox.hidden = !isManual;
 
-    senderNumber.required = isManual;
-    transactionId.required = isManual;
+      senderNumber.required = isManual;
+      transactionId.required = isManual;
 
-    if (method === 'bKash') {
-      paymentTitle.textContent = 'Pay with bKash';
+      if (method === 'bKash') {
+        paymentTitle.textContent =
+          'Pay with bKash';
 
-      paymentNumber.textContent =
-        bkashNumber || 'Number not configured';
+        paymentNumber.textContent =
+          bkashNumber ||
+          'Number not configured';
+      }
+
+      if (method === 'Nagad') {
+        paymentTitle.textContent =
+          'Pay with Nagad';
+
+        paymentNumber.textContent =
+          nagadNumber ||
+          'Number not configured';
+      }
+
+      if (!isManual) {
+        senderNumber.value = '';
+        transactionId.value = '';
+        paymentNumber.textContent = '';
+      }
     }
 
-    if (method === 'Nagad') {
-      paymentTitle.textContent = 'Pay with Nagad';
+    paymentMethod?.addEventListener(
+      'change',
+      updatePaymentFields
+    );
 
-      paymentNumber.textContent =
-        nagadNumber || 'Number not configured';
-    }
+    updatePaymentFields();
+  });
+</script>
 
-    if (!isManual) {
-      senderNumber.value = '';
-      transactionId.value = '';
-    }
-  }
-
-  paymentMethod.addEventListener(
-    'change',
-    updatePaymentFields
-  );
-
-  updatePaymentFields();
-</script><%- include('partials/footer') %>
+<%- include('partials/footer') %>
