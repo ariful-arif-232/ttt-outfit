@@ -29,7 +29,9 @@
 <link rel="stylesheet" href="/css/style.css?v=111">
 </head>
 
-<body>
+<body
+  data-logged-in="<%= currentUser ? 'true' : 'false' %>"
+>
 
 <div class="announcement-bar">
   <div class="announcement-track">
@@ -119,6 +121,19 @@
   </span>
 
   <span class="nav-arrow">›</span>
+</a>
+<a
+  href="/wishlist"
+  class="<%= currentPath.startsWith('/wishlist') ? 'active-nav' : '' %>"
+>
+  <span class="nav-item-left">
+    <span class="nav-icon">♡</span>
+    <span>Wishlist</span>
+  </span>
+
+  <span class="wishlist-nav-count">
+    <span data-wishlist-count>0</span>
+  </span>
 </a>
   <a
     href="/cart"
