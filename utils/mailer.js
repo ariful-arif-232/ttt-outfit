@@ -1,86 +1,87 @@
-const nodemailer = require('nodemailer');
+const brevo = require('@getbrevo/brevo');
 
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST || 'smtp.gmail.com',
-  port: Number(process.env.SMTP_PORT || 587),
-  secure: false,
+const apiInstance = new brevo.TransactionalEmailsApi();
 
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS
-  },
+apiInstance.setApiKey(
+  brevo.TransactionalEmailsApiApiKeys.apiKey,
+  process.env.BREVO_API_KEY
+);
 
-  requireTLS: true,
-
-  connectionTimeout: 20000,
-  greetingTimeout: 20000,
-  socketTimeout: 30000
-});
-async function verifyMailConnection() {
-  try {
-    await transporter.verify();
-
-    console.log(
-      'SMTP connection is ready.'
-    );
-  } catch (error) {
-    console.error(
-      'SMTP verification failed:',
-      error
-    );
-  }
-}
-
-verifyMailConnection();
+const sender = {
+  name: process.env.BREVO_SENDER_NAME || 'TTT Outfit',
+  email: process.env.BREVO_SENDER_EMAIL
+};
 
 async function sendAdminOrderEmail(order) {
-  await transporter.sendMail({
-    from: `"TTT Outfit" <${process.env.SMTP_USER}>`,
-    to: process.env.ADMIN_EMAIL,
-    subject: `🛒 New Order ${order.orderNumber}`,
-    html: `
-      <h2>New Order Received</h2>
+  const email = new brevo.SendSmtpEmail();
 
-      <p><b>Order:</b> ${order.orderNumber}</p>
+  email.sender = sender;
 
-      <p><b>Name:</b> ${order.customerSnapshot.name}</p>
+  email.to = [
+    {
+      email: process.env.ADMIN_EMAIL
+    }
+  ];
 
-      <p><b>Phone:</b> ${order.customerSnapshot.phone}</p>
+  email.subject =
+    `🛒 New Order - ${order.orderNumber}`;
 
-      <p><b>Email:</b> ${order.customerSnapshot.email || '-'}</p>
+  email.htmlContent = `
+    <h2>New Order Received</h2>
 
-      <p><b>Total:</b> ৳${order.total}</p>
+    <p><b>Order No:</b> ${order.orderNumber}</p>
 
-      <p><b>Payment:</b> ${order.paymentMethod}</p>
-    `
-  });
+    <p><b>Customer:</b> ${order.customerSnapshot.name}</p>
+
+    <p><b>Phone:</b> ${order.customerSnapshot.phone}</p>
+
+    <p><b>Email:</b> ${order.customerSnapshot.email || '-'}</p>
+
+    <p><b>Total:</b> ৳${order.total}</p>
+
+    <p><b>Payment:</b> ${order.paymentMethod}</p>
+  `;
+
+  await apiInstance.sendTransacEmail(email);
 }
 
 async function sendCustomerOrderEmail(order) {
-
   if (!order.customerSnapshot.email) return;
 
-  await transporter.sendMail({
+  const email = new brevo.SendSmtpEmail();
 
-    from: `"TTT Outfit" <${process.env.SMTP_USER}>`,
+  email.sender = sender;
 
-    to: order.customerSnapshot.email,
+  email.to = [
+    {
+      email: order.customerSnapshot.email
+    }
+  ];
 
-    subject: `Order Confirmation - ${order.orderNumber}`,
+  email.subject =
+    `Order Confirmation - ${order.orderNumber}`;
 
-    html: `
-      <h2>Thank you for shopping with TTT Outfit ❤️</h2>
+  email.htmlContent = `
+    <h2>Thank you for shopping with TTT Outfit ❤️</h2>
 
-      <p>Your order has been placed successfully.</p>
+    <p>Your order has been placed successfully.</p>
 
-      <p><b>Order Number:</b> ${order.orderNumber}</p>
+    <p>
+      <b>Order Number:</b>
+      ${order.orderNumber}
+    </p>
 
-      <p><b>Total:</b> ৳${order.total}</p>
+    <p>
+      <b>Total:</b>
+      ৳${order.total}
+    </p>
 
-      <p>We will contact you soon.</p>
-    `
-  });
+    <p>
+      We will contact you soon.
+    </p>
+  `;
 
+  await apiInstance.sendTransacEmail(email);
 }
 
 module.exports = {
