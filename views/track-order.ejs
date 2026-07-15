@@ -1,0 +1,114 @@
+<%- include('partials/header') %>
+
+<section class="section">
+
+<div class="container">
+
+<h1>Track Your Order</h1>
+
+<p>
+Enter your Order Number and Phone Number.
+</p>
+
+<form
+action="/track-order"
+method="POST"
+class="track-form"
+>
+
+<input
+type="text"
+name="orderNumber"
+placeholder="Order Number"
+required
+>
+
+<input
+type="text"
+name="phone"
+placeholder="Phone Number"
+required
+>
+
+<button class="btn">
+Track Order
+</button>
+
+</form>
+
+<% if(error){ %>
+
+<div class="flash error">
+<%= error %>
+</div>
+
+<% } %>
+
+<% if(order){ %>
+
+<hr>
+
+<h2>
+Order
+<%= order.orderNumber %>
+</h2>
+
+<p>
+
+<b>Status:</b>
+
+<%= order.status %>
+
+</p>
+
+<p>
+
+<b>Payment:</b>
+
+<%= order.paymentMethod %>
+
+</p>
+
+<p>
+
+<b>Total:</b>
+
+৳<%= money(order.total) %>
+
+</p>
+
+<p>
+
+<b>Date:</b>
+
+<%= new Date(order.createdAt).toLocaleString() %>
+
+</p>
+
+<h3>Shipping Address</h3>
+
+<p>
+
+<%= order.shippingAddress.address %>
+
+</p>
+
+<p>
+
+<%= order.shippingAddress.area %>
+
+</p>
+
+<p>
+
+<%= order.shippingAddress.city %>
+
+</p>
+
+<% } %>
+
+</div>
+
+</section>
+
+<%- include('partials/footer') %>
