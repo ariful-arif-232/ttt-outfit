@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const currentUserLoggedIn =
     document.body.dataset.loggedIn === 'true';
-
+let savedProductIds = new Set();
   function readGuestWishlist() {
     try {
       const saved =
@@ -81,25 +81,32 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  function refreshAllButtons(productIds) {
-    const savedSet =
-      new Set(productIds.map(String));
+function refreshAllButtons(productIds) {
+  savedProductIds =
+    new Set(
+      productIds.map(String)
+    );
 
-    document
-      .querySelectorAll(
-        '.product-wishlist-button'
-      )
-      .forEach(button => {
-        updateButton(
-          button,
-          savedSet.has(
-            String(button.dataset.productId)
-          )
+  document
+    .querySelectorAll(
+      '.product-wishlist-button'
+    )
+    .forEach(button => {
+      const productId =
+        String(
+          button.dataset.productId || ''
         );
-      });
 
-    updateWishlistCount(savedSet.size);
-  }
+      updateButton(
+        button,
+        savedProductIds.has(productId)
+      );
+    });
+
+  updateWishlistCount(
+    savedProductIds.size
+  );
+}
 
   async function getAccountWishlist() {
     const response =
@@ -197,11 +204,24 @@ document.addEventListener('DOMContentLoaded', () => {
   async function initializeWishlist() {
     try {
       if (currentUserLoggedIn) {
-        const productIds =
-          await syncGuestWishlist();
+  const guestIds =
+    readGuestWishlist();
 
-        refreshAllButtons(productIds);
-      } else {
+  let productIds = [];
+
+  if (guestIds.length) {
+    productIds =
+      await syncGuestWishlist();
+  } else {
+    const result =
+      await getAccountWishlist();
+
+    productIds =
+      result.productIds || [];
+  }
+
+  refreshAllButtons(productIds);
+} else {
         refreshAllButtons(
           readGuestWishlist()
         );
@@ -249,34 +269,35 @@ document.addEventListener('DOMContentLoaded', () => {
       button.disabled = true;
 
       try {
-        if (currentUserLoggedIn) {
-          const isCurrentlySaved =
-            button.classList.contains('active');
+if (currentUserLoggedIn) {
+  const isCurrentlySaved =
+    savedProductIds.has(productId);
 
-          const result =
-            isCurrentlySaved
-              ? await removeAccountWishlist(
-                  productId
-                )
-              : await addAccountWishlist(
-                  productId
-                );
+  const result =
+    isCurrentlySaved
+      ? await removeAccountWishlist(
+          productId
+        )
+      : await addAccountWishlist(
+          productId
+        );
 
-          updateButton(
-            button,
-            !isCurrentlySaved
-          );
+  if (isCurrentlySaved) {
+    savedProductIds.delete(productId);
+  } else {
+    savedProductIds.add(productId);
+  }
 
-          updateWishlistCount(
-            result.count || 0
-          );
+  refreshAllButtons(
+    [...savedProductIds]
+  );
 
-          if (isCurrentlySaved) {
-            removeWishlistPageCard(
-              productId
-            );
-          }
-        } else {
+  if (isCurrentlySaved) {
+    removeWishlistPageCard(
+      productId
+    );
+  }
+} else {
           let savedIds =
             readGuestWishlist();
 
