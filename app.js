@@ -18,6 +18,10 @@ const Review = require('./models/Review');
 const Coupon = require('./models/Coupon');
 const ProductView =
   require('./models/ProductView');
+const {
+    sendAdminOrderEmail,
+    sendCustomerOrderEmail
+} = require('./utils/mailer');
 
 const app = express();
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 * 1024 * 1024 } });
