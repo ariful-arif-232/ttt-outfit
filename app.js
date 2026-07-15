@@ -449,51 +449,89 @@ app.post('/cart/update', (req, res) => {
   res.redirect('/cart');
 });
 app.post('/cart/remove', (req, res) => { req.session.cart?.splice(Number(req.body.index), 1); res.redirect('/cart'); });
+/* =========================================
+   COUPON HELPERS
+========================================= */
+
+async function getValidCoupon(code, subtotal) {
+  const normalizedCode =
+    String(code || '')
+      .trim()
+      .toUpperCase();
+
+  if (!normalizedCode) {
+    return {
+      coupon: null,
+      discount: 0
+    };
+  }
+
+  const coupon =
+    await Coupon.findOne({
+      code: normalizedCode,
+      active: true
+    }).lean();
+
+  if (!coupon) {
+    throw new Error('Invalid coupon code.');
+  }
+
+  if (
+    coupon.expiresAt &&
+    new Date(coupon.expiresAt) < new Date()
+  ) {
+    throw new Error('This coupon has expired.');
+  }
+
+  const minimumOrder =
+    Number(coupon.minimumOrder || 0);
+
+  if (subtotal < minimumOrder) {
+    throw new Error(
+      `Minimum order amount is ৳${money(minimumOrder)}.`
+    );
+  }
+
+  let discount = 0;
+
+  if (coupon.type === 'percentage') {
+    discount =
+      Math.round(
+        subtotal *
+        Number(coupon.value || 0) /
+        100
+      );
+  } else if (coupon.type === 'fixed') {
+    discount =
+      Number(coupon.value || 0);
+  }
+
+  discount =
+    Math.min(
+      Math.max(discount, 0),
+      subtotal
+    );
+
+  return {
+    coupon,
+    discount
+  };
+}
+
+
+/* =========================================
+   APPLY COUPON — GUEST + LOGGED-IN
+========================================= */
+
 app.post(
   '/coupon/apply',
-  requireLogin,
   async (req, res) => {
     try {
       const cart =
         req.session.cart || [];
 
       if (!cart.length) {
-        throw new Error(
-          'Your cart is empty.'
-        );
-      }
-
-      const code =
-        String(req.body.code || '')
-          .trim()
-          .toUpperCase();
-
-      if (!code) {
-        throw new Error(
-          'Enter a coupon code.'
-        );
-      }
-
-      const coupon =
-        await Coupon.findOne({
-          code,
-          active: true
-        }).lean();
-
-      if (!coupon) {
-        throw new Error(
-          'Invalid coupon code.'
-        );
-      }
-
-      if (
-        coupon.expiresAt &&
-        new Date(coupon.expiresAt) <
-          new Date()
-      ) {
-        throw new Error(
-          'This coupon has expired.'
-        );
+        throw new Error('Your cart is empty.');
       }
 
       const subtotal =
@@ -505,33 +543,14 @@ app.post(
           0
         );
 
-      if (
-        subtotal <
-        Number(
-          coupon.minimumOrder || 0
-        )
-      ) {
-        throw new Error(
-          `Minimum order amount is ৳${money(
-            coupon.minimumOrder
-          )}.`
+      const { coupon } =
+        await getValidCoupon(
+          req.body.code,
+          subtotal
         );
-      }
 
       req.session.coupon = {
-        code:
-          coupon.code,
-
-        type:
-          coupon.type,
-
-        value:
-          Number(coupon.value || 0),
-
-        minimumOrder:
-          Number(
-            coupon.minimumOrder || 0
-          )
+        code: coupon.code
       };
 
       req.session.flash = {
@@ -555,24 +574,31 @@ app.post(
 );
 
 
+/* =========================================
+   REMOVE COUPON — GUEST + LOGGED-IN
+========================================= */
+
 app.post(
   '/coupon/remove',
-  requireLogin,
   (req, res) => {
     delete req.session.coupon;
 
     req.session.flash = {
       type: 'success',
-      message:
-        'Coupon removed.'
+      message: 'Coupon removed.'
     };
 
     res.redirect('/checkout');
   }
 );
+
+
+/* =========================================
+   GET CHECKOUT — GUEST + LOGGED-IN
+========================================= */
+
 app.get(
   '/checkout',
-  requireLogin,
   async (req, res, next) => {
     try {
       const cart =
@@ -582,10 +608,14 @@ app.get(
         return res.redirect('/cart');
       }
 
-      const user =
-        await User.findById(
-          req.session.user.id
-        ).lean();
+      let user = null;
+
+      if (req.session.user?.id) {
+        user =
+          await User.findById(
+            req.session.user.id
+          ).lean();
+      }
 
       const subtotal =
         cart.reduce(
@@ -601,45 +631,28 @@ app.get(
           ? 0
           : 80;
 
-      const coupon =
-        req.session.coupon || null;
-
+      let coupon = null;
       let discount = 0;
 
-      if (
-        coupon &&
-        subtotal >=
-          Number(
-            coupon.minimumOrder || 0
-          )
-      ) {
-        if (
-          coupon.type ===
-          'percentage'
-        ) {
-          discount =
-            Math.round(
-              subtotal *
-              Number(
-                coupon.value || 0
-              ) /
-              100
+      if (req.session.coupon?.code) {
+        try {
+          const result =
+            await getValidCoupon(
+              req.session.coupon.code,
+              subtotal
             );
-        } else if (
-          coupon.type === 'fixed'
-        ) {
-          discount =
-            Number(
-              coupon.value || 0
-            );
+
+          coupon = result.coupon;
+          discount = result.discount;
+        } catch (couponError) {
+          delete req.session.coupon;
+
+          req.session.flash = {
+            type: 'error',
+            message: couponError.message
+          };
         }
       }
-
-      discount =
-        Math.min(
-          Math.max(discount, 0),
-          subtotal
-        );
 
       const total =
         subtotal +
@@ -664,221 +677,572 @@ app.get(
     }
   }
 );
-app.post('/checkout', requireLogin, async (req, res, next) => {
-  try {
-    const cart = req.session.cart || [];
-    if (!cart.length) throw new Error('Your cart is empty.');
-    const ids = cart.map(i => i.productId);
-    const products = await Product.find({ _id: { $in: ids }, active: true });
-    const map = new Map(products.map(p => [p._id.toString(), p]));
-    const items = [];
-for (const cartItem of cart) {
-  const product =
-    map.get(cartItem.productId);
 
-  if (!product) {
-    throw new Error(
-      `${cartItem.name} is unavailable.`
-    );
-  }
 
-  const selectedVariant =
-    product.variants?.find(
-      variant =>
-        variant.color === cartItem.color
-    );
+/* =========================================
+   POST CHECKOUT — GUEST + LOGGED-IN
+========================================= */
 
-  const availableStock =
-    selectedVariant
-      ? Number(selectedVariant.stock || 0)
-      : Number(product.stock || 0);
+app.post(
+  '/checkout',
+  async (req, res) => {
+    try {
+      const cart =
+        req.session.cart || [];
 
-  if (availableStock < cartItem.quantity) {
-    throw new Error(
-      `${cartItem.name} (${cartItem.color}) does not have enough stock.`
-    );
-  }
+      if (!cart.length) {
+        throw new Error('Your cart is empty.');
+      }
 
-  const selectedImage =
-    cartItem.image ||
-    selectedVariant?.images?.[0]?.url ||
-    product.images?.[0]?.url ||
-    '';
+      /* Optional logged-in user */
 
-  items.push({
-    product: product._id,
-    name: product.name,
-    sku: product.sku,
-    image: selectedImage,
-    size: cartItem.size,
-    color: cartItem.color,
-    quantity: cartItem.quantity,
-    unitPrice: product.price,
-    lineTotal:
-      product.price * cartItem.quantity
-  });
-}
-    const user = await User.findById(req.session.user.id);
-    const subtotal = items.reduce((sum, i) => sum + i.lineTotal, 0);
-    const deliveryFee = subtotal >= 3000 ? 0 : 80;
+      let user = null;
 
-    const coupon =
-  req.session.coupon || null;
+      if (req.session.user?.id) {
+        user =
+          await User.findById(
+            req.session.user.id
+          );
+      }
 
-let discount = 0;
+      /* Customer information */
 
-if (
-  coupon &&
-  subtotal >=
-    Number(
-      coupon.minimumOrder || 0
-    )
-) {
-  if (
-    coupon.type === 'percentage'
-  ) {
-    discount =
-      Math.round(
-        subtotal *
-        Number(
-          coupon.value || 0
-        ) /
-        100
-      );
-  } else if (
-    coupon.type === 'fixed'
-  ) {
-    discount =
-      Number(
-        coupon.value || 0
-      );
-  }
-}
+      const customerName =
+        String(
+          req.body.name ||
+          user?.name ||
+          ''
+        ).trim();
 
-discount =
-  Math.min(
-    Math.max(discount, 0),
-    subtotal
-  );
+      const customerPhone =
+        String(
+          req.body.phone ||
+          user?.phone ||
+          ''
+        ).trim();
 
-const total =
-  subtotal +
-  deliveryFee -
-  discount;
-    
-   const paymentMethod = ['COD', 'bKash', 'Nagad'].includes(
-  req.body.paymentMethod
-)
-  ? req.body.paymentMethod
-  : 'COD';
+      const customerEmail =
+        String(
+          req.body.email ||
+          user?.email ||
+          ''
+        )
+          .trim()
+          .toLowerCase();
 
-const senderNumber = String(req.body.senderNumber || '').trim();
-const transactionId = String(req.body.transactionId || '').trim();
-
-if (paymentMethod !== 'COD') {
-  if (!senderNumber) {
-    throw new Error('Sender bKash/Nagad number is required.');
-  }
-
-  if (!/^01\d{9}$/.test(senderNumber)) {
-    throw new Error('Enter a valid 11-digit sender number.');
-  }
-
-  if (!transactionId) {
-    throw new Error('Transaction ID is required.');
-  }
-}
-    const order = await Order.create({
-      orderNumber: makeOrderNumber(), customer: user._id,
-      customerSnapshot: { name: user.name, email: user.email, phone: req.body.phone || user.phone },
-      items, shippingAddress: { address: req.body.address, city: req.body.city, postalCode: req.body.postalCode || '' },
-   subtotal,
-deliveryFee,
-discount,
-couponCode:
-  coupon?.code || '',
-total,
-paymentMethod,
-senderNumber:
-  paymentMethod === 'COD'
-    ? ''
-    : senderNumber,
-
-transactionId:
-  paymentMethod === 'COD'
-    ? ''
-    : transactionId,
-
-paymentStatus:
-  paymentMethod === 'COD'
-    ? 'Pending'
-    : 'Submitted', statusHistory: [
-  {
-    status: 'Pending',
-    note:
-      paymentMethod === 'COD'
-        ? 'Cash on Delivery order placed.'
-        : `${paymentMethod} payment submitted for manual verification.`
-  }
-],
-    });
-await Promise.all(
-  items.map(async item => {
-    const product =
-      await Product.findById(item.product);
-
-    if (!product) {
-      throw new Error(
-        `${item.name} was not found.`
-      );
-    }
-
-    const variant =
-      product.variants?.find(
-        option =>
-          option.color === item.color
-      );
-
-    if (variant) {
-      if (variant.stock < item.quantity) {
+      if (!customerName) {
         throw new Error(
-          `${item.name} (${item.color}) does not have enough stock.`
+          'Recipient name is required.'
         );
       }
 
-      variant.stock -= item.quantity;
+      if (!customerPhone) {
+        throw new Error(
+          'Contact number is required.'
+        );
+      }
 
-      product.stock =
-        product.variants.reduce(
-          (total, option) =>
-            total +
-            Number(option.stock || 0),
+      if (!/^01\d{9}$/.test(customerPhone)) {
+        throw new Error(
+          'Enter a valid 11-digit Bangladeshi phone number.'
+        );
+      }
+
+      if (
+        customerEmail &&
+        !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
+          customerEmail
+        )
+      ) {
+        throw new Error(
+          'Enter a valid email address.'
+        );
+      }
+
+      /* Shipping information */
+
+      const country =
+        String(
+          req.body.country ||
+          'Bangladesh'
+        ).trim();
+
+      const city =
+        String(
+          req.body.city || ''
+        ).trim();
+
+      const area =
+        String(
+          req.body.area || ''
+        ).trim();
+
+      const address =
+        String(
+          req.body.address || ''
+        ).trim();
+
+      const postalCode =
+        String(
+          req.body.postalCode || ''
+        ).trim();
+
+      const deliveryType =
+        ['Home', 'Office'].includes(
+          req.body.deliveryType
+        )
+          ? req.body.deliveryType
+          : 'Home';
+
+      const notes =
+        String(
+          req.body.notes || ''
+        )
+          .trim()
+          .slice(0, 500);
+
+      if (!city) {
+        throw new Error(
+          'District or city is required.'
+        );
+      }
+
+      if (!area) {
+        throw new Error(
+          'Area, thana or upazila is required.'
+        );
+      }
+
+      if (!address) {
+        throw new Error(
+          'Full shipping address is required.'
+        );
+      }
+
+      /* Load real products */
+
+      const productIds =
+        cart.map(
+          item => item.productId
+        );
+
+      const products =
+        await Product.find({
+          _id: {
+            $in: productIds
+          },
+          active: true
+        });
+
+      const productMap =
+        new Map(
+          products.map(product => [
+            product._id.toString(),
+            product
+          ])
+        );
+
+      const items = [];
+
+      for (const cartItem of cart) {
+        const product =
+          productMap.get(
+            cartItem.productId
+          );
+
+        if (!product) {
+          throw new Error(
+            `${cartItem.name} is unavailable.`
+          );
+        }
+
+        const selectedVariant =
+          product.variants?.find(
+            variant =>
+              variant.color ===
+              cartItem.color
+          );
+
+        const availableStock =
+          selectedVariant
+            ? Number(
+                selectedVariant.stock || 0
+              )
+            : Number(
+                product.stock || 0
+              );
+
+        const quantity =
+          Number(cartItem.quantity || 0);
+
+        if (
+          quantity < 1 ||
+          availableStock < quantity
+        ) {
+          throw new Error(
+            `${cartItem.name} (${cartItem.color}) does not have enough stock.`
+          );
+        }
+
+        const selectedImage =
+          cartItem.image ||
+          selectedVariant
+            ?.images?.[0]?.url ||
+          product.images?.[0]?.url ||
+          '';
+
+        items.push({
+          product: product._id,
+          name: product.name,
+          sku: product.sku,
+          image: selectedImage,
+          size: cartItem.size,
+          color: cartItem.color,
+          quantity,
+          unitPrice:
+            Number(product.price),
+          lineTotal:
+            Number(product.price) *
+            quantity
+        });
+      }
+
+      /* Calculate totals */
+
+      const subtotal =
+        items.reduce(
+          (sum, item) =>
+            sum + item.lineTotal,
           0
         );
-    } else {
-      if (product.stock < item.quantity) {
-        throw new Error(
-          `${item.name} does not have enough stock.`
+
+      const deliveryFee =
+        subtotal >= 3000
+          ? 0
+          : 80;
+
+      let coupon = null;
+      let discount = 0;
+
+      if (req.session.coupon?.code) {
+        const couponResult =
+          await getValidCoupon(
+            req.session.coupon.code,
+            subtotal
+          );
+
+        coupon =
+          couponResult.coupon;
+
+        discount =
+          couponResult.discount;
+      }
+
+      const total =
+        subtotal +
+        deliveryFee -
+        discount;
+
+      /* Payment validation */
+
+      const paymentMethod =
+        ['COD', 'bKash', 'Nagad']
+          .includes(
+            req.body.paymentMethod
+          )
+          ? req.body.paymentMethod
+          : 'COD';
+
+      const senderNumber =
+        String(
+          req.body.senderNumber || ''
+        ).trim();
+
+      const transactionId =
+        String(
+          req.body.transactionId || ''
+        ).trim();
+
+      if (paymentMethod !== 'COD') {
+        if (!senderNumber) {
+          throw new Error(
+            'Sender bKash/Nagad number is required.'
+          );
+        }
+
+        if (!/^01\d{9}$/.test(senderNumber)) {
+          throw new Error(
+            'Enter a valid 11-digit sender number.'
+          );
+        }
+
+        if (!transactionId) {
+          throw new Error(
+            'Transaction ID is required.'
+          );
+        }
+      }
+
+      /* Create order */
+
+      const order =
+        await Order.create({
+          orderNumber:
+            makeOrderNumber(),
+
+          customer:
+            user?._id || null,
+
+          customerSnapshot: {
+            name: customerName,
+            email: customerEmail,
+            phone: customerPhone
+          },
+
+          items,
+
+          shippingAddress: {
+            country,
+            city,
+            area,
+            address,
+            postalCode,
+            deliveryType
+          },
+
+          subtotal,
+          deliveryFee,
+          discount,
+
+          couponCode:
+            coupon?.code || '',
+
+          total,
+
+          paymentMethod,
+
+          senderNumber:
+            paymentMethod === 'COD'
+              ? ''
+              : senderNumber,
+
+          transactionId:
+            paymentMethod === 'COD'
+              ? ''
+              : transactionId,
+
+          paymentStatus:
+            paymentMethod === 'COD'
+              ? 'Pending'
+              : 'Submitted',
+
+          notes,
+
+          status: 'Pending',
+
+          statusHistory: [
+            {
+              status: 'Pending',
+
+              note:
+                paymentMethod === 'COD'
+                  ? 'Cash on Delivery order placed.'
+                  : `${paymentMethod} payment submitted for manual verification.`
+            }
+          ]
+        });
+
+      /* Reduce product stock */
+
+      await Promise.all(
+        items.map(async item => {
+          const product =
+            await Product.findById(
+              item.product
+            );
+
+          if (!product) {
+            throw new Error(
+              `${item.name} was not found.`
+            );
+          }
+
+          const variant =
+            product.variants?.find(
+              option =>
+                option.color ===
+                item.color
+            );
+
+          if (variant) {
+            if (
+              Number(variant.stock) <
+              item.quantity
+            ) {
+              throw new Error(
+                `${item.name} (${item.color}) does not have enough stock.`
+              );
+            }
+
+            variant.stock -=
+              item.quantity;
+
+            product.stock =
+              product.variants.reduce(
+                (totalStock, option) =>
+                  totalStock +
+                  Number(
+                    option.stock || 0
+                  ),
+                0
+              );
+          } else {
+            if (
+              Number(product.stock) <
+              item.quantity
+            ) {
+              throw new Error(
+                `${item.name} does not have enough stock.`
+              );
+            }
+
+            product.stock -=
+              item.quantity;
+          }
+
+          product.soldCount =
+            Number(
+              product.soldCount || 0
+            ) +
+            item.quantity;
+
+          await product.save();
+        })
+      );
+
+      /* Email notifications */
+
+      try {
+        await sendAdminOrderEmail(order);
+
+        if (customerEmail) {
+          await sendCustomerOrderEmail(
+            order
+          );
+        }
+      } catch (emailError) {
+        console.error(
+          'Order email notification failed:',
+          emailError
         );
       }
 
-      product.stock -= item.quantity;
+      /* Save success access in session */
+
+      req.session.lastOrder = {
+        id:
+          order._id.toString(),
+
+        orderNumber:
+          order.orderNumber,
+
+        phone:
+          customerPhone
+      };
+
+      req.session.cart = [];
+
+      delete req.session.coupon;
+
+      res.redirect(
+        `/order-success/${order._id}`
+      );
+    } catch (error) {
+      console.error(
+        'Checkout error:',
+        error
+      );
+
+      req.session.flash = {
+        type: 'error',
+        message: error.message
+      };
+
+      res.redirect('/checkout');
     }
-
-    product.soldCount += item.quantity;
-
-    await product.save();
-  })
-);
-    req.session.cart = [];
-    delete req.session.coupon;
-    req.session.flash = { type: 'success', message: `Order ${order.orderNumber} placed successfully.` };
-    res.redirect(`/orders/${order._id}`);
-  } catch (e) {
-    req.session.flash = { type: 'error', message: e.message };
-    res.redirect('/checkout');
   }
-});
+);
+
+
+/* =========================================
+   ORDER SUCCESS PAGE
+========================================= */
+
+app.get(
+  '/order-success/:id',
+  async (req, res, next) => {
+    try {
+      const order =
+        await Order.findById(
+          req.params.id
+        ).lean();
+
+      if (!order) {
+        return res
+          .status(404)
+          .render('message', {
+            title:
+              'Order not found',
+
+            message:
+              'This order does not exist.'
+          });
+      }
+
+      const isAdmin =
+        req.session.user?.role ===
+        'admin';
+
+      const isLoggedInOwner =
+        req.session.user?.id &&
+        order.customer &&
+        order.customer.toString() ===
+          req.session.user.id;
+
+      const isGuestOwner =
+        req.session.lastOrder?.id ===
+        order._id.toString();
+
+      if (
+        !isAdmin &&
+        !isLoggedInOwner &&
+        !isGuestOwner
+      ) {
+        return res
+          .status(403)
+          .render('message', {
+            title:
+              'Access denied',
+
+            message:
+              'You cannot view this order.'
+          });
+      }
+
+      res.render(
+        'order-success',
+        {
+          title:
+            'Order placed successfully',
+
+          order
+        }
+      );
+    } catch (error) {
+      next(error);
+    }
+  }
+);
 
 app.get('/account', requireLogin, async (req, res, next) => {
   try {
