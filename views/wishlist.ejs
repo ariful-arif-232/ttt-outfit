@@ -1,0 +1,129 @@
+<%- include('partials/header') %>
+
+<section class="section wishlist-page-section">
+
+  <div class="container">
+
+    <header class="wishlist-page-header">
+
+      <div>
+        <span class="section-kicker">
+          SAVED PRODUCTS
+        </span>
+
+        <h1>My Wishlist</h1>
+
+        <p>
+          Keep your favourite products here and
+          add them to the cart whenever you are ready.
+        </p>
+      </div>
+
+      <a class="btn" href="/shop">
+        Continue Shopping
+      </a>
+
+    </header>
+
+
+    <% if (currentUser) { %>
+
+      <div
+        id="serverWishlistGrid"
+        class="grid product-grid wishlist-product-grid"
+      >
+
+        <% if (!products.length) { %>
+
+          <div
+            id="wishlistEmptyState"
+            class="wishlist-empty-state"
+          >
+            <div class="wishlist-empty-icon">
+              ♡
+            </div>
+
+            <h2>Your wishlist is empty</h2>
+
+            <p>
+              Tap the heart icon on any product to
+              save it here.
+            </p>
+
+            <a class="btn" href="/shop">
+              Explore Products
+            </a>
+          </div>
+
+        <% } else { %>
+
+          <% products.forEach(p => { %>
+
+            <div
+              class="wishlist-card-wrapper"
+              data-wishlist-product="<%= p._id %>"
+            >
+              <%- include(
+                'partials/product-card',
+                { p }
+              ) %>
+            </div>
+
+          <% }) %>
+
+        <% } %>
+
+      </div>
+
+    <% } else { %>
+
+      <div class="guest-wishlist-notice">
+
+        <div>
+          <strong>Guest Wishlist</strong>
+
+          <p>
+            Your saved products are stored safely in
+            this browser. Login later to sync them
+            with your account.
+          </p>
+        </div>
+
+        <a class="btn secondary" href="/login">
+          Login / Register
+        </a>
+
+      </div>
+
+      <div
+        id="guestWishlistGrid"
+        class="grid product-grid wishlist-product-grid"
+      ></div>
+
+      <div
+        id="guestWishlistEmpty"
+        class="wishlist-empty-state"
+        hidden
+      >
+        <div class="wishlist-empty-icon">
+          ♡
+        </div>
+
+        <h2>Your wishlist is empty</h2>
+
+        <p>
+          Browse products and tap the heart icon.
+        </p>
+
+        <a class="btn" href="/shop">
+          Explore Products
+        </a>
+      </div>
+
+    <% } %>
+
+  </div>
+
+</section>
+
+<%- include('partials/footer') %>
