@@ -26,5 +26,6 @@
     "helmet": "^8.0.0",
     "mongoose": "^8.9.5",
     "multer": "^2.0.2"
+    "nodemailer": "^6.9.16",
   }
 }
