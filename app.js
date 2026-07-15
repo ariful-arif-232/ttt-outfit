@@ -16,6 +16,7 @@ const { requireLogin, requireAdmin } = require('./middleware/auth');
 const { slugify, money, makeOrderNumber } = require('./utils/helpers');
 const Review = require('./models/Review');
 const Coupon = require('./models/Coupon');
+const Wishlist = require('./models/Wishlist');
 const ProductView =
   require('./models/ProductView');
 const {
@@ -277,6 +278,336 @@ app.post(
     }
   }
 );
+/* =========================================
+   WISHLIST PAGE
+========================================= */
+
+app.get('/wishlist', async (req, res, next) => {
+  try {
+    let products = [];
+
+    if (req.session.user?.id) {
+      const wishlist = await Wishlist.findOne({
+        user: req.session.user.id
+      })
+        .populate({
+          path: 'products',
+          match: { active: true }
+        })
+        .lean();
+
+      products =
+        wishlist?.products?.filter(Boolean) || [];
+    }
+
+    res.render('wishlist', {
+      title: 'My Wishlist',
+      products
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+
+/* =========================================
+   GET LOGGED-IN WISHLIST IDS
+========================================= */
+
+app.get('/api/wishlist', async (req, res) => {
+  try {
+    if (!req.session.user?.id) {
+      return res.json({
+        loggedIn: false,
+        productIds: []
+      });
+    }
+
+    const wishlist = await Wishlist.findOne({
+      user: req.session.user.id
+    }).lean();
+
+    res.json({
+      loggedIn: true,
+
+      productIds:
+        wishlist?.products?.map(
+          productId => productId.toString()
+        ) || []
+    });
+  } catch (error) {
+    console.error('Wishlist read error:', error);
+
+    res.status(500).json({
+      loggedIn: Boolean(req.session.user?.id),
+      productIds: [],
+      message: 'Could not load wishlist.'
+    });
+  }
+});
+
+
+/* =========================================
+   ADD PRODUCT TO LOGGED-IN WISHLIST
+========================================= */
+
+app.post('/api/wishlist/add', async (req, res) => {
+  try {
+    if (!req.session.user?.id) {
+      return res.status(401).json({
+        loggedIn: false,
+        message: 'Login is required.'
+      });
+    }
+
+    const productId =
+      String(req.body.productId || '').trim();
+
+    const product = await Product.findOne({
+      _id: productId,
+      active: true
+    }).lean();
+
+    if (!product) {
+      return res.status(404).json({
+        message: 'Product not found.'
+      });
+    }
+
+    const wishlist =
+      await Wishlist.findOneAndUpdate(
+        {
+          user: req.session.user.id
+        },
+        {
+          $addToSet: {
+            products: product._id
+          }
+        },
+        {
+          upsert: true,
+          new: true,
+          setDefaultsOnInsert: true
+        }
+      );
+
+    res.json({
+      success: true,
+      added: true,
+      count: wishlist.products.length
+    });
+  } catch (error) {
+    console.error('Wishlist add error:', error);
+
+    res.status(500).json({
+      message: 'Could not add product to wishlist.'
+    });
+  }
+});
+
+
+/* =========================================
+   REMOVE PRODUCT FROM LOGGED-IN WISHLIST
+========================================= */
+
+app.post('/api/wishlist/remove', async (req, res) => {
+  try {
+    if (!req.session.user?.id) {
+      return res.status(401).json({
+        loggedIn: false,
+        message: 'Login is required.'
+      });
+    }
+
+    const productId =
+      String(req.body.productId || '').trim();
+
+    const wishlist =
+      await Wishlist.findOneAndUpdate(
+        {
+          user: req.session.user.id
+        },
+        {
+          $pull: {
+            products: productId
+          }
+        },
+        {
+          new: true
+        }
+      );
+
+    res.json({
+      success: true,
+      added: false,
+      count: wishlist?.products?.length || 0
+    });
+  } catch (error) {
+    console.error('Wishlist remove error:', error);
+
+    res.status(500).json({
+      message: 'Could not remove product from wishlist.'
+    });
+  }
+});
+
+
+/* =========================================
+   SYNC GUEST WISHLIST AFTER LOGIN
+========================================= */
+
+app.post('/api/wishlist/sync', async (req, res) => {
+  try {
+    if (!req.session.user?.id) {
+      return res.status(401).json({
+        loggedIn: false,
+        message: 'Login is required.'
+      });
+    }
+
+    const rawProductIds =
+      Array.isArray(req.body.productIds)
+        ? req.body.productIds
+        : [];
+
+    const productIds = [
+      ...new Set(
+        rawProductIds
+          .map(id => String(id || '').trim())
+          .filter(Boolean)
+      )
+    ].slice(0, 100);
+
+    if (!productIds.length) {
+      const existing = await Wishlist.findOne({
+        user: req.session.user.id
+      }).lean();
+
+      return res.json({
+        success: true,
+
+        productIds:
+          existing?.products?.map(
+            id => id.toString()
+          ) || []
+      });
+    }
+
+    const validProducts = await Product.find({
+      _id: { $in: productIds },
+      active: true
+    })
+      .select('_id')
+      .lean();
+
+    const validIds =
+      validProducts.map(product => product._id);
+
+    const wishlist =
+      await Wishlist.findOneAndUpdate(
+        {
+          user: req.session.user.id
+        },
+        {
+          $addToSet: {
+            products: {
+              $each: validIds
+            }
+          }
+        },
+        {
+          upsert: true,
+          new: true,
+          setDefaultsOnInsert: true
+        }
+      );
+
+    res.json({
+      success: true,
+
+      productIds:
+        wishlist.products.map(
+          id => id.toString()
+        )
+    });
+  } catch (error) {
+    console.error('Wishlist sync error:', error);
+
+    res.status(500).json({
+      message: 'Could not sync wishlist.'
+    });
+  }
+});
+app.post('/api/wishlist/cards', async (req, res) => {
+  try {
+    const productIds =
+      Array.isArray(req.body.productIds)
+        ? req.body.productIds
+        : [];
+
+    if (!productIds.length) {
+      return res.json({
+        cards: []
+      });
+    }
+
+    const products = await Product.find({
+      _id: { $in: productIds },
+      active: true
+    }).lean();
+
+    const orderedProducts =
+      productIds
+        .map(id =>
+          products.find(
+            product =>
+              product._id.toString() === id
+          )
+        )
+        .filter(Boolean);
+
+    const cards = await Promise.all(
+      orderedProducts.map(
+        product =>
+          new Promise((resolve, reject) => {
+            res.app.render(
+              'partials/product-card',
+              {
+                p: product,
+                money
+              },
+              (error, html) => {
+                if (error) {
+                  reject(error);
+                  return;
+                }
+
+                resolve({
+                  productId:
+                    product._id.toString(),
+
+                  html
+                });
+              }
+            );
+          })
+      )
+    );
+
+    res.json({ cards });
+  } catch (error) {
+    console.error(
+      'Guest wishlist cards error:',
+      error
+    );
+
+    res.status(500).json({
+      cards: [],
+      message:
+        'Could not load wishlist products.'
+    });
+  }
+});
 
 app.get('/register', (req, res) => res.render('register', { title: 'Create account' }));
 app.post('/register', async (req, res, next) => {
