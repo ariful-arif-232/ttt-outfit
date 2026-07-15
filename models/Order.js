@@ -19,7 +19,7 @@ const orderSchema = new mongoose.Schema({
     ref: 'User',
     default: null,
     index: true
-}
+},
   customerSnapshot: { name: String, email: String, phone: String },
   items: [itemSchema],
   shippingAddress: { address: String, city: String, postalCode: String },
