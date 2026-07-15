@@ -1,1 +1,419 @@
-<%- include('partials/header') %><section class="section"><div class="container"><h1>My orders</h1><% if(!orders.length){ %><div class="panel">You have no orders yet.</div><% } orders.forEach(o=>{ %><a class="order-card" style="display:block" href="/orders/<%= o._id %>"><strong><%= o.orderNumber %></strong><span class="status" style="float:right"><%= o.status %></span><p><%= o.items.length %> item(s) · ৳<%= money(o.total) %></p><p class="small"><%= new Date(o.createdAt).toLocaleString() %> · Payment: <%= o.paymentStatus %></p></a><% }) %></div></section><%- include('partials/footer') %>
+<%- include('partials/header') %>
+
+<%
+  function getStatusClass(status) {
+    const value =
+      String(status || '')
+        .toLowerCase()
+        .replace(/\s+/g, '-');
+
+    return `order-status-${value}`;
+  }
+
+  function getPaymentClass(status) {
+    const value =
+      String(status || '')
+        .toLowerCase()
+        .replace(/\s+/g, '-');
+
+    return `payment-status-${value}`;
+  }
+%>
+
+<section class="section orders-page-section">
+
+  <div class="container">
+
+    <header class="orders-page-header">
+
+      <div>
+        <span class="section-kicker">
+          ORDER HISTORY
+        </span>
+
+        <h1>My Orders</h1>
+
+        <p>
+          View your purchases, payment information
+          and current delivery status.
+        </p>
+      </div>
+
+      <div class="orders-header-actions">
+
+        <a
+          class="btn secondary"
+          href="/track-order"
+        >
+          Track an Order
+        </a>
+
+        <a
+          class="btn"
+          href="/shop"
+        >
+          Continue Shopping
+        </a>
+
+      </div>
+
+    </header>
+
+
+    <% if (!orders.length) { %>
+
+      <section class="orders-empty-state">
+
+        <div class="orders-empty-icon">
+          📦
+        </div>
+
+        <h2>No orders yet</h2>
+
+        <p>
+          You have not placed any orders from this
+          account yet.
+        </p>
+
+        <a
+          class="btn"
+          href="/shop"
+        >
+          Start Shopping
+        </a>
+
+      </section>
+
+    <% } else { %>
+
+      <div class="professional-orders-list">
+
+        <% orders.forEach(order => { %>
+
+          <article class="professional-order-card">
+
+            <!-- ORDER HEADER -->
+
+            <header class="professional-order-header">
+
+              <div class="order-number-area">
+
+                <span class="order-label">
+                  Order Number
+                </span>
+
+                <a
+                  href="/orders/<%= order._id %>"
+                  class="order-number-link"
+                >
+                  <%= order.orderNumber %>
+                </a>
+
+              </div>
+
+              <div class="order-status-area">
+
+                <span
+                  class="professional-order-status
+                  <%= getStatusClass(order.status) %>"
+                >
+                  <i></i>
+                  <%= order.status %>
+                </span>
+
+              </div>
+
+            </header>
+
+
+            <!-- ORDER INFORMATION -->
+
+            <div class="professional-order-body">
+
+              <div class="order-information-grid">
+
+                <div class="order-info-item">
+
+                  <span class="order-info-icon">
+                    📅
+                  </span>
+
+                  <div>
+                    <small>Order Date</small>
+
+                    <strong>
+                      <%= new Date(
+                        order.createdAt
+                      ).toLocaleDateString(
+                        'en-BD',
+                        {
+                          day: '2-digit',
+                          month: 'short',
+                          year: 'numeric'
+                        }
+                      ) %>
+                    </strong>
+                  </div>
+
+                </div>
+
+
+                <div class="order-info-item">
+
+                  <span class="order-info-icon">
+                    🛍️
+                  </span>
+
+                  <div>
+                    <small>Products</small>
+
+                    <strong>
+                      <%= order.items.reduce(
+                        (total, item) =>
+                          total +
+                          Number(item.quantity || 0),
+                        0
+                      ) %>
+                      item(s)
+                    </strong>
+                  </div>
+
+                </div>
+
+
+                <div class="order-info-item">
+
+                  <span class="order-info-icon">
+                    💳
+                  </span>
+
+                  <div>
+                    <small>Payment Method</small>
+
+                    <strong>
+                      <%= order.paymentMethod %>
+                    </strong>
+                  </div>
+
+                </div>
+
+
+                <div class="order-info-item">
+
+                  <span class="order-info-icon">
+                    🚚
+                  </span>
+
+                  <div>
+                    <small>Delivery Type</small>
+
+                    <strong>
+                      <%= order.shippingAddress
+                        ?.deliveryType || 'Home'
+                      %>
+                    </strong>
+                  </div>
+
+                </div>
+
+              </div>
+
+
+              <!-- PRODUCT PREVIEW -->
+
+              <% if (order.items?.length) { %>
+
+                <div class="order-products-preview">
+
+                  <% order.items
+                    .slice(0, 3)
+                    .forEach(item => { %>
+
+                    <div class="order-preview-item">
+
+                      <img
+                        src="<%= item.image ||
+                          'https://via.placeholder.com/140x175?text=TTT'
+                        %>"
+                        alt="<%= item.name %>"
+                      >
+
+                      <div>
+                        <strong>
+                          <%= item.name %>
+                        </strong>
+
+                        <small>
+                          <%= item.color || 'Default' %>
+                          ·
+                          <%= item.size || 'One Size' %>
+                          · Qty:
+                          <%= item.quantity %>
+                        </small>
+                      </div>
+
+                    </div>
+
+                  <% }) %>
+
+
+                  <% if (order.items.length > 3) { %>
+
+                    <div class="order-more-items">
+
+                      +<%= order.items.length - 3 %>
+                      more product(s)
+
+                    </div>
+
+                  <% } %>
+
+                </div>
+
+              <% } %>
+
+
+              <!-- ORDER PAYMENT SUMMARY -->
+
+              <div class="order-payment-summary">
+
+                <div>
+
+                  <span
+                    class="professional-payment-status
+                    <%= getPaymentClass(
+                      order.paymentStatus
+                    ) %>"
+                  >
+                    Payment:
+                    <strong>
+                      <%= order.paymentStatus %>
+                    </strong>
+                  </span>
+
+                  <small class="order-date-time">
+                    <%= new Date(
+                      order.createdAt
+                    ).toLocaleTimeString(
+                      'en-BD',
+                      {
+                        hour: '2-digit',
+                        minute: '2-digit'
+                      }
+                    ) %>
+                  </small>
+
+                </div>
+
+                <div class="order-total-area">
+
+                  <small>Total Amount</small>
+
+                  <strong>
+                    ৳<%= money(order.total) %>
+                  </strong>
+
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <!-- ORDER FOOTER -->
+
+            <footer class="professional-order-footer">
+
+              <div class="order-footer-message">
+
+                <% if (order.status === 'Pending') { %>
+
+                  <span>
+                    Your order has been received and
+                    is waiting for confirmation.
+                  </span>
+
+                <% } else if (
+                  order.status === 'Confirmed'
+                ) { %>
+
+                  <span>
+                    Your order has been confirmed.
+                  </span>
+
+                <% } else if (
+                  order.status === 'Processing'
+                ) { %>
+
+                  <span>
+                    Your order is being prepared.
+                  </span>
+
+                <% } else if (
+                  order.status === 'Shipped'
+                ) { %>
+
+                  <span>
+                    Your order is on the way.
+                  </span>
+
+                <% } else if (
+                  order.status === 'Delivered'
+                ) { %>
+
+                  <span>
+                    Your order has been delivered.
+                  </span>
+
+                <% } else if (
+                  order.status === 'Cancelled'
+                ) { %>
+
+                  <span>
+                    This order has been cancelled.
+                  </span>
+
+                <% } else { %>
+
+                  <span>
+                    Check the order details for the
+                    latest update.
+                  </span>
+
+                <% } %>
+
+              </div>
+
+              <div class="order-card-actions">
+
+                <a
+                  class="order-track-button"
+                  href="/orders/<%= order._id %>#orderTimeline"
+                >
+                  Track Order
+                </a>
+
+                <a
+                  class="btn order-details-button"
+                  href="/orders/<%= order._id %>"
+                >
+                  View Details
+                </a>
+
+              </div>
+
+            </footer>
+
+          </article>
+
+        <% }) %>
+
+      </div>
+
+    <% } %>
+
+  </div>
+
+</section>
+
+<%- include('partials/footer') %>
