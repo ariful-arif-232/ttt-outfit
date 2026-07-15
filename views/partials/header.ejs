@@ -95,8 +95,11 @@
     class="<%= currentPath === '/' ? 'active-nav' : '' %>"
   >
     <span class="nav-item-left">
-      <span class="nav-icon">🏠</span>
-      <span>Home</span>
+<div class="mobile-icon-box">
+  <i class="bi bi-house-door"></i>
+</div>
+
+<span>Home</span>
     </span>
     <span class="nav-arrow">›</span>
   </a>
@@ -106,8 +109,11 @@
     class="<%= currentPath.startsWith('/shop') || currentPath.startsWith('/product') ? 'active-nav' : '' %>"
   >
     <span class="nav-item-left">
-      <span class="nav-icon">🛍️</span>
-      <span>Shop</span>
+<div class="mobile-icon-box">
+  <i class="bi bi-bag"></i>
+</div>
+
+<span>Shop</span>
     </span>
     <span class="nav-arrow">›</span>
   </a>
@@ -116,8 +122,11 @@
   class="<%= currentPath.startsWith('/track-order') ? 'active-nav' : '' %>"
 >
   <span class="nav-item-left">
-    <span class="nav-icon">🚚</span>
-    <span>Track Order</span>
+<div class="mobile-icon-box">
+  <i class="bi bi-truck"></i>
+</div>
+
+<span>Track Order</span>
   </span>
 
   <span class="nav-arrow">›</span>
@@ -127,7 +136,17 @@
   class="<%= currentPath.startsWith('/wishlist') ? 'active-nav' : '' %>"
 >
   <span class="nav-item-left">
-    <span class="nav-icon">♡</span>
+ <div class="mobile-icon-box">
+
+    <i class="bi bi-heart"></i>
+
+    <span
+        class="mobile-badge wishlist-badge"
+        data-wishlist-count>
+        0
+    </span>
+
+</div>
     <span>Wishlist</span>
   </span>
 
@@ -140,7 +159,17 @@
     class="cart-link <%= currentPath.startsWith('/cart') ? 'active-nav' : '' %>"
   >
     <span class="nav-item-left">
-      <span class="nav-icon">🛒</span>
+     <div class="mobile-icon-box">
+
+    <i class="bi bi-cart3"></i>
+
+    <span
+        class="mobile-badge cart-badge"
+        data-cart-count>
+        <%= cartCount %>
+    </span>
+
+</div>
       <span>Cart</span>
     </span>
 
@@ -156,8 +185,11 @@
       class="<%= currentPath.startsWith('/orders') ? 'active-nav' : '' %>"
     >
       <span class="nav-item-left">
-        <span class="nav-icon">📦</span>
-        <span>My Orders</span>
+<div class="mobile-icon-box">
+  <i class="bi bi-box-seam"></i>
+</div>
+
+<span>My Orders</span>
       </span>
       <span class="nav-arrow">›</span>
     </a>
@@ -167,8 +199,11 @@
       class="<%= currentPath.startsWith('/account') ? 'active-nav' : '' %>"
     >
       <span class="nav-item-left">
-        <span class="nav-icon">👤</span>
-        <span>Account</span>
+<div class="mobile-icon-box">
+  <i class="bi bi-person"></i>
+</div>
+
+<span>Account</span>
       </span>
       <span class="nav-arrow">›</span>
     </a>
@@ -179,8 +214,11 @@
         class="admin-link <%= currentPath.startsWith('/admin') ? 'active-nav' : '' %>"
       >
         <span class="nav-item-left">
-          <span class="nav-icon">⚙️</span>
-          <span>Admin</span>
+<div class="mobile-icon-box">
+  <i class="bi bi-gear"></i>
+</div>
+
+<span>Admin</span>
         </span>
         <span class="nav-arrow">›</span>
       </a>
@@ -199,8 +237,11 @@
       class="<%= currentPath.startsWith('/login') ? 'active-nav' : '' %>"
     >
       <span class="nav-item-left">
-        <span class="nav-icon">👤</span>
-        <span>Login</span>
+<div class="mobile-icon-box">
+    <i class="bi bi-person-circle"></i>
+</div>
+
+<span>Login / Register</span>
       </span>
       <span class="nav-arrow">›</span>
     </a>
