@@ -1243,6 +1243,50 @@ app.get(
     }
   }
 );
+app.get('/track-order', (req, res) => {
+  res.render('track-order', {
+    title: 'Track Order',
+    order: null,
+    error: null
+  });
+});
+
+app.post('/track-order', async (req, res) => {
+  try {
+    const orderNumber = String(req.body.orderNumber || '')
+      .trim()
+      .toUpperCase();
+
+    const phone = String(req.body.phone || '')
+      .replace(/\s+/g, '');
+
+    const order = await Order.findOne({
+      orderNumber,
+      'customerSnapshot.phone': phone
+    }).lean();
+
+    if (!order) {
+      return res.render('track-order', {
+        title: 'Track Order',
+        order: null,
+        error: 'Order not found.'
+      });
+    }
+
+    res.render('track-order', {
+      title: 'Track Order',
+      order,
+      error: null
+    });
+
+  } catch (err) {
+    res.render('track-order', {
+      title: 'Track Order',
+      order: null,
+      error: 'Something went wrong.'
+    });
+  }
+});
 
 app.get('/account', requireLogin, async (req, res, next) => {
   try {
