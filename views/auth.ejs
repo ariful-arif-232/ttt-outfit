@@ -1,0 +1,673 @@
+<%- include('partials/header') %>
+
+<%
+  const activeTab =
+    typeof tab !== 'undefined'
+      ? tab
+      : 'login';
+%>
+
+<section class="auth-page-section">
+
+  <div class="container auth-page-container">
+
+    <div class="auth-premium-card">
+
+      <!-- LEFT SIDE -->
+
+      <aside class="auth-brand-panel">
+
+        <div class="auth-brand-content">
+
+          <a href="/" class="auth-logo-link">
+            <img
+              src="/ttt-logo.jpeg"
+              alt="TTT Outfit"
+            >
+
+            <span>
+              TTT <strong>OUTFIT</strong>
+            </span>
+          </a>
+
+          <span class="auth-kicker">
+            PREMIUM FASHION EXPERIENCE
+          </span>
+
+          <h1>
+            Wear Your
+            <em>Identity.</em>
+          </h1>
+
+          <p>
+            Login or create your account to save
+            favourites, track orders and enjoy a
+            faster shopping experience.
+          </p>
+
+          <div class="auth-benefit-list">
+
+            <div>
+              <span>♡</span>
+
+              <div>
+                <strong>Save your favourites</strong>
+                <small>
+                  Keep your wishlist across devices.
+                </small>
+              </div>
+            </div>
+
+            <div>
+              <span>📦</span>
+
+              <div>
+                <strong>Track every order</strong>
+                <small>
+                  View status and order history.
+                </small>
+              </div>
+            </div>
+
+            <div>
+              <span>⚡</span>
+
+              <div>
+                <strong>Faster checkout</strong>
+                <small>
+                  Save your delivery information.
+                </small>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+        <div class="auth-decoration auth-decoration-one"></div>
+        <div class="auth-decoration auth-decoration-two"></div>
+
+      </aside>
+
+
+      <!-- RIGHT SIDE -->
+
+      <div class="auth-form-panel">
+
+        <header class="auth-form-header">
+
+          <span class="section-kicker">
+            WELCOME TO TTT OUTFIT
+          </span>
+
+          <h2>
+            Login / Register
+          </h2>
+
+          <p>
+            Access your account or create a new one.
+          </p>
+
+        </header>
+
+
+        <!-- AUTH TABS -->
+
+        <div class="auth-tabs">
+
+          <button
+            class="auth-tab-button
+              <%= activeTab === 'login' ? 'active' : '' %>"
+            type="button"
+            data-auth-tab="login"
+          >
+            Login
+          </button>
+
+          <button
+            class="auth-tab-button
+              <%= activeTab === 'register' ? 'active' : '' %>"
+            type="button"
+            data-auth-tab="register"
+          >
+            Register
+          </button>
+
+        </div>
+
+
+        <!-- LOGIN FORM -->
+
+        <div
+          class="auth-tab-panel
+            <%= activeTab === 'login' ? 'active' : '' %>"
+          data-auth-panel="login"
+        >
+
+          <form
+            class="premium-auth-form"
+            method="post"
+            action="/login"
+          >
+
+            <div class="field">
+
+              <label for="loginIdentity">
+                Email or Phone
+              </label>
+
+              <div class="auth-input-wrap">
+
+                <i class="bi bi-person"></i>
+
+                <input
+                  id="loginIdentity"
+                  type="text"
+                  name="identity"
+                  placeholder="Email address or phone"
+                  autocomplete="username"
+                  required
+                >
+
+              </div>
+
+            </div>
+
+
+            <div class="field">
+
+              <div class="auth-label-row">
+
+                <label for="loginPassword">
+                  Password
+                </label>
+
+                <a href="/forgot-password">
+                  Forgot Password?
+                </a>
+
+              </div>
+
+              <div class="auth-input-wrap">
+
+                <i class="bi bi-lock"></i>
+
+                <input
+                  id="loginPassword"
+                  type="password"
+                  name="password"
+                  placeholder="Enter your password"
+                  autocomplete="current-password"
+                  required
+                >
+
+                <button
+                  class="auth-password-toggle"
+                  type="button"
+                  data-password-toggle="loginPassword"
+                  aria-label="Show password"
+                >
+                  <i class="bi bi-eye"></i>
+                </button>
+
+              </div>
+
+            </div>
+
+
+            <label class="auth-remember-row">
+
+              <input
+                type="checkbox"
+                name="rememberMe"
+                value="yes"
+              >
+
+              <span>Remember me</span>
+
+            </label>
+
+
+            <button
+              class="btn auth-submit-button"
+              type="submit"
+            >
+              Login to Account
+              <i class="bi bi-arrow-right"></i>
+            </button>
+
+          </form>
+
+
+          <div class="auth-divider">
+            <span>or continue with</span>
+          </div>
+
+
+          <a
+            class="auth-google-button"
+            href="/auth/google"
+          >
+            <span class="google-logo">G</span>
+            Continue with Google
+          </a>
+
+
+          <p class="auth-switch-message">
+            New to TTT Outfit?
+
+            <button
+              type="button"
+              data-switch-auth="register"
+            >
+              Create an account
+            </button>
+          </p>
+
+        </div>
+
+
+        <!-- REGISTER FORM -->
+
+        <div
+          class="auth-tab-panel
+            <%= activeTab === 'register' ? 'active' : '' %>"
+          data-auth-panel="register"
+        >
+
+          <form
+            class="premium-auth-form"
+            method="post"
+            action="/register"
+          >
+
+            <div class="auth-form-grid">
+
+              <div class="field">
+
+                <label for="registerName">
+                  Full Name
+                </label>
+
+                <div class="auth-input-wrap">
+
+                  <i class="bi bi-person"></i>
+
+                  <input
+                    id="registerName"
+                    type="text"
+                    name="name"
+                    placeholder="Your full name"
+                    autocomplete="name"
+                    required
+                  >
+
+                </div>
+
+              </div>
+
+
+              <div class="field">
+
+                <label for="registerPhone">
+                  Phone Number
+                </label>
+
+                <div class="auth-input-wrap">
+
+                  <i class="bi bi-telephone"></i>
+
+                  <input
+                    id="registerPhone"
+                    type="tel"
+                    name="phone"
+                    placeholder="01XXXXXXXXX"
+                    maxlength="11"
+                    pattern="01[0-9]{9}"
+                    autocomplete="tel"
+                    required
+                  >
+
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <div class="field">
+
+              <label for="registerEmail">
+                Email Address
+              </label>
+
+              <div class="auth-input-wrap">
+
+                <i class="bi bi-envelope"></i>
+
+                <input
+                  id="registerEmail"
+                  type="email"
+                  name="email"
+                  placeholder="example@email.com"
+                  autocomplete="email"
+                  required
+                >
+
+              </div>
+
+            </div>
+
+
+            <div class="auth-form-grid">
+
+              <div class="field">
+
+                <label for="registerPassword">
+                  Password
+                </label>
+
+                <div class="auth-input-wrap">
+
+                  <i class="bi bi-lock"></i>
+
+                  <input
+                    id="registerPassword"
+                    type="password"
+                    name="password"
+                    minlength="8"
+                    placeholder="Minimum 8 characters"
+                    autocomplete="new-password"
+                    required
+                  >
+
+                  <button
+                    class="auth-password-toggle"
+                    type="button"
+                    data-password-toggle="registerPassword"
+                    aria-label="Show password"
+                  >
+                    <i class="bi bi-eye"></i>
+                  </button>
+
+                </div>
+
+              </div>
+
+
+              <div class="field">
+
+                <label for="confirmPassword">
+                  Confirm Password
+                </label>
+
+                <div class="auth-input-wrap">
+
+                  <i class="bi bi-shield-lock"></i>
+
+                  <input
+                    id="confirmPassword"
+                    type="password"
+                    name="confirmPassword"
+                    minlength="8"
+                    placeholder="Repeat password"
+                    autocomplete="new-password"
+                    required
+                  >
+
+                  <button
+                    class="auth-password-toggle"
+                    type="button"
+                    data-password-toggle="confirmPassword"
+                    aria-label="Show password"
+                  >
+                    <i class="bi bi-eye"></i>
+                  </button>
+
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <details class="auth-optional-details">
+
+              <summary>
+                Add delivery address now
+                <span>Optional</span>
+              </summary>
+
+              <div class="auth-optional-body">
+
+                <div class="field">
+
+                  <label for="registerAddress">
+                    Delivery Address
+                  </label>
+
+                  <textarea
+                    id="registerAddress"
+                    name="address"
+                    placeholder="House, road, area"
+                  ></textarea>
+
+                </div>
+
+                <div class="field">
+
+                  <label for="registerCity">
+                    City / District
+                  </label>
+
+                  <input
+                    id="registerCity"
+                    type="text"
+                    name="city"
+                    placeholder="Dhaka"
+                  >
+
+                </div>
+
+              </div>
+
+            </details>
+
+
+            <label class="auth-terms-row">
+
+              <input
+                type="checkbox"
+                required
+              >
+
+              <span>
+                I agree to the terms, privacy policy
+                and account conditions.
+              </span>
+
+            </label>
+
+
+            <button
+              class="btn auth-submit-button"
+              type="submit"
+            >
+              Create Account
+              <i class="bi bi-arrow-right"></i>
+            </button>
+
+          </form>
+
+
+          <div class="auth-divider">
+            <span>or continue with</span>
+          </div>
+
+
+          <a
+            class="auth-google-button"
+            href="/auth/google"
+          >
+            <span class="google-logo">G</span>
+            Continue with Google
+          </a>
+
+
+          <p class="auth-switch-message">
+            Already have an account?
+
+            <button
+              type="button"
+              data-switch-auth="login"
+            >
+              Login here
+            </button>
+          </p>
+
+        </div>
+
+
+        <div class="auth-security-note">
+
+          <i class="bi bi-shield-check"></i>
+
+          <span>
+            Your personal information is encrypted
+            and securely protected.
+          </span>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<script>
+  document.addEventListener(
+    'DOMContentLoaded',
+    () => {
+      const tabButtons =
+        document.querySelectorAll(
+          '[data-auth-tab]'
+        );
+
+      const tabPanels =
+        document.querySelectorAll(
+          '[data-auth-panel]'
+        );
+
+      function showAuthTab(tabName) {
+        tabButtons.forEach(button => {
+          button.classList.toggle(
+            'active',
+            button.dataset.authTab === tabName
+          );
+        });
+
+        tabPanels.forEach(panel => {
+          panel.classList.toggle(
+            'active',
+            panel.dataset.authPanel === tabName
+          );
+        });
+
+        const url =
+          new URL(window.location.href);
+
+        url.searchParams.set(
+          'tab',
+          tabName
+        );
+
+        window.history.replaceState(
+          {},
+          '',
+          url
+        );
+      }
+
+      tabButtons.forEach(button => {
+        button.addEventListener(
+          'click',
+          () => {
+            showAuthTab(
+              button.dataset.authTab
+            );
+          }
+        );
+      });
+
+      document
+        .querySelectorAll(
+          '[data-switch-auth]'
+        )
+        .forEach(button => {
+          button.addEventListener(
+            'click',
+            () => {
+              showAuthTab(
+                button.dataset.switchAuth
+              );
+
+              document
+                .querySelector(
+                  '.auth-form-panel'
+                )
+                ?.scrollIntoView({
+                  behavior: 'smooth',
+                  block: 'start'
+                });
+            }
+          );
+        });
+
+
+      document
+        .querySelectorAll(
+          '[data-password-toggle]'
+        )
+        .forEach(button => {
+          button.addEventListener(
+            'click',
+            () => {
+              const input =
+                document.getElementById(
+                  button.dataset.passwordToggle
+                );
+
+              if (!input) return;
+
+              const showPassword =
+                input.type === 'password';
+
+              input.type =
+                showPassword
+                  ? 'text'
+                  : 'password';
+
+              const icon =
+                button.querySelector('i');
+
+              icon?.classList.toggle(
+                'bi-eye',
+                !showPassword
+              );
+
+              icon?.classList.toggle(
+                'bi-eye-slash',
+                showPassword
+              );
+            }
+          );
+        });
+    }
+  );
+</script>
+
+<%- include('partials/footer') %>
