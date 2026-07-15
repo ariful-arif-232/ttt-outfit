@@ -1622,6 +1622,9 @@
         }
 
         saveWishlist(wishlist);
+window.dispatchEvent(
+  new Event('wishlistUpdated')
+);
         updateWishlistButton();
       }
     );
