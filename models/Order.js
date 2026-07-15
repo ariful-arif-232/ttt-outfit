@@ -14,7 +14,12 @@ const itemSchema = new mongoose.Schema({
 
 const orderSchema = new mongoose.Schema({
   orderNumber: { type: String, required: true, unique: true, index: true },
-  customer: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true, index: true },
+  customer: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    default: null,
+    index: true
+}
   customerSnapshot: { name: String, email: String, phone: String },
   items: [itemSchema],
   shippingAddress: { address: String, city: String, postalCode: String },
