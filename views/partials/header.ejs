@@ -227,24 +227,28 @@
 
   <% } else { %>
 
-    <a
-      href="/login"
-      class="<%= currentPath.startsWith('/login') ? 'active-nav' : '' %>"
-    >
-      <span class="nav-item-left">
-<div class="mobile-icon-box">
-    <i class="bi bi-person-circle"></i>
-</div>
+<a
+  href="/auth"
+  class="<%=
+    currentPath.startsWith('/auth') ||
+    currentPath.startsWith('/login') ||
+    currentPath.startsWith('/register')
+      ? 'active-nav'
+      : ''
+  %>"
+>
+  <span class="nav-item-left">
 
-<span>Login / Register</span>
-      </span>
-      <span class="nav-arrow">›</span>
-    </a>
+    <div class="mobile-icon-box">
+      <i class="bi bi-person-circle"></i>
+    </div>
 
-    <a class="nav-register" href="/register">
-      <span>✦ Create Account</span>
-    </a>
+    <span>Login / Register</span>
 
+  </span>
+
+  <span class="nav-arrow">›</span>
+</a>
   <% } %>
 
 <div class="mobile-menu-social">
