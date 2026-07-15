@@ -6020,3 +6020,32 @@ width: min(75vw, 250px) !important;
     text-align: left;
   }
 }
+.track-form{
+
+display:grid;
+
+gap:18px;
+
+max-width:520px;
+
+margin:40px auto;
+
+}
+
+.track-form input{
+
+padding:15px;
+
+border:1px solid #ddd;
+
+border-radius:10px;
+
+font-size:16px;
+
+}
+
+.track-form button{
+
+height:52px;
+
+}
