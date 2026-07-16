@@ -1222,12 +1222,18 @@ app.post('/cart/add', async (req, res) => {
 const requestedRedirect =
   String(req.body.redirectTo || '').trim();
 
-const safeRedirect =
-  requestedRedirect === '/checkout'
-    ? '/checkout'
-    : req.get('referer') || '/cart';
+if (requestedRedirect === '/checkout') {
+  return res.redirect('/checkout');
+}
 
-res.redirect(safeRedirect);
+/*
+  Add to Cart from Home / Shop / Product
+  Stay on the same page.
+*/
+
+return res.redirect(
+  req.get('referer') || '/shop'
+);
   } catch (error) {
     req.session.flash = {
       type: 'error',
