@@ -7337,3 +7337,77 @@ height:52px;
     font-size: 14px !important;
   }
 }
+/* =========================================
+   PRODUCT CARD WHOLESALE / RETAIL
+========================================= */
+
+.product-extra-badges {
+  margin-top: 10px;
+
+  display: flex;
+  align-items: center;
+  gap: 7px;
+
+  color: #222;
+}
+
+.product-extra-badges .extra-badge {
+  padding: 0;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+
+  color: #222;
+  background: transparent;
+  border: 0;
+
+  font-size: 13px;
+  font-weight: 650;
+  white-space: nowrap;
+}
+
+.product-extra-badges .extra-badge i {
+  color: #111;
+  font-size: 15px;
+  line-height: 1;
+}
+
+.product-extra-badges .extra-divider {
+  color: #aaa;
+  font-size: 12px;
+}
+
+
+/* Mobile */
+
+@media (max-width: 700px) {
+  .product-extra-badges {
+    width: 100%;
+    margin-top: 6px;
+
+    gap: 4px;
+    flex-wrap: nowrap;
+    overflow: hidden;
+  }
+
+  .product-extra-badges .extra-badge {
+    min-width: 0;
+
+    gap: 3px;
+
+    font-size: 8px;
+    font-weight: 650;
+    white-space: nowrap;
+  }
+
+  .product-extra-badges .extra-badge i {
+    flex-shrink: 0;
+    font-size: 10px;
+  }
+
+  .product-extra-badges .extra-divider {
+    flex-shrink: 0;
+    font-size: 8px;
+  }
+}
