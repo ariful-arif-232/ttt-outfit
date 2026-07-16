@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1"
+  >
+
+  <title><%= title %> | TTT Outfit</title>
+
+  <meta
+    name="description"
+    content="TTT Outfit — Premium fashion and everyday clothing for Bangladesh."
+  >
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap"
+    rel="stylesheet"
+  >
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+>
+<link rel="stylesheet" href="/css/style.css?v=122">
+</head>
+
+<body
+  data-logged-in="<%= currentUser ? 'true' : 'false' %>"
+>
+
+<div class="announcement-bar">
+  <div class="announcement-track">
+
+    <span>FREE DELIVERY ON ORDERS OVER ৳3,000</span>
+    <span>PREMIUM QUALITY CLOTHING</span>
+    <span>MANUAL BKASH &amp; NAGAD PAYMENT</span>
+    <span>NEW COLLECTION AVAILABLE NOW</span>
+
+    <span>FREE DELIVERY ON ORDERS OVER ৳3,000</span>
+    <span>PREMIUM QUALITY CLOTHING</span>
+    <span>MANUAL BKASH &amp; NAGAD PAYMENT</span>
+    <span>NEW COLLECTION AVAILABLE NOW</span>
+
+  </div>
+</div>
+
+<header class="site-header" id="siteHeader">
+  <div class="container nav">
+
+    <a class="brand" href="/">
+      <img
+        class="brand-logo"
+        src="/ttt-logo.jpeg"
+        alt="TTT Outfit logo"
+      >
+
+      <span>
+        TTT <strong>OUTFIT</strong>
+      </span>
+    </a>
+
+    <button
+      class="mobile-menu-button"
+      id="mobileMenuButton"
+      type="button"
+      aria-label="Open navigation menu"
+      aria-expanded="false"
+      aria-controls="navLinks"
+    >
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+
+<nav class="nav-links" id="navLinks">
+
+<div class="mobile-menu-brand">
+  <img
+    src="/ttt-logo.jpeg"
+    alt="TTT Outfit logo"
+  >
+
+  <span>
+    TTT <strong>OUTFIT</strong>
+  </span>
+</div>
+
+  <a
+    href="/"
+    class="<%= currentPath === '/' ? 'active-nav' : '' %>"
+  >
+    <span class="nav-item-left">
+<div class="mobile-icon-box">
+  <i class="bi bi-house-door"></i>
+</div>
+
+<span>Home</span>
+    </span>
+    <span class="nav-arrow">›</span>
+  </a>
+
+  <a
+    href="/shop"
+    class="<%= currentPath.startsWith('/shop') || currentPath.startsWith('/product') ? 'active-nav' : '' %>"
+  >
+    <span class="nav-item-left">
+<div class="mobile-icon-box">
+  <i class="bi bi-bag"></i>
+</div>
+
+<span>Shop</span>
+    </span>
+    <span class="nav-arrow">›</span>
+  </a>
+<a
+  href="/track-order"
+  class="<%= currentPath.startsWith('/track-order') ? 'active-nav' : '' %>"
+>
+  <span class="nav-item-left">
+<div class="mobile-icon-box">
+  <i class="bi bi-truck"></i>
+</div>
+
+<span>Track Order</span>
+  </span>
+
+  <span class="nav-arrow">›</span>
+</a>
+<a
+  href="/wishlist"
+  class="<%= currentPath.startsWith('/wishlist') ? 'active-nav' : '' %>"
+>
+  <span class="nav-item-left">
+ <div class="mobile-icon-box">
+
+    <i class="bi bi-heart"></i>
+
+    <span
+        class="mobile-badge wishlist-badge"
+        data-wishlist-count>
+        0
+    </span>
+
+</div>
+    <span>Wishlist</span>
+  </span>
+<span class="nav-arrow">›</span>
+</a>
+  <a
+    href="/cart"
+    class="cart-link <%= currentPath.startsWith('/cart') ? 'active-nav' : '' %>"
+  >
+    <span class="nav-item-left">
+     <div class="mobile-icon-box">
+
+    <i class="bi bi-cart3"></i>
+
+    <span
+        class="mobile-badge cart-badge"
+        data-cart-count>
+        <%= cartCount %>
+    </span>
+
+</div>
+      <span>Cart</span>
+    </span>
+
+<span class="nav-arrow">›</span>
+  </a>
+
+  <% if (currentUser) { %>
+
+    <a
+      href="/orders"
+      class="<%= currentPath.startsWith('/orders') ? 'active-nav' : '' %>"
+    >
+      <span class="nav-item-left">
+<div class="mobile-icon-box">
+  <i class="bi bi-box-seam"></i>
+</div>
+
+<span>My Orders</span>
+      </span>
+      <span class="nav-arrow">›</span>
+    </a>
+
+    <a
+      href="/account"
+      class="<%= currentPath.startsWith('/account') ? 'active-nav' : '' %>"
+    >
+      <span class="nav-item-left">
+<div class="mobile-icon-box">
+  <i class="bi bi-person"></i>
+</div>
+
+<span>Account</span>
+      </span>
+      <span class="nav-arrow">›</span>
+    </a>
+
+    <% if (currentUser.role === 'admin') { %>
+      <a
+        href="/admin"
+        class="admin-link <%= currentPath.startsWith('/admin') ? 'active-nav' : '' %>"
+      >
+        <span class="nav-item-left">
+<div class="mobile-icon-box">
+  <i class="bi bi-gear"></i>
+</div>
+
+<span>Admin</span>
+        </span>
+        <span class="nav-arrow">›</span>
+      </a>
+    <% } %>
+
+    <form action="/logout" method="post">
+      <button class="link-btn logout-btn" type="submit">
+        <span>↪ Logout</span>
+      </button>
+    </form>
+
+  <% } else { %>
+
+<a
+  href="/auth"
+  class="<%=
+    currentPath.startsWith('/auth') ||
+    currentPath.startsWith('/login') ||
+    currentPath.startsWith('/register')
+      ? 'active-nav'
+      : ''
+  %>"
+>
+  <span class="nav-item-left">
+
+    <div class="mobile-icon-box">
+      <i class="bi bi-person-circle"></i>
+    </div>
+
+    <span>Login / Register</span>
+
+  </span>
+
+  <span class="nav-arrow">›</span>
+</a>
+  <% } %>
+
+<div class="mobile-menu-social">
+
+  <span>Follow us</span>
+
+  <div class="mobile-social-links">
+
+    <a
+      href="https://www.facebook.com/share/198YBpPR7T/?mibextid=wwXIfr"
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="Facebook"
+    >
+      <i class="bi bi-facebook"></i>
+    </a>
+
+    <a
+      href="https://www.facebook.com/share/198YBpPR7T/?mibextid=wwXIfr"
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="Instagram"
+    >
+      <i class="bi bi-instagram"></i>
+    </a>
+
+    <a
+      href="https://www.facebook.com/share/198YBpPR7T/?mibextid=wwXIfr"
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="TikTok"
+    >
+      <i class="bi bi-tiktok"></i>
+    </a>
+
+    <a
+      href="https://wa.me/8801608397497"
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="WhatsApp"
+    >
+      <i class="bi bi-whatsapp"></i>
+    </a>
+
+  </div>
+
+</div>
+
+</nav>
+
+  </div>
+</header>
+
+<main>
+
+  <% if (flash) { %>
+    <div class="container flash <%= flash.type %>">
+      <%= flash.message %>
+    </div>
+  <% } %>
