@@ -112,7 +112,7 @@ const userSchema = new mongoose.Schema(
       default: true
     },
 
-    lastLoginAt: Date
+    lastLoginAt: Date,
     resetPasswordToken: {
   type: String,
   default: null
