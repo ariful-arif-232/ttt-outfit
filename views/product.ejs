@@ -696,7 +696,128 @@
 
     </div>
 
+<section class="product-review-section">
 
+  <div class="review-section-header">
+    <span class="section-kicker">CUSTOMER FEEDBACK</span>
+    <h2>Customer Reviews</h2>
+  </div>
+
+  <% if (currentUser) { %>
+
+    <form
+      class="review-form"
+      action="/product/<%= product._id %>/reviews"
+      method="post"
+    >
+
+      <div class="field">
+        <label for="rating">Your Rating</label>
+
+        <select
+          id="rating"
+          name="rating"
+          required
+        >
+          <option value="">Select rating</option>
+          <option value="5">★★★★★ — Excellent</option>
+          <option value="4">★★★★☆ — Very Good</option>
+          <option value="3">★★★☆☆ — Good</option>
+          <option value="2">★★☆☆☆ — Fair</option>
+          <option value="1">★☆☆☆☆ — Poor</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="comment">Your Review</label>
+
+        <textarea
+          id="comment"
+          name="comment"
+          rows="5"
+          maxlength="1000"
+          placeholder="Write your experience with this product..."
+          required
+        ></textarea>
+      </div>
+
+      <button
+        class="btn gold-btn"
+        type="submit"
+      >
+        <i class="bi bi-send"></i>
+        Submit Review
+      </button>
+
+    </form>
+
+  <% } else { %>
+
+    <div class="review-login-box">
+      <p>
+        Please login to rate and review this product.
+      </p>
+
+      <a
+        class="btn gold-btn"
+        href="/auth?tab=login"
+      >
+        <i class="bi bi-person"></i>
+        Login to Review
+      </a>
+    </div>
+
+  <% } %>
+
+
+  <div class="customer-review-list">
+
+    <% if (reviews && reviews.length) { %>
+
+      <% reviews.forEach(review => { %>
+
+        <article class="customer-review-card">
+
+          <div class="customer-review-top">
+
+            <div>
+              <strong><%= review.name %></strong>
+
+              <div class="review-stars">
+                <% for (let star = 1; star <= 5; star++) { %>
+                  <span class="<%= star <= review.rating ? 'active' : '' %>">
+                    ★
+                  </span>
+                <% } %>
+              </div>
+            </div>
+
+            <% if (review.createdAt) { %>
+              <time>
+                <%= new Date(review.createdAt).toLocaleDateString('en-BD') %>
+              </time>
+            <% } %>
+
+          </div>
+
+          <p><%= review.comment %></p>
+
+        </article>
+
+      <% }) %>
+
+    <% } else { %>
+
+      <div class="no-reviews-box">
+        <i class="bi bi-chat-square-text"></i>
+        <p>No reviews yet. Be the first to review this product.</p>
+      </div>
+
+    <% } %>
+
+  </div>
+
+</section>
     <!-- Related products: rendered only when route provides them -->
 
     <% if (
