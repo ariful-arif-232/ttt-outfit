@@ -83,8 +83,141 @@ async function sendCustomerOrderEmail(order) {
 
   await apiInstance.sendTransacEmail(email);
 }
+async function sendPasswordResetEmail({
+  email,
+  name,
+  resetUrl
+}) {
+  const message =
+    new brevo.SendSmtpEmail();
+
+  message.sender = sender;
+
+  message.to = [
+    {
+      email,
+      name: name || 'TTT Outfit Customer'
+    }
+  ];
+
+  message.subject =
+    'Reset Your TTT Outfit Password';
+
+  message.htmlContent = `
+    <!doctype html>
+    <html>
+      <body
+        style="
+          margin:0;
+          padding:0;
+          background:#f4f1e9;
+          font-family:Arial,sans-serif;
+          color:#222;
+        "
+      >
+
+        <div
+          style="
+            max-width:620px;
+            margin:30px auto;
+            background:#ffffff;
+            border:1px solid #e4ded0;
+            border-radius:16px;
+            overflow:hidden;
+          "
+        >
+
+          <div
+            style="
+              padding:28px;
+              background:#111111;
+              color:#ffffff;
+              text-align:center;
+            "
+          >
+            <h1 style="margin:0;">
+              TTT <span style="color:#c7a646;">OUTFIT</span>
+            </h1>
+          </div>
+
+          <div style="padding:34px;">
+
+            <h2 style="margin-top:0;">
+              Reset your password
+            </h2>
+
+            <p>
+              Hello ${name || 'Customer'},
+            </p>
+
+            <p>
+              We received a request to reset your
+              TTT Outfit account password.
+            </p>
+
+            <p>
+              Click the button below to create a new password.
+              This link will expire in 30 minutes.
+            </p>
+
+            <div
+              style="
+                margin:30px 0;
+                text-align:center;
+              "
+            >
+              <a
+                href="${resetUrl}"
+                style="
+                  display:inline-block;
+                  padding:14px 24px;
+                  color:#111111;
+                  background:#c7a646;
+                  border-radius:9px;
+                  text-decoration:none;
+                  font-weight:700;
+                "
+              >
+                Reset Password
+              </a>
+            </div>
+
+            <p
+              style="
+                color:#777777;
+                font-size:13px;
+                line-height:1.6;
+              "
+            >
+              If you did not request this password reset,
+              you can safely ignore this email.
+            </p>
+
+            <p
+              style="
+                color:#999999;
+                font-size:12px;
+                word-break:break-all;
+              "
+            >
+              ${resetUrl}
+            </p>
+
+          </div>
+
+        </div>
+
+      </body>
+    </html>
+  `;
+
+  await apiInstance.sendTransacEmail(
+    message
+  );
+}
 
 module.exports = {
   sendAdminOrderEmail,
-  sendCustomerOrderEmail
+  sendCustomerOrderEmail,
+  sendPasswordResetEmail
 };
