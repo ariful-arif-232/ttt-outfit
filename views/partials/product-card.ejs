@@ -169,7 +169,7 @@
     <% if (productStock > 0) { %>
 
       <form
-        class="quick-cart-form"
+         name="size"
         method="post"
         action="/cart/add"
       >
@@ -186,17 +186,18 @@
           value="1"
         >
 
-        <input
-          type="hidden"
-          name="size"
-          value="<%= selectedSize %>"
-        >
-
-        <input
-          type="hidden"
-          name="color"
-          value="<%= selectedColor %>"
-        >
+<input
+  type="hidden"
+  name="size"
+  value="<%= selectedSize %>"
+  data-selected-size
+>
+<input
+  type="hidden"
+  name="color"
+  value="<%= selectedColor %>"
+  data-selected-color
+>
 
         <button
           type="submit"
@@ -339,36 +340,28 @@
 
     <% if (productColors.length) { %>
 
-      <div class="product-color-preview">
+<% if (p.variants?.length) { %>
 
-        <% productColors
-          .slice(0, 4)
-          .forEach(color => { %>
+  <div class="product-color-preview" data-color-options>
 
-          <span
-            class="product-color-dot"
-            title="<%= color %>"
-            aria-label="<%= color %>"
-            style="
-              --swatch-color:
-              <%= String(color)
-                .toLowerCase()
-                .replace(/\s+/g, '') %>;
-            "
-          ></span>
+    <% p.variants.forEach((variant, index) => { %>
 
-        <% }) %>
+      <button
+        type="button"
+        class="product-color-option <%= index === 0 ? 'active' : '' %>"
+        data-color="<%= variant.color %>"
+        data-image="<%= variant.images?.[0]?.url || mainImage %>"
+        data-sizes='<%- JSON.stringify(variant.sizes || []) %>'
+        aria-label="Select <%= variant.color %>"
+        title="<%= variant.color %>"
+        style="--swatch-color: <%= variant.colorHex || '#cccccc' %>;"
+      ></button>
 
+    <% }) %>
 
-        <% if (productColors.length > 4) { %>
+  </div>
 
-          <small>
-            +<%= productColors.length - 4 %>
-          </small>
-
-        <% } %>
-
-      </div>
+<% } %>
 
     <% } %>
 
@@ -377,28 +370,21 @@
 
     <% if (productSizes.length) { %>
 
-      <div class="product-size-list">
+<div class="product-size-list" data-size-options>
 
-        <% productSizes
-          .slice(0, 5)
-          .forEach(size => { %>
+  <% productSizes.forEach((size, index) => { %>
 
-          <span>
-            <%= size %>
-          </span>
+    <button
+      type="button"
+      class="product-size-option <%= index === 0 ? 'active' : '' %>"
+      data-size="<%= size %>"
+    >
+      <%= size %>
+    </button>
 
-        <% }) %>
+  <% }) %>
 
-
-        <% if (productSizes.length > 5) { %>
-
-          <span>
-            +<%= productSizes.length - 5 %>
-          </span>
-
-        <% } %>
-
-      </div>
+</div>
 
     <% } %>
 
