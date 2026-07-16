@@ -803,7 +803,7 @@ if (!passwordMatches) {
   throw new Error(
     'Invalid email/phone or password.'
   );
-} throw new Error('Invalid email/phone or password.');
+} 
     user.lastLoginAt = new Date(); await user.save();
     req.session.user = { id: user._id.toString(), name: user.name, email: user.email, role: user.role };
     const destination = req.session.returnTo || (user.role === 'admin' ? '/admin' : '/account');
