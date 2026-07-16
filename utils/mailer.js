@@ -88,6 +88,29 @@ async function sendPasswordResetEmail({
   name,
   resetUrl
 }) {
+    console.log(
+    '=== sendPasswordResetEmail START ==='
+  );
+
+  console.log(
+    'Reset email receiver:',
+    email
+  );
+
+  console.log(
+    'Reset URL:',
+    resetUrl
+  );
+
+  console.log(
+    'Brevo sender:',
+    sender.email
+  );
+
+  console.log(
+    'Brevo API key available:',
+    Boolean(process.env.BREVO_API_KEY)
+  );
   const message =
     new brevo.SendSmtpEmail();
 
@@ -211,9 +234,21 @@ async function sendPasswordResetEmail({
     </html>
   `;
 
+console.log(
+  'Calling Brevo API for reset email...'
+);
+
+const result =
   await apiInstance.sendTransacEmail(
     message
   );
+
+console.log(
+  'Brevo reset email sent successfully:',
+  result?.body?.messageId ||
+  result?.response?.body ||
+  'Success'
+);
 }
 
 module.exports = {
