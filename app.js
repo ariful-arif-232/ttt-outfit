@@ -22,8 +22,9 @@ const ProductView =
   require('./models/ProductView');
 const passport = require('./config/passport');
 const {
-    sendAdminOrderEmail,
-    sendCustomerOrderEmail
+  sendAdminOrderEmail,
+  sendCustomerOrderEmail,
+  sendPasswordResetEmail
 } = require('./utils/mailer');
 
 const app = express();
@@ -813,7 +814,301 @@ if (!passwordMatches) {
 res.redirect('/auth?tab=login');
   }
 });
+/* =========================================
+   FORGOT PASSWORD
+========================================= */
 
+app.get(
+  '/forgot-password',
+  (req, res) => {
+    res.render(
+      'forgot-password',
+      {
+        title: 'Forgot Password'
+      }
+    );
+  }
+);
+
+
+app.post(
+  '/forgot-password',
+  async (req, res) => {
+    try {
+      const email =
+        String(req.body.email || '')
+          .trim()
+          .toLowerCase();
+
+      if (
+        !email ||
+        !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
+          email
+        )
+      ) {
+        throw new Error(
+          'Enter a valid email address.'
+        );
+      }
+
+      const user =
+        await User.findOne({
+          email,
+          isActive: true
+        });
+
+      /*
+        Always show the same success message.
+        This prevents people from discovering
+        which emails are registered.
+      */
+
+      if (user) {
+        const rawToken =
+          crypto
+            .randomBytes(32)
+            .toString('hex');
+
+        const hashedToken =
+          crypto
+            .createHash('sha256')
+            .update(rawToken)
+            .digest('hex');
+
+        user.resetPasswordToken =
+          hashedToken;
+
+        user.resetPasswordExpires =
+          new Date(
+            Date.now() +
+            30 * 60 * 1000
+          );
+
+        await user.save();
+
+        const baseUrl =
+          process.env.APP_BASE_URL ||
+          `${req.protocol}://${req.get('host')}`;
+
+        const resetUrl =
+          `${baseUrl}/reset-password/${rawToken}`;
+
+        try {
+          await sendPasswordResetEmail({
+            email: user.email,
+            name: user.name,
+            resetUrl
+          });
+        } catch (emailError) {
+          console.error(
+            'Password reset email failed:',
+            emailError.response?.body ||
+            emailError.message ||
+            emailError
+          );
+
+          user.resetPasswordToken = null;
+          user.resetPasswordExpires = null;
+
+          await user.save();
+
+          throw new Error(
+            'Could not send the reset email. Please try again.'
+          );
+        }
+      }
+
+      req.session.flash = {
+        type: 'success',
+        message:
+          'If an account exists with that email, a password reset link has been sent.'
+      };
+
+      res.redirect(
+        '/forgot-password'
+      );
+    } catch (error) {
+      req.session.flash = {
+        type: 'error',
+        message: error.message
+      };
+
+      res.redirect(
+        '/forgot-password'
+      );
+    }
+  }
+);
+
+
+/* =========================================
+   RESET PASSWORD PAGE
+========================================= */
+
+app.get(
+  '/reset-password/:token',
+  async (req, res) => {
+    try {
+      const rawToken =
+        String(req.params.token || '');
+
+      const hashedToken =
+        crypto
+          .createHash('sha256')
+          .update(rawToken)
+          .digest('hex');
+
+      const user =
+        await User.findOne({
+          resetPasswordToken:
+            hashedToken,
+
+          resetPasswordExpires: {
+            $gt: new Date()
+          },
+
+          isActive: true
+        }).lean();
+
+      if (!user) {
+        req.session.flash = {
+          type: 'error',
+          message:
+            'This password reset link is invalid or has expired.'
+        };
+
+        return res.redirect(
+          '/forgot-password'
+        );
+      }
+
+      res.render(
+        'reset-password',
+        {
+          title: 'Reset Password',
+          token: rawToken
+        }
+      );
+    } catch (error) {
+      req.session.flash = {
+        type: 'error',
+        message:
+          'Could not open the password reset page.'
+      };
+
+      res.redirect(
+        '/forgot-password'
+      );
+    }
+  }
+);
+
+
+/* =========================================
+   SAVE NEW PASSWORD
+========================================= */
+
+app.post(
+  '/reset-password/:token',
+  async (req, res) => {
+    try {
+      const password =
+        String(
+          req.body.password || ''
+        );
+
+      const confirmPassword =
+        String(
+          req.body.confirmPassword || ''
+        );
+
+      if (password.length < 8) {
+        throw new Error(
+          'Password must be at least 8 characters.'
+        );
+      }
+
+      if (
+        password !== confirmPassword
+      ) {
+        throw new Error(
+          'Passwords do not match.'
+        );
+      }
+
+      const rawToken =
+        String(req.params.token || '');
+
+      const hashedToken =
+        crypto
+          .createHash('sha256')
+          .update(rawToken)
+          .digest('hex');
+
+      const user =
+        await User.findOne({
+          resetPasswordToken:
+            hashedToken,
+
+          resetPasswordExpires: {
+            $gt: new Date()
+          },
+
+          isActive: true
+        });
+
+      if (!user) {
+        throw new Error(
+          'This password reset link is invalid or has expired.'
+        );
+      }
+
+      user.passwordHash =
+        await bcrypt.hash(
+          password,
+          12
+        );
+
+      user.resetPasswordToken =
+        null;
+
+      user.resetPasswordExpires =
+        null;
+
+      /*
+        If the account was created through Google,
+        it can now also use password login.
+      */
+
+      if (
+        user.provider === 'google'
+      ) {
+        user.provider = 'local';
+      }
+
+      await user.save();
+
+      req.session.flash = {
+        type: 'success',
+        message:
+          'Your password has been updated. You can now login.'
+      };
+
+      res.redirect(
+        '/auth?tab=login'
+      );
+    } catch (error) {
+      req.session.flash = {
+        type: 'error',
+        message: error.message
+      };
+
+      res.redirect(
+        `/reset-password/${req.params.token}`
+      );
+    }
+  }
+);
 app.post('/logout', (req, res) => req.session.destroy(() => res.redirect('/')));
 
 app.post('/cart/add', async (req, res) => {
