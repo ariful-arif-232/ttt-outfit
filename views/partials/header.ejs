@@ -304,8 +304,45 @@
 
 <main>
 
-  <% if (flash) { %>
-    <div class="container flash <%= flash.type %>">
-      <%= flash.message %>
+<% if (flash) { %>
+  <div
+    class="flash-toast <%= flash.type %>"
+    id="flashToast"
+    role="alert"
+    aria-live="polite"
+  >
+    <div class="flash-icon">
+      <% if (flash.type === 'success') { %>
+        <i class="bi bi-check-circle-fill"></i>
+      <% } else if (flash.type === 'error') { %>
+        <i class="bi bi-exclamation-circle-fill"></i>
+      <% } else { %>
+        <i class="bi bi-info-circle-fill"></i>
+      <% } %>
     </div>
-  <% } %>
+
+    <div class="flash-content">
+      <strong>
+        <%= flash.type === 'success'
+          ? 'Success'
+          : flash.type === 'error'
+            ? 'Something went wrong'
+            : 'Notice'
+        %>
+      </strong>
+
+      <span><%= flash.message %></span>
+    </div>
+
+    <button
+      class="flash-close"
+      type="button"
+      aria-label="Close message"
+      onclick="this.parentElement.remove()"
+    >
+      <i class="bi bi-x-lg"></i>
+    </button>
+
+    <div class="flash-progress"></div>
+  </div>
+<% } %>
