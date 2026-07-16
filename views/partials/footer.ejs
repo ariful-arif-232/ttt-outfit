@@ -69,5 +69,21 @@
 
 <script src="/js/main.js?v=111" defer></script>
 <script src="/js/wishlist.js?v=4"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const flashToast =
+      document.getElementById('flashToast');
+
+    if (!flashToast) return;
+
+    const removeToast = () => {
+      if (flashToast && flashToast.parentNode) {
+        flashToast.remove();
+      }
+    };
+
+    setTimeout(removeToast, 5200);
+  });
+</script>
 </body>
 </html>
