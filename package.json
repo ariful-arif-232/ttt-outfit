@@ -27,7 +27,8 @@
   "mongoose": "^8.9.5",
   "multer": "^2.0.2",
   "nodemailer": "^6.9.16",
-"@getbrevo/brevo": "^3.0.1""passport": "^0.7.0",
+"@getbrevo/brevo": "^3.0.1",
+"passport": "^0.7.0",
 "passport-google-oauth20": "^2.0.0"
 }
 }
