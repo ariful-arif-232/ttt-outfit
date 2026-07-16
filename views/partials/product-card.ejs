@@ -1,32 +1,71 @@
 <%
- const firstVariant =
-  p.variants?.[0] || null;
+  const firstVariant =
+    p.variants?.[0] || null;
 
-const mainImage =
-  firstVariant?.images?.[0]?.url ||
-  p.images?.[0]?.url ||
-  'https://via.placeholder.com/700x875?text=TTT+Outfit';
+  const mainImage =
+    firstVariant?.images?.[0]?.url ||
+    p.images?.[0]?.url ||
+    'https://via.placeholder.com/700x875?text=TTT+Outfit';
 
-const secondImage =
-  firstVariant?.images?.[1]?.url ||
-  p.images?.[1]?.url ||
-  mainImage;
+  const secondImage =
+    firstVariant?.images?.[1]?.url ||
+    p.images?.[1]?.url ||
+    mainImage;
+
+  const hasSecondImage = Boolean(
+    firstVariant?.images?.[1]?.url ||
+    p.images?.[1]?.url
+  );
 
   const hasDiscount =
-    Number(p.compareAtPrice) > Number(p.price);
+    Number(p.compareAtPrice || 0) >
+    Number(p.price || 0);
 
-  const discountPercent = hasDiscount
-    ? Math.round(
-        ((p.compareAtPrice - p.price) /
-          p.compareAtPrice) * 100
-      )
-    : 0;
+  const discountPercent =
+    hasDiscount && Number(p.compareAtPrice) > 0
+      ? Math.round(
+          (
+            (
+              Number(p.compareAtPrice) -
+              Number(p.price)
+            ) /
+            Number(p.compareAtPrice)
+          ) * 100
+        )
+      : 0;
 
   const productSizes =
-    Array.isArray(p.sizes) ? p.sizes : [];
+    firstVariant?.sizes?.length
+      ? firstVariant.sizes
+      : Array.isArray(p.sizes)
+        ? p.sizes
+        : [];
 
   const productColors =
-    Array.isArray(p.colors) ? p.colors : [];
+    p.variants?.length
+      ? p.variants
+          .map(variant => variant.color)
+          .filter(Boolean)
+      : Array.isArray(p.colors)
+        ? p.colors
+        : [];
+
+  const productStock =
+    p.variants?.length
+      ? p.variants.reduce(
+          (total, variant) =>
+            total + Number(variant.stock || 0),
+          0
+        )
+      : Number(p.stock || 0);
+
+  const selectedSize =
+    productSizes[0] || 'One Size';
+
+  const selectedColor =
+    firstVariant?.color ||
+    productColors[0] ||
+    'Default';
 %>
 
 <article class="professional-product-card">
@@ -46,65 +85,88 @@ const secondImage =
         loading="lazy"
       >
 
-    <% if (
-  firstVariant?.images?.[1]?.url ||
-  p.images?.[1]?.url
-) { %>
+      <% if (hasSecondImage) { %>
+
         <img
           class="product-secondary-image"
           src="<%= secondImage %>"
           alt="<%= p.name %> alternate view"
           loading="lazy"
         >
+
       <% } %>
 
     </a>
 
+
+    <!-- Discount and stock badges -->
+
     <div class="product-badges">
 
       <% if (hasDiscount) { %>
+
         <span class="sale-badge">
           -<%= discountPercent %>%
         </span>
+
       <% } %>
 
-      <% if (p.stock < 1) { %>
+
+      <% if (productStock < 1) { %>
+
         <span class="sold-out-badge">
           Sold Out
         </span>
-      <% } else if (p.stock <= 5) { %>
+
+      <% } else if (productStock <= 5) { %>
+
         <span class="low-stock-badge">
-          Only <%= p.stock %> left
+          Only <%= productStock %> left
         </span>
+
       <% } %>
 
     </div>
+
+
+    <!-- Quick view and wishlist -->
 
     <div class="product-hover-actions">
 
       <a
+        class="product-quick-view-button"
         href="/product/<%= p.slug %>"
-        aria-label="Quick view"
-        title="Quick View"
+        aria-label="View <%= p.name %> details"
+        title="View product"
       >
-        <span>⌕</span>
+        <i
+          class="bi bi-eye"
+          aria-hidden="true"
+        ></i>
       </a>
 
-<button
-  class="product-wishlist-button"
-  type="button"
-  data-product-id="<%= p._id %>"
-  data-product-name="<%= p.name %>"
-  aria-label="Add <%= p.name %> to wishlist"
-  aria-pressed="false"
-  title="Add to Wishlist"
->
-  <span>♡</span>
-</button>
+
+      <button
+        class="product-wishlist-button"
+        type="button"
+        data-product-id="<%= p._id %>"
+        data-product-name="<%= p.name %>"
+        data-product-slug="<%= p.slug %>"
+        data-product-image="<%= mainImage %>"
+        data-product-price="<%= p.price %>"
+        aria-label="Add <%= p.name %> to wishlist"
+        aria-pressed="false"
+        title="Add to Wishlist"
+      >
+        <span>♡</span>
+      </button>
 
     </div>
 
-    <% if (p.stock > 0) { %>
+
+    <!-- Add to cart -->
+
+    <% if (productStock > 0) { %>
 
       <form
         class="quick-cart-form"
@@ -127,18 +189,33 @@ const secondImage =
         <input
           type="hidden"
           name="size"
-          value="<%= productSizes[0] || 'One Size' %>"
+          value="<%= selectedSize %>"
         >
 
         <input
           type="hidden"
           name="color"
-          value="<%= productColors[0] || 'Default' %>"
+          value="<%= selectedColor %>"
         >
 
-        <button type="submit">
-          <span>＋</span>
-          Quick Add
+        <input
+          type="hidden"
+          name="redirectTo"
+          value="/cart"
+        >
+
+        <button
+          type="submit"
+          aria-label="Add <%= p.name %> to cart"
+        >
+
+          <i
+            class="bi bi-cart-plus"
+            aria-hidden="true"
+          ></i>
+
+          <span>Add to cart</span>
+
         </button>
 
       </form>
@@ -146,6 +223,9 @@ const secondImage =
     <% } %>
 
   </div>
+
+
+  <!-- Product information -->
 
   <div class="professional-product-info">
 
@@ -156,124 +236,202 @@ const secondImage =
       </span>
 
       <% if (p.gender) { %>
+
         <span class="product-gender">
           <%= p.gender %>
         </span>
+
       <% } %>
 
     </div>
-<h3>
-  <a href="/product/<%= p.slug %>">
-    <%= p.name %>
-  </a>
-</h3>
-<div class="product-rating-row">
 
-  <div
-    class="product-rating"
-    aria-label="<%= Number(p.ratingAverage || 0).toFixed(1) %> out of 5"
-  >
-    <span>★</span>
 
-    <strong>
-      <%= Number(p.ratingAverage || 0).toFixed(1) %>
-    </strong>
-  </div>
+    <h3>
 
-  <% if (Number(p.soldCount || 0) > 0) { %>
-    <span class="product-sold-count">
-      <%= p.soldCount %> sold
-    </span>
-  <% } %>
+      <a href="/product/<%= p.slug %>">
+        <%= p.name %>
+      </a>
 
-</div>
+    </h3>
 
-<div class="product-price-row">
 
-  <span class="product-current-price">
-    ৳<%= money(p.price) %>
-  </span>
+    <!-- Rating and sold count -->
 
-  <% if (hasDiscount) { %>
-    <span class="product-compare-price">
-      ৳<%= money(p.compareAtPrice) %>
-    </span>
-  <% } %>
+    <div class="product-rating-row">
 
-</div>
+      <div
+        class="product-rating"
+        aria-label="<%= Number(p.ratingAverage || 0).toFixed(1) %> out of 5"
+      >
 
-<div class="product-extra-badges">
+        <span>★</span>
 
-  <span class="extra-badge">
-    🚚 Cash on Delivery
-  </span>
+        <strong>
+          <%= Number(p.ratingAverage || 0).toFixed(1) %>
+        </strong>
 
-  <span class="extra-badge">
-    🔄 Easy Return
-  </span>
+      </div>
 
-  <% if (Number(p.price) >= 3000) { %>
-    <span class="extra-badge">
-      ✓ Free Delivery
-    </span>
-  <% } %>
 
-</div>
+      <% if (Number(p.soldCount || 0) > 0) { %>
+
+        <span class="product-sold-count">
+          <%= p.soldCount %> sold
+        </span>
+
+      <% } %>
+
+    </div>
+
+
+    <!-- Price -->
+
+    <div class="product-price-row">
+
+      <span class="product-current-price">
+        ৳<%= money(p.price) %>
+      </span>
+
+      <% if (hasDiscount) { %>
+
+        <span class="product-compare-price">
+          ৳<%= money(p.compareAtPrice) %>
+        </span>
+
+      <% } %>
+
+    </div>
+
+
+    <!-- Wholesale and Retail -->
+
+    <div class="product-extra-badges">
+
+      <span class="extra-badge">
+
+        <i
+          class="bi bi-box-seam"
+          aria-hidden="true"
+        ></i>
+
+        <span>Wholesale</span>
+
+      </span>
+
+
+      <span
+        class="extra-divider"
+        aria-hidden="true"
+      >
+        |
+      </span>
+
+
+      <span class="extra-badge">
+
+        <i
+          class="bi bi-bag"
+          aria-hidden="true"
+        ></i>
+
+        <span>Retail</span>
+
+      </span>
+
+    </div>
+
+
+    <!-- Color preview -->
+
     <% if (productColors.length) { %>
 
       <div class="product-color-preview">
 
-        <% productColors.slice(0, 4).forEach(color => { %>
+        <% productColors
+          .slice(0, 4)
+          .forEach(color => { %>
+
           <span
             class="product-color-dot"
             title="<%= color %>"
-            style="--swatch-color:
-              <%= color.toLowerCase()
-                .replace(/\s+/g, '') %>;"
+            aria-label="<%= color %>"
+            style="
+              --swatch-color:
+              <%= String(color)
+                .toLowerCase()
+                .replace(/\s+/g, '') %>;
+            "
           ></span>
+
         <% }) %>
 
+
         <% if (productColors.length > 4) { %>
+
           <small>
             +<%= productColors.length - 4 %>
           </small>
+
         <% } %>
 
       </div>
 
     <% } %>
+
+
+    <!-- Available sizes -->
 
     <% if (productSizes.length) { %>
 
       <div class="product-size-list">
 
-        <% productSizes.slice(0, 5).forEach(size => { %>
-          <span><%= size %></span>
+        <% productSizes
+          .slice(0, 5)
+          .forEach(size => { %>
+
+          <span>
+            <%= size %>
+          </span>
+
         <% }) %>
 
+
         <% if (productSizes.length > 5) { %>
+
           <span>
             +<%= productSizes.length - 5 %>
           </span>
+
         <% } %>
 
       </div>
 
     <% } %>
 
+
+    <!-- Card footer -->
+
     <div class="product-card-footer">
 
       <span
-        class="product-stock-status
-        <%= p.stock > 0 ? 'available' : 'unavailable' %>"
+        class="
+          product-stock-status
+          <%= productStock > 0
+            ? 'available'
+            : 'unavailable'
+          %>
+        "
       >
+
         <i></i>
 
-        <%= p.stock > 0
+        <%= productStock > 0
           ? 'Available'
           : 'Out of stock'
         %>
+
       </span>
+
 
       <a href="/product/<%= p.slug %>">
         Details →
