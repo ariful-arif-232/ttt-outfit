@@ -19,6 +19,7 @@ const Coupon = require('./models/Coupon');
 const Wishlist = require('./models/Wishlist');
 const ProductView =
   require('./models/ProductView');
+const passport = require('./config/passport');
 const {
     sendAdminOrderEmail,
     sendCustomerOrderEmail
@@ -54,7 +55,7 @@ app.use(session({
   store: process.env.MONGODB_URI ? MongoStore.create({ mongoUrl: process.env.MONGODB_URI, collectionName: 'sessions', ttl: 60 * 60 * 24 * 14 }) : undefined,
   cookie: { httpOnly: true, sameSite: 'lax', secure: process.env.NODE_ENV === 'production', maxAge: 1000 * 60 * 60 * 24 * 14 }
 }));
-
+app.use(passport.initialize());
 app.use((req, res, next) => {
   res.locals.currentUser = req.session.user || null;
   res.locals.currentPath = req.path;
@@ -608,6 +609,129 @@ app.post('/api/wishlist/cards', async (req, res) => {
     });
   }
 });
+/* =========================================
+   GOOGLE AUTHENTICATION
+========================================= */
+
+app.get(
+  '/auth/google',
+  (req, res, next) => {
+    if (
+      !process.env.GOOGLE_CLIENT_ID ||
+      !process.env.GOOGLE_CLIENT_SECRET ||
+      !process.env.GOOGLE_CALLBACK_URL
+    ) {
+      req.session.flash = {
+        type: 'error',
+        message:
+          'Google login is not configured yet.'
+      };
+
+      return res.redirect(
+        '/auth?tab=login'
+      );
+    }
+
+    passport.authenticate(
+      'google',
+      {
+        scope: [
+          'profile',
+          'email'
+        ],
+
+        prompt:
+          'select_account'
+      }
+    )(req, res, next);
+  }
+);
+
+
+app.get(
+  '/auth/google/callback',
+
+  passport.authenticate(
+    'google',
+    {
+      session: false,
+      failureRedirect:
+        '/auth/google/failure'
+    }
+  ),
+
+  async (req, res, next) => {
+    try {
+      const user = req.user;
+
+      if (!user) {
+        throw new Error(
+          'Google login failed.'
+        );
+      }
+
+      req.session.user = {
+        id:
+          user._id.toString(),
+
+        name:
+          user.name,
+
+        email:
+          user.email,
+
+        role:
+          user.role,
+
+        avatar:
+          user.avatar || '',
+
+        provider:
+          user.provider || 'google'
+      };
+
+      req.session.flash = {
+        type: 'success',
+        message:
+          `Welcome, ${user.name}! Google login successful.`
+      };
+
+      const destination =
+        req.session.returnTo ||
+        (
+          user.role === 'admin'
+            ? '/admin'
+            : '/account'
+        );
+
+      delete req.session.returnTo;
+
+      req.session.save(error => {
+        if (error) {
+          return next(error);
+        }
+
+        res.redirect(destination);
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+
+app.get(
+  '/auth/google/failure',
+  (req, res) => {
+    req.session.flash = {
+      type: 'error',
+      message:
+        'Google login was cancelled or failed. Please try again.'
+    };
+
+    res.redirect('/auth?tab=login');
+  }
+);
 app.get('/auth', (req, res) => {
   const selectedTab =
     req.query.tab === 'register'
@@ -655,7 +779,29 @@ app.post('/login', async (req, res, next) => {
   try {
     const identity = String(req.body.identity || '').trim();
     const user = await User.findOne({ $or: [{ email: identity.toLowerCase() }, { phone: identity }], isActive: true });
-    if (!user || !(await bcrypt.compare(req.body.password || '', user.passwordHash))) throw new Error('Invalid email/phone or password.');
+   if (!user) {
+  throw new Error(
+    'Invalid email/phone or password.'
+  );
+}
+
+if (!user.passwordHash) {
+  throw new Error(
+    'This account uses Google login. Please continue with Google.'
+  );
+}
+
+const passwordMatches =
+  await bcrypt.compare(
+    req.body.password || '',
+    user.passwordHash
+  );
+
+if (!passwordMatches) {
+  throw new Error(
+    'Invalid email/phone or password.'
+  );
+} throw new Error('Invalid email/phone or password.');
     user.lastLoginAt = new Date(); await user.save();
     req.session.user = { id: user._id.toString(), name: user.name, email: user.email, role: user.role };
     const destination = req.session.returnTo || (user.role === 'admin' ? '/admin' : '/account');
