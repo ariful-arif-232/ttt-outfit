@@ -125,7 +125,15 @@ async function sendPasswordResetEmail({
 
   message.subject =
     'Reset Your TTT Outfit Password';
+message.textContent = `
+Hello ${name},
 
+Reset your password:
+
+${resetUrl}
+
+TTT Outfit
+`;
   message.htmlContent = `
     <!doctype html>
     <html>
