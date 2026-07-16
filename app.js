@@ -856,7 +856,15 @@ app.post(
           email,
           isActive: true
         });
+console.log(
+  'Forgot password email:',
+  email
+);
 
+console.log(
+  'Reset user found:',
+  user ? user.email : 'NO USER FOUND'
+);
       /*
         Always show the same success message.
         This prevents people from discovering
