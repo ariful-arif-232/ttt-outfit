@@ -17,6 +17,7 @@ const { slugify, money, makeOrderNumber } = require('./utils/helpers');
 const Review = require('./models/Review');
 const Coupon = require('./models/Coupon');
 const Wishlist = require('./models/Wishlist');
+const crypto = require('crypto');
 const ProductView =
   require('./models/ProductView');
 const passport = require('./config/passport');
