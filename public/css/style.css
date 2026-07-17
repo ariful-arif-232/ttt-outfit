@@ -9028,4 +9028,97 @@ body.offer-modal-open {
 
 }
 
+/* =========================================
+   MOBILE PRODUCT FOOTER OVERLAP FIX
+========================================= */
 
+@media (max-width: 700px) {
+
+  .professional-product-card .product-card-footer-offer {
+    width: 100% !important;
+    min-height: auto !important;
+    padding-top: 8px !important;
+
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    justify-content: flex-start !important;
+
+    gap: 8px !important;
+  }
+
+  .professional-product-card .product-footer-left {
+    width: 100% !important;
+    min-width: 0 !important;
+
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+
+    gap: 6px !important;
+  }
+
+  .professional-product-card .product-footer-right {
+    width: 100% !important;
+    min-width: 0 !important;
+    margin-left: 0 !important;
+
+    display: flex !important;
+    align-items: stretch !important;
+  }
+
+  .professional-product-card .product-sale-types {
+    min-width: 0 !important;
+    gap: 3px !important;
+
+    font-size: 7px !important;
+    white-space: nowrap !important;
+  }
+
+  .professional-product-card .product-sale-types i {
+    font-size: 7px !important;
+  }
+
+  .professional-product-card .sale-type-separator {
+    font-size: 6px !important;
+  }
+
+  .professional-product-card .product-stock-status {
+    flex-shrink: 0 !important;
+    font-size: 7px !important;
+    white-space: nowrap !important;
+  }
+
+  .professional-product-card .product-offer-button {
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: 28px !important;
+    height: 28px !important;
+
+    padding: 0 7px !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    gap: 4px !important;
+  }
+
+  .professional-product-card .offer-word {
+    font-size: 7px !important;
+  }
+
+  .professional-product-card .offer-percent {
+    min-width: 28px !important;
+    height: 16px !important;
+    padding: 0 4px !important;
+
+    font-size: 8px !important;
+  }
+
+  .professional-product-card .offer-tag-icon,
+  .professional-product-card .offer-arrow-icon {
+    font-size: 8px !important;
+  }
+}
