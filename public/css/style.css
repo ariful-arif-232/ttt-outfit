@@ -8101,3 +8101,88 @@ height:52px;
     font-size: 9px !important;
   }
 }
+/* Product card spacing polish only */
+
+.professional-product-card .product-extra-badges {
+  margin-top: 7px;
+  margin-bottom: 7px;
+  gap: 5px;
+}
+
+.professional-product-card .product-extra-badges .extra-badge {
+  gap: 4px;
+  font-size: 10px;
+  line-height: 1.15;
+}
+
+.professional-product-card .product-extra-badges .extra-badge i {
+  font-size: 11px;
+}
+
+.professional-product-card .product-extra-badges .extra-divider {
+  font-size: 9px;
+}
+
+/* Color exists: balanced space above and below swatches */
+.professional-product-card .product-color-preview {
+  margin-top: 3px;
+  margin-bottom: 9px;
+}
+
+/* Size row starts neatly after badges or colors */
+.professional-product-card .product-size-list {
+  margin-top: 0;
+  margin-bottom: 9px;
+}
+
+/* No color row: reduce the empty gap before sizes */
+.professional-product-card
+.product-extra-badges
++ .product-size-list {
+  margin-top: 1px;
+}
+
+/* When color row exists, keep a small clean gap */
+.professional-product-card
+.product-extra-badges
++ .product-color-preview {
+  margin-top: 3px;
+}
+
+@media (max-width: 700px) {
+  .professional-product-card .product-extra-badges {
+    margin-top: 5px;
+    margin-bottom: 5px;
+    gap: 4px;
+  }
+
+  .professional-product-card
+  .product-extra-badges
+  .extra-badge {
+    gap: 3px;
+    font-size: 8px;
+  }
+
+  .professional-product-card
+  .product-extra-badges
+  .extra-badge i {
+    font-size: 9px;
+  }
+
+  .professional-product-card
+  .product-extra-badges
+  .extra-divider {
+    font-size: 8px;
+  }
+
+  .professional-product-card .product-color-preview {
+    margin-top: 2px;
+    margin-bottom: 7px;
+  }
+
+  .professional-product-card
+  .product-extra-badges
+  + .product-size-list {
+    margin-top: 0;
+  }
+}
