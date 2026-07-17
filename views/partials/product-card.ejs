@@ -354,7 +354,10 @@
         data-sizes='<%- JSON.stringify(variant.sizes || []) %>'
         aria-label="Select <%= variant.color %>"
         title="<%= variant.color %>"
-        style="--swatch-color: <%= variant.colorHex || '#cccccc' %>;"
+        style="
+--swatch-color:
+<%= variant.color.toLowerCase() %>;
+"
       ></button>
 
     <% }) %>
