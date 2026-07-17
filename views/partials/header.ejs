@@ -52,31 +52,82 @@
 <header class="site-header" id="siteHeader">
   <div class="container nav">
 
-    <a class="brand" href="/">
-      <img
-        class="brand-logo"
-        src="/ttt-logo.jpeg"
-        alt="TTT Outfit logo"
-      >
+   <a class="brand" href="/">
+  <img
+    class="brand-logo"
+    src="/ttt-logo.jpeg"
+    alt="TTT Outfit logo"
+  >
 
-      <span>
-        TTT <strong>OUTFIT</strong>
-      </span>
-    </a>
+  <span>
+    TTT <strong>OUTFIT</strong>
+  </span>
+</a>
 
-    <button
-      class="mobile-menu-button"
-      id="mobileMenuButton"
-      type="button"
-      aria-label="Open navigation menu"
-      aria-expanded="false"
-      aria-controls="navLinks"
+
+<!-- Mobile navigation icons -->
+
+<div class="mobile-header-actions">
+
+  <!-- Search -->
+
+  <button
+    class="mobile-header-icon mobile-search-toggle"
+    id="mobileSearchToggle"
+    type="button"
+    aria-label="Search products"
+    aria-expanded="false"
+    aria-controls="mobileSearchPanel"
+  >
+    <i class="bi bi-search"></i>
+  </button>
+
+
+  <!-- Shop -->
+
+  <a
+    class="mobile-header-icon"
+    href="/shop"
+    aria-label="Shop"
+  >
+    <i class="bi bi-shop"></i>
+  </a>
+
+
+  <!-- Cart -->
+
+  <a
+    class="mobile-header-icon mobile-header-cart"
+    href="/cart"
+    aria-label="Cart"
+  >
+    <i class="bi bi-bag"></i>
+
+    <span
+      class="mobile-header-badge"
+      data-cart-count
     >
-      <span></span>
-      <span></span>
-      <span></span>
-    </button>
+      <%= cartCount %>
+    </span>
+  </a>
 
+
+  <!-- Menu -->
+
+  <button
+    class="mobile-menu-button"
+    id="mobileMenuButton"
+    type="button"
+    aria-label="Open navigation menu"
+    aria-expanded="false"
+    aria-controls="navLinks"
+  >
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+
+</div>
 <nav class="nav-links" id="navLinks">
 
 <div class="mobile-menu-brand">
@@ -300,6 +351,45 @@
 </nav>
 
   </div>
+
+
+  <!-- Mobile search panel -->
+
+  <div
+    class="mobile-search-panel"
+    id="mobileSearchPanel"
+  >
+
+    <form
+      class="mobile-search-form"
+      action="/shop"
+      method="get"
+    >
+
+      <i
+        class="bi bi-search"
+        aria-hidden="true"
+      ></i>
+
+      <input
+        type="search"
+        name="q"
+        placeholder="Search products..."
+        aria-label="Search products"
+        autocomplete="off"
+      >
+
+      <button
+        type="submit"
+        aria-label="Submit search"
+      >
+        Search
+      </button>
+
+    </form>
+
+  </div>
+
 </header>
 
 <main>
