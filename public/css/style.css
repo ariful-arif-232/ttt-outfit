@@ -8003,15 +8003,44 @@ height:52px;
   transform: translateY(-1px) scale(1.06) !important;
 }
 
-.professional-product-card .product-color-option.active {
-  transform: none !important;
+.product-color-option.active{
+    transform: none !important;
+    scale: 1 !important;
 
-  box-shadow:
-    0 0 0 1px #111111,
-    0 0 0 3px #ffffff,
-    0 0 0 4px var(--gold) !important;
+    border: 1px solid rgba(0,0,0,.15);
+    box-shadow: none;
+}
+.product-color-option{
+    position: relative;
+    overflow: visible !important;
 }
 
+.product-color-option::after{
+
+    content:"";
+
+    position:absolute;
+
+    left:50%;
+    bottom:-5px;
+
+    transform:translateX(-50%) scaleX(0);
+
+    width:12px;
+    height:2px;
+
+    background:#C7A646;
+
+    border-radius:999px;
+
+    transition:transform .25s ease;
+}
+
+.product-color-option.active::after{
+
+    transform:translateX(-50%) scaleX(1);
+
+}
 .professional-product-card .product-color-option span,
 .professional-product-card .product-color-option small {
   display: none !important;
@@ -9155,7 +9184,7 @@ body.offer-modal-open {
   /* Scroll করলে screenshot-এর মতো dark header */
 
 .site-header.scrolled{
-    background: rgba(15,15,15,.40) !important;
+    background: rgba(15,15,15,.44) !important;
 
     border-bottom: 1px solid rgba(255,255,255,.06);
 
@@ -9475,4 +9504,31 @@ body.offer-modal-open {
     gap: 4px;
   }
 
+}
+.product-color-option{
+    position: relative;
+}
+
+.product-color-option::after{
+    content: "";
+
+    position: absolute;
+
+    left: 50%;
+    bottom: -5px;
+
+    transform: translateX(-50%) scaleX(0);
+
+    width: 12px;
+    height: 2px;
+
+    background: #C7A646;
+
+    border-radius: 999px;
+
+    transition: transform .25s ease;
+}
+
+.product-color-option.active::after{
+    transform: translateX(-50%) scaleX(1);
 }
