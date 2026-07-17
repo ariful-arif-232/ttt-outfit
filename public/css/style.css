@@ -7966,7 +7966,7 @@ height:52px;
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 7px;
+  gap: 9px;
 }
 
 .professional-product-card .product-color-option {
@@ -8232,7 +8232,7 @@ border: 1px solid rgba(0,0,0,.12) !important;
 
 .professional-product-card .product-rating-row {
   margin-top: 0;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
 
   min-height: 18px;
 
@@ -8286,12 +8286,12 @@ border: 1px solid rgba(0,0,0,.12) !important;
 /* Price থেকে color-এর gap */
 .professional-product-card .product-price-row
 + .product-color-preview {
-  margin-top: 3px;
+  margin-top: 7px;
 }
 
 /* Color থেকে size-এর gap */
 .professional-product-card .product-color-preview {
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 }
 
 .professional-product-card .product-size-list {
@@ -8317,7 +8317,7 @@ border: 1px solid rgba(0,0,0,.12) !important;
   }
 
   .professional-product-card .product-rating-row {
-    margin-bottom: 3px;
+    margin-bottom: 6px;
     min-height: 15px;
   }
 
@@ -8353,11 +8353,11 @@ border: 1px solid rgba(0,0,0,.12) !important;
 
   .professional-product-card .product-price-row
   + .product-color-preview {
-    margin-top: 2px;
+    margin-top: 6px;
   }
 
   .professional-product-card .product-color-preview {
-    margin-bottom: 8px;
+    margin-bottom: 11px;
   }
 
   .professional-product-card .product-size-list {
