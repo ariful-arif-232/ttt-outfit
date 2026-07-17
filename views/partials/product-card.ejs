@@ -407,23 +407,44 @@ const firstVariant =
   </div>
 
 
-  <div class="product-footer-right">
+<div class="product-footer-right">
 
-    <button
-      class="product-offer-button"
-      type="button"
-      data-offer-url="/shop"
-      aria-label="View wholesale offer"
-    >
-      Get Offer
-    </button>
+  <button
+    class="product-offer-button"
+    type="button"
+    data-offer-url="/shop"
+    aria-label="Get 20% wholesale offer"
+  >
 
-    <a href="/product/<%= p.slug %>">
-      Details →
-    </a>
+    <i
+      class="bi bi-tags-fill offer-tag-icon"
+      aria-hidden="true"
+    ></i>
 
-  </div>
+    <span class="offer-text">
 
+      <span class="offer-word">
+        GET
+      </span>
+
+      <span class="offer-percent">
+        20%
+      </span>
+
+      <span class="offer-word">
+        OFF
+      </span>
+
+    </span>
+
+    <i
+      class="bi bi-arrow-up-right offer-arrow-icon"
+      aria-hidden="true"
+    ></i>
+
+  </button>
+
+</div>
 </div>
 
   </div>
