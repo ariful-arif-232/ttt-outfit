@@ -1,6 +1,10 @@
 <%
-  const firstVariant =
-    p.variants?.[0] || null;
+const firstVariant =
+  p.variants?.find(
+    variant => Number(variant.stock || 0) > 0
+  ) ||
+  p.variants?.[0] ||
+  null;
 
   const mainImage =
     firstVariant?.images?.[0]?.url ||
@@ -11,11 +15,6 @@
     firstVariant?.images?.[1]?.url ||
     p.images?.[1]?.url ||
     mainImage;
-
-  const hasSecondImage = Boolean(
-    firstVariant?.images?.[1]?.url ||
-    p.images?.[1]?.url
-  );
 
   const hasDiscount =
     Number(p.compareAtPrice || 0) >
@@ -85,16 +84,12 @@
         loading="lazy"
       >
 
-      <% if (hasSecondImage) { %>
-
-        <img
-          class="product-secondary-image"
-          src="<%= secondImage %>"
-          alt="<%= p.name %> alternate view"
-          loading="lazy"
-        >
-
-      <% } %>
+<img
+  class="product-secondary-image"
+  src="<%= secondImage %>"
+  alt="<%= p.name %> alternate view"
+  loading="lazy"
+>
 
     </a>
 
@@ -168,11 +163,11 @@
 
     <% if (productStock > 0) { %>
 
-      <form
-         name="size"
-        method="post"
-        action="/cart/add"
-      >
+<form
+  class="quick-cart-form"
+  method="post"
+  action="/cart/add"
+>
 
         <input
           type="hidden"
@@ -336,28 +331,31 @@
     </div>
 
 
-    <!-- Color preview -->
-
-    <% if (productColors.length) { %>
+<!-- Color preview -->
 
 <% if (p.variants?.length) { %>
 
-  <div class="product-color-preview" data-color-options>
+  <div
+    class="product-color-preview"
+    data-color-options
+  >
 
-    <% p.variants.forEach((variant, index) => { %>
+    <% p.variants.forEach((variant) => { %>
 
       <button
         type="button"
-        class="product-color-option <%= index === 0 ? 'active' : '' %>"
+        class="product-color-option <%= variant === firstVariant ? 'active' : '' %>"
         data-color="<%= variant.color %>"
         data-image="<%= variant.images?.[0]?.url || mainImage %>"
+        data-second-image="<%= variant.images?.[1]?.url || variant.images?.[0]?.url || mainImage %>"
         data-sizes='<%- JSON.stringify(variant.sizes || []) %>'
+        data-stock="<%= Number(variant.stock || 0) %>"
         aria-label="Select <%= variant.color %>"
         title="<%= variant.color %>"
         style="
---swatch-color:
-<%= variant.color.toLowerCase() %>;
-"
+          --swatch-color:
+          <%= variant.colorHex || '#cccccc' %>;
+        "
       ></button>
 
     <% }) %>
@@ -365,8 +363,6 @@
   </div>
 
 <% } %>
-
-    <% } %>
 
 
     <!-- Available sizes -->
