@@ -163,17 +163,54 @@ function emailHeader({
         color:#ffffff;
       "
     >
-      <div
+<table
+  role="presentation"
+  align="center"
+  cellpadding="0"
+  cellspacing="0"
+  style="
+    margin:0 auto 16px;
+    border-collapse:collapse;
+  "
+>
+  <tr>
+    <td
+      style="
+        padding-right:10px;
+        vertical-align:middle;
+      "
+    >
+      <img
+        src="${websiteUrl}/ttt-logo.jpeg"
+        alt="TTT Outfit"
+        width="46"
+        height="46"
         style="
-          margin-bottom:13px;
-          color:#c7a646;
-          font-size:13px;
-          font-weight:800;
-          letter-spacing:2px;
+          width:46px;
+          height:46px;
+          display:block;
+          object-fit:cover;
+          background:#ffffff;
+          border:2px solid #c7a646;
+          border-radius:50%;
         "
       >
-        TTT OUTFIT
-      </div>
+    </td>
+
+    <td
+      style="
+        color:#c7a646;
+        font-size:15px;
+        font-weight:800;
+        letter-spacing:2px;
+        vertical-align:middle;
+        white-space:nowrap;
+      "
+    >
+      TTT OUTFIT
+    </td>
+  </tr>
+</table>
 
       <div
         style="
