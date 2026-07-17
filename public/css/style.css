@@ -8317,7 +8317,7 @@ border: 1px solid rgba(0,0,0,.12) !important;
   }
 
   .professional-product-card .product-rating-row {
-    margin-bottom: 6px;
+    margin-bottom: 7px;
     min-height: 15px;
   }
 
@@ -8353,11 +8353,11 @@ border: 1px solid rgba(0,0,0,.12) !important;
 
   .professional-product-card .product-price-row
   + .product-color-preview {
-    margin-top: 6px;
+    margin-top: 8px;
   }
 
   .professional-product-card .product-color-preview {
-    margin-bottom: 11px;
+    margin-bottom: 12px;
   }
 
   .professional-product-card .product-size-list {
