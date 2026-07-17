@@ -351,72 +351,80 @@ const firstVariant =
 </div>
 
     <% } %>
-  <!-- Wholesale and Retail -->
+ 
 
-    <div class="product-extra-badges">
+<!-- Card footer -->
 
-      <span class="extra-badge">
+<div class="product-card-footer product-card-footer-offer">
 
+  <div class="product-footer-left">
+
+    <div class="product-sale-types">
+
+      <span>
         <i
           class="bi bi-box-seam"
           aria-hidden="true"
         ></i>
 
-        <span>Wholesale</span>
-
+        Wholesale
       </span>
 
-
-      <span
-        class="extra-divider"
-        aria-hidden="true"
-      >
-        |
+      <span class="sale-type-separator">
+        •
       </span>
 
-
-      <span class="extra-badge">
-
+      <span>
         <i
           class="bi bi-bag"
           aria-hidden="true"
         ></i>
 
-        <span>Retail</span>
-
+        Retail
       </span>
 
     </div>
 
-    <!-- Card footer -->
-
-    <div class="product-card-footer">
-
-      <span
-        class="
-          product-stock-status
-          <%= productStock > 0
-            ? 'available'
-            : 'unavailable'
-          %>
-        "
-      >
-
-        <i></i>
-
+    <span
+      class="
+        product-stock-status
         <%= productStock > 0
-          ? 'Available'
-          : 'Out of stock'
+          ? 'available'
+          : 'unavailable'
         %>
+      "
+    >
 
-      </span>
+      <i></i>
+
+      <%= productStock > 0
+        ? 'Available'
+        : 'Out of stock'
+      %>
+
+    </span>
+
+  </div>
 
 
-      <a href="/product/<%= p.slug %>">
-        Details →
-      </a>
+  <div class="product-footer-right">
 
-    </div>
+    <button
+      class="product-offer-button"
+      type="button"
+      data-offer-url="/shop"
+      aria-label="View wholesale offer"
+    >
+      Get Offer
+    </button>
+
+    <a href="/product/<%= p.slug %>">
+      Details →
+    </a>
+
+  </div>
+
+</div>
 
   </div>
 
