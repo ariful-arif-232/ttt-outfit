@@ -85,5 +85,113 @@
     setTimeout(removeToast, 5200);
   });
 </script>
+<script>
+document.addEventListener('click', event => {
+  const colorButton =
+    event.target.closest('.product-color-option');
+
+  if (colorButton) {
+    const card =
+      colorButton.closest('.professional-product-card');
+
+    if (!card) return;
+
+    card
+      .querySelectorAll('.product-color-option')
+      .forEach(button => {
+        button.classList.remove('active');
+      });
+
+    colorButton.classList.add('active');
+
+    const colorInput =
+      card.querySelector('[data-selected-color]');
+
+    if (colorInput) {
+      colorInput.value =
+        colorButton.dataset.color || '';
+    }
+
+    const mainImage =
+      card.querySelector('.product-primary-image');
+
+    if (
+      mainImage &&
+      colorButton.dataset.image
+    ) {
+      mainImage.src =
+        colorButton.dataset.image;
+    }
+
+    let sizes = [];
+
+    try {
+      sizes = JSON.parse(
+        colorButton.dataset.sizes || '[]'
+      );
+    } catch {
+      sizes = [];
+    }
+
+    const sizeContainer =
+      card.querySelector('[data-size-options]');
+
+    const sizeInput =
+      card.querySelector('[data-selected-size]');
+
+    if (sizeContainer) {
+      sizeContainer.innerHTML = '';
+
+      sizes.forEach((size, index) => {
+        const button =
+          document.createElement('button');
+
+        button.type = 'button';
+        button.className =
+          'product-size-option' +
+          (index === 0 ? ' active' : '');
+
+        button.dataset.size = size;
+        button.textContent = size;
+
+        sizeContainer.appendChild(button);
+      });
+    }
+
+    if (sizeInput) {
+      sizeInput.value =
+        sizes[0] || 'One Size';
+    }
+
+    return;
+  }
+
+  const sizeButton =
+    event.target.closest('.product-size-option');
+
+  if (sizeButton) {
+    const card =
+      sizeButton.closest('.professional-product-card');
+
+    if (!card) return;
+
+    card
+      .querySelectorAll('.product-size-option')
+      .forEach(button => {
+        button.classList.remove('active');
+      });
+
+    sizeButton.classList.add('active');
+
+    const sizeInput =
+      card.querySelector('[data-selected-size]');
+
+    if (sizeInput) {
+      sizeInput.value =
+        sizeButton.dataset.size || '';
+    }
+  }
+});
+</script>
 </body>
 </html>
