@@ -9155,17 +9155,15 @@ body.offer-modal-open {
   /* Scroll করলে screenshot-এর মতো dark header */
 
 .site-header.scrolled{
-    background: rgba(8,8,8,0.995) !important;
+    background: rgba(32,32,32,.78) !important;
 
-    border-bottom: 1px solid rgba(199,166,70,.55) !important;
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
 
-    box-shadow:
-        0 10px 35px rgba(0,0,0,.55) !important;
+    border-bottom: 1px solid rgba(255,255,255,.10);
 
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    box-shadow: 0 8px 24px rgba(0,0,0,.20);
 }
-
   /* Logo */
 
   .site-header .brand {
