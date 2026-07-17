@@ -9122,3 +9122,357 @@ body.offer-modal-open {
     font-size: 8px !important;
   }
 }
+/* =========================================
+   PREMIUM MOBILE HEADER NAVIGATION
+========================================= */
+
+.mobile-header-actions,
+.mobile-search-panel {
+  display: none;
+}
+
+
+@media (max-width: 950px) {
+
+  /* Header base */
+
+  .site-header {
+    background: rgba(255, 255, 255, 0.98) !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.07) !important;
+
+    transition:
+      background 0.3s ease,
+      box-shadow 0.3s ease,
+      border-color 0.3s ease !important;
+  }
+
+  .site-header .nav {
+    min-height: 66px !important;
+    gap: 10px !important;
+  }
+
+
+  /* Scroll করলে screenshot-এর মতো dark header */
+
+  .site-header.scrolled {
+    background: rgba(20, 20, 20, 0.96) !important;
+    border-bottom-color: rgba(199, 166, 70, 0.32) !important;
+
+    box-shadow:
+      0 8px 28px rgba(0, 0, 0, 0.22) !important;
+
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+  }
+
+
+  /* Logo */
+
+  .site-header .brand {
+    min-width: 0;
+    margin-right: auto;
+
+    flex-shrink: 1;
+  }
+
+  .site-header .brand-logo {
+    width: 43px !important;
+    height: 43px !important;
+
+    flex-shrink: 0;
+
+    background: #ffffff;
+  }
+
+  .site-header .brand span {
+    color: #111111;
+
+    transition: color 0.3s ease;
+  }
+
+  .site-header.scrolled .brand span {
+    color: #ffffff;
+  }
+
+  .site-header .brand strong,
+  .site-header.scrolled .brand strong {
+    color: var(--gold);
+  }
+
+
+  /* Mobile icon group */
+
+  .mobile-header-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+
+    gap: 5px;
+    flex-shrink: 0;
+  }
+
+  .mobile-header-icon {
+    position: relative;
+
+    width: 36px;
+    height: 42px;
+    padding: 0;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #1a1a1a;
+    background: transparent;
+
+    border: 0;
+    border-radius: 0;
+
+    font-size: 21px;
+    line-height: 1;
+
+    transition:
+      color 0.25s ease,
+      transform 0.25s ease;
+  }
+
+  .mobile-header-icon:hover,
+  .mobile-header-icon:active {
+    color: var(--gold);
+    transform: translateY(-1px);
+  }
+
+  .site-header.scrolled .mobile-header-icon {
+    color: var(--gold);
+  }
+
+
+  /* Cart badge */
+
+  .mobile-header-cart {
+    overflow: visible;
+  }
+
+  .mobile-header-badge {
+    position: absolute;
+    top: 2px;
+    right: 0;
+
+    min-width: 17px;
+    height: 17px;
+    padding: 0 4px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #111111;
+    background: var(--gold);
+
+    border: 1.5px solid #ffffff;
+    border-radius: 999px;
+
+    font-size: 8px;
+    font-weight: 900;
+    line-height: 1;
+  }
+
+  .site-header.scrolled .mobile-header-badge {
+    border-color: #171717;
+  }
+
+
+  /* Hamburger: আলাদা box থাকবে না */
+
+  .mobile-menu-button {
+    width: 39px !important;
+    height: 42px !important;
+    padding: 0 !important;
+
+    display: flex !important;
+
+    gap: 5px !important;
+
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+  }
+
+  .mobile-menu-button span {
+    width: 24px !important;
+    height: 2px !important;
+
+    background: #1a1a1a !important;
+
+    transition:
+      transform 0.3s ease,
+      opacity 0.3s ease,
+      background 0.3s ease !important;
+  }
+
+  .site-header.scrolled .mobile-menu-button span {
+    background: var(--gold) !important;
+  }
+
+
+  /* Search dropdown */
+
+  .mobile-search-panel {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 1250;
+
+    padding: 0 4.5%;
+
+    display: block;
+
+    background: transparent;
+
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+
+    transform: translateY(-8px);
+
+    transition:
+      opacity 0.25s ease,
+      visibility 0.25s ease,
+      transform 0.25s ease;
+  }
+
+  .mobile-search-panel.active {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+
+    transform: translateY(0);
+  }
+
+  .mobile-search-form {
+    width: 100%;
+    padding: 8px 8px 8px 14px;
+
+    display: flex;
+    align-items: center;
+    gap: 9px;
+
+    background: #ffffff;
+
+    border: 1px solid rgba(199, 166, 70, 0.55);
+    border-radius: 0 0 12px 12px;
+
+    box-shadow:
+      0 15px 35px rgba(0, 0, 0, 0.18);
+  }
+
+  .mobile-search-form > i {
+    flex-shrink: 0;
+
+    color: var(--gold);
+    font-size: 17px;
+  }
+
+  .mobile-search-form input {
+    min-width: 0;
+    height: 38px;
+    padding: 0;
+
+    flex: 1;
+
+    color: #111111;
+    background: transparent;
+
+    border: 0;
+    outline: 0;
+
+    font-size: 13px;
+  }
+
+  .mobile-search-form input::placeholder {
+    color: #8c8c8c;
+  }
+
+  .mobile-search-form button {
+    height: 36px;
+    padding: 0 14px;
+
+    flex-shrink: 0;
+
+    color: #111111;
+    background: var(--gold);
+
+    border: 0;
+    border-radius: 7px;
+
+    font-size: 10px;
+    font-weight: 850;
+    letter-spacing: 0.3px;
+  }
+
+
+  /* Mobile drawer-এর ভিতরের Cart hide */
+
+  .nav-links .cart-link {
+    display: none !important;
+  }
+}
+
+
+@media (max-width: 430px) {
+
+  .site-header .nav {
+    min-height: 62px !important;
+  }
+
+  .site-header .brand {
+    gap: 6px !important;
+  }
+
+  .site-header .brand-logo {
+    width: 39px !important;
+    height: 39px !important;
+  }
+
+  .site-header .brand span {
+    max-width: 100px;
+
+    font-size: 14px !important;
+    letter-spacing: 0.7px !important;
+    white-space: nowrap;
+  }
+
+  .mobile-header-actions {
+    gap: 1px;
+  }
+
+  .mobile-header-icon {
+    width: 33px;
+    height: 39px;
+
+    font-size: 19px;
+  }
+
+  .mobile-menu-button {
+    width: 35px !important;
+    height: 39px !important;
+  }
+
+  .mobile-menu-button span {
+    width: 22px !important;
+  }
+}
+
+
+@media (max-width: 370px) {
+
+  .site-header .brand span {
+    display: none;
+  }
+
+  .mobile-header-actions {
+    gap: 4px;
+  }
+
+}
