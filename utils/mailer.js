@@ -281,22 +281,27 @@ function infoCard({
           font-size:17px;
         "
       >
-        <span
-          style="
-            display:inline-flex;
-            width:27px;
-            height:27px;
-            margin-right:8px;
-            align-items:center;
-            justify-content:center;
-            color:#151515;
-            background:#c7a646;
-            border-radius:7px;
-            font-size:14px;
-          "
-        >
-          ${icon}
-        </span>
+<span
+  style="
+    display:inline-flex;
+    width:30px;
+    height:30px;
+    margin-right:9px;
+    align-items:center;
+    justify-content:center;
+    color:#ffffff;
+    background:#9b7900;
+    border:1px solid #c7a646;
+    border-radius:50%;
+    font-size:14px;
+    font-weight:800;
+    line-height:30px;
+    text-align:center;
+    vertical-align:middle;
+  "
+>
+  ${icon}
+</span>
 
         ${escapeHtml(title)}
       </h2>
@@ -501,22 +506,27 @@ function orderItemsTable(items = []) {
           font-size:17px;
         "
       >
-        <span
-          style="
-            display:inline-flex;
-            width:27px;
-            height:27px;
-            margin-right:8px;
-            align-items:center;
-            justify-content:center;
-            color:#151515;
-            background:#c7a646;
-            border-radius:7px;
-            font-size:14px;
-          "
-        >
-          ◫
-        </span>
+<span
+  style="
+    display:inline-flex;
+    width:30px;
+    height:30px;
+    margin-right:9px;
+    align-items:center;
+    justify-content:center;
+    color:#ffffff;
+    background:#9b7900;
+    border:1px solid #c7a646;
+    border-radius:50%;
+    font-size:14px;
+    font-weight:800;
+    line-height:30px;
+    text-align:center;
+    vertical-align:middle;
+  "
+>
+  ◫
+</span>
 
         Ordered Products
       </h2>
