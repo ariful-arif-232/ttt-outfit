@@ -110,7 +110,112 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  /* =========================
+     MOBILE HEADER SEARCH
+  ========================= */
 
+  const mobileSearchToggle =
+    document.getElementById('mobileSearchToggle');
+
+  const mobileSearchPanel =
+    document.getElementById('mobileSearchPanel');
+
+  const mobileSearchInput =
+    mobileSearchPanel?.querySelector(
+      'input[type="search"]'
+    );
+
+
+  function closeMobileSearch() {
+    if (!mobileSearchToggle || !mobileSearchPanel) {
+      return;
+    }
+
+    mobileSearchPanel.classList.remove('active');
+
+    mobileSearchToggle.setAttribute(
+      'aria-expanded',
+      'false'
+    );
+  }
+
+
+  function openMobileSearch() {
+    if (!mobileSearchToggle || !mobileSearchPanel) {
+      return;
+    }
+
+    closeMobileMenu();
+
+    mobileSearchPanel.classList.add('active');
+
+    mobileSearchToggle.setAttribute(
+      'aria-expanded',
+      'true'
+    );
+
+    window.setTimeout(() => {
+      mobileSearchInput?.focus();
+    }, 150);
+  }
+
+
+  if (mobileSearchToggle && mobileSearchPanel) {
+
+    mobileSearchToggle.addEventListener(
+      'click',
+      event => {
+        event.preventDefault();
+        event.stopPropagation();
+
+        const isOpen =
+          mobileSearchPanel.classList.contains(
+            'active'
+          );
+
+        if (isOpen) {
+          closeMobileSearch();
+        } else {
+          openMobileSearch();
+        }
+      }
+    );
+
+
+    mobileSearchPanel.addEventListener(
+      'click',
+      event => {
+        event.stopPropagation();
+      }
+    );
+
+
+    document.addEventListener(
+      'click',
+      closeMobileSearch
+    );
+
+
+    document.addEventListener(
+      'keydown',
+      event => {
+        if (event.key === 'Escape') {
+          closeMobileSearch();
+        }
+      }
+    );
+
+
+    window.addEventListener(
+      'resize',
+      () => {
+        if (window.innerWidth > 950) {
+          closeMobileSearch();
+        }
+      }
+    );
+
+  }
   /* =========================
      HERO SLIDER
   ========================= */
