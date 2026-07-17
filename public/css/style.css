@@ -8186,3 +8186,112 @@ height:52px;
     margin-top: 0;
   }
 }
+/* =========================================
+   PRODUCT CARD COMPACT TITLE / RATING / PRICE
+========================================= */
+
+.professional-product-card .professional-product-info h3 {
+  margin-top: 4px;
+  margin-bottom: 5px;
+
+  font-size: 15px;
+  line-height: 1.2;
+}
+
+.professional-product-card .product-rating-row {
+  margin-top: 0;
+  margin-bottom: 4px;
+
+  min-height: 18px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.professional-product-card .product-rating {
+  gap: 4px;
+
+  font-size: 10px;
+  line-height: 1;
+}
+
+.professional-product-card .product-rating span {
+  font-size: 11px;
+}
+
+.professional-product-card .product-rating strong {
+  font-size: 10px;
+}
+
+.professional-product-card .product-sold-count {
+  font-size: 9px;
+  line-height: 1;
+}
+
+.professional-product-card .product-price-row {
+  margin-top: 0;
+  margin-bottom: 5px;
+
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+}
+
+.professional-product-card .product-current-price {
+  font-size: 19px;
+  line-height: 1;
+  font-weight: 850;
+  letter-spacing: -0.3px;
+}
+
+.professional-product-card .product-compare-price {
+  font-size: 10px;
+  line-height: 1;
+}
+
+/* Mobile compact version */
+@media (max-width: 700px) {
+  .professional-product-card .professional-product-info h3 {
+    margin-top: 3px;
+    margin-bottom: 4px;
+
+    font-size: 13px;
+  }
+
+  .professional-product-card .product-rating-row {
+    margin-bottom: 3px;
+    min-height: 15px;
+  }
+
+  .professional-product-card .product-rating {
+    gap: 3px;
+    font-size: 8px;
+  }
+
+  .professional-product-card .product-rating span {
+    font-size: 9px;
+  }
+
+  .professional-product-card .product-rating strong {
+    font-size: 8px;
+  }
+
+  .professional-product-card .product-sold-count {
+    font-size: 8px;
+  }
+
+  .professional-product-card .product-price-row {
+    margin-bottom: 4px;
+    gap: 5px;
+  }
+
+  .professional-product-card .product-current-price {
+    font-size: 17px;
+  }
+
+  .professional-product-card .product-compare-price {
+    font-size: 9px;
+  }
+}
