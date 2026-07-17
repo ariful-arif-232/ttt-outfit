@@ -2401,9 +2401,6 @@ app.use((err, req, res, next) => {
   console.error(err);
   res.status(500).render('message', { title: 'Something went wrong', message: process.env.NODE_ENV === 'production' ? 'A server error occurred. Please try again.' : err.message });
 });
-
-const port = process.env.PORT || 3000;
-
 const port = process.env.PORT || 3000;
 if (require.main === module) app.listen(port, () => console.log(`TTT Outfit running at http://localhost:${port}`));
 module.exports = app;
