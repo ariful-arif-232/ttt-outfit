@@ -226,5 +226,91 @@ if (addButton) {
   }
 });
 </script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const offerModal =
+    document.getElementById('wholesaleOfferModal');
+
+  const shopButton =
+    document.getElementById('offerShopButton');
+
+  if (!offerModal) return;
+
+  let destination = '/shop';
+
+  const openOffer = button => {
+    destination =
+      button?.dataset.offerUrl || '/shop';
+
+    offerModal.classList.add('show');
+
+    offerModal.setAttribute(
+      'aria-hidden',
+      'false'
+    );
+
+    document.body.classList.add(
+      'offer-modal-open'
+    );
+  };
+
+  const closeOffer = shouldRedirect => {
+    offerModal.classList.remove('show');
+
+    offerModal.setAttribute(
+      'aria-hidden',
+      'true'
+    );
+
+    document.body.classList.remove(
+      'offer-modal-open'
+    );
+
+    if (shouldRedirect) {
+      setTimeout(() => {
+        window.location.href = destination;
+      }, 250);
+    }
+  };
+
+  document.addEventListener('click', event => {
+    const offerButton =
+      event.target.closest(
+        '.product-offer-button'
+      );
+
+    if (offerButton) {
+      openOffer(offerButton);
+      return;
+    }
+
+    const closeButton =
+      event.target.closest(
+        '[data-close-offer]'
+      );
+
+    if (closeButton) {
+      closeOffer(false);
+    }
+  });
+
+  shopButton?.addEventListener(
+    'click',
+    () => closeOffer(true)
+  );
+
+  document.addEventListener(
+    'keydown',
+    event => {
+      if (
+        event.key === 'Escape' &&
+        offerModal.classList.contains('show')
+      ) {
+        closeOffer(false);
+      }
+    }
+  );
+});
+</script>
 </body>
 </html>
