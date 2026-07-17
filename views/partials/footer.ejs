@@ -226,6 +226,86 @@ if (addButton) {
   }
 });
 </script>
+
+<div
+  class="wholesale-offer-modal"
+  id="wholesaleOfferModal"
+  aria-hidden="true"
+>
+  <div
+    class="wholesale-offer-backdrop"
+    data-close-offer
+  ></div>
+
+  <div
+    class="wholesale-offer-card"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="wholesaleOfferTitle"
+  >
+    <button
+      class="wholesale-offer-close"
+      type="button"
+      aria-label="Close offer"
+      data-close-offer
+    >
+      <i class="bi bi-x-lg"></i>
+    </button>
+
+    <div class="offer-card-decoration offer-decoration-one"></div>
+    <div class="offer-card-decoration offer-decoration-two"></div>
+
+    <div class="offer-card-icon">
+      <i class="bi bi-percent"></i>
+    </div>
+
+    <span class="offer-card-kicker">
+      TTT OUTFIT WHOLESALE DEAL
+    </span>
+
+    <h2 id="wholesaleOfferTitle">
+      Buy More,
+      <span>Save More</span>
+    </h2>
+
+    <p class="offer-card-message">
+      Minimum buy
+      <strong>10 products</strong>
+      and get
+      <strong>20% wholesale offer!</strong>
+    </p>
+
+    <div class="offer-card-benefits">
+      <span>
+        <i class="bi bi-check-circle-fill"></i>
+        Minimum 10 items
+      </span>
+
+      <span>
+        <i class="bi bi-check-circle-fill"></i>
+        Save up to 20%
+      </span>
+
+      <span>
+        <i class="bi bi-check-circle-fill"></i>
+        Mix available products
+      </span>
+    </div>
+
+    <button
+      class="offer-shop-button"
+      id="offerShopButton"
+      type="button"
+    >
+      Close &amp; Shop Now
+      <i class="bi bi-arrow-right"></i>
+    </button>
+
+    <small>
+      Offer conditions may apply.
+    </small>
+  </div>
+</div>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
   const offerModal =
