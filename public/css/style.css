@@ -8694,3 +8694,109 @@ body.offer-modal-open {
     font-size: 11px;
   }
 }
+/* =========================================
+   PRODUCT CARD OFFER FOOTER
+========================================= */
+
+.professional-product-card .product-card-footer-offer {
+  min-height: 48px;
+  padding-top: 8px;
+
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.professional-product-card .product-footer-left,
+.professional-product-card .product-footer-right {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+}
+
+.professional-product-card .product-footer-left {
+  align-items: flex-start;
+  gap: 5px;
+}
+
+.professional-product-card .product-footer-right {
+  align-items: flex-end;
+  gap: 5px;
+}
+
+.professional-product-card .product-sale-types {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+
+  color: #777168;
+
+  font-size: 8.5px;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.professional-product-card .product-sale-types span {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.professional-product-card .product-sale-types i {
+  color: #8b762f;
+  font-size: 9px;
+}
+
+.professional-product-card .sale-type-separator {
+  color: #bdb7ac;
+  font-size: 7px;
+}
+
+.professional-product-card .product-offer-button {
+  padding: 0;
+
+  color: #9a771d;
+  background: transparent;
+  border: 0;
+
+  font-size: 9px;
+  font-weight: 850;
+  line-height: 1;
+
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.professional-product-card .product-offer-button:hover {
+  color: #111111;
+}
+
+.professional-product-card .product-footer-right > a {
+  font-size: 9px;
+  line-height: 1;
+}
+
+@media (max-width: 700px) {
+  .professional-product-card .product-card-footer-offer {
+    min-height: 43px;
+    padding-top: 7px;
+    gap: 7px;
+  }
+
+  .professional-product-card .product-sale-types {
+    gap: 3px;
+    font-size: 7px;
+  }
+
+  .professional-product-card .product-sale-types i {
+    font-size: 7px;
+  }
+
+  .professional-product-card .product-offer-button,
+  .professional-product-card .product-footer-right > a {
+    font-size: 8px;
+  }
+}
