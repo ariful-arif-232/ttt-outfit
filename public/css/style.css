@@ -9154,17 +9154,17 @@ body.offer-modal-open {
 
   /* Scroll করলে screenshot-এর মতো dark header */
 
-  .site-header.scrolled {
-    background: rgba(20, 20, 20, 0.96) !important;
-    border-bottom-color: rgba(199, 166, 70, 0.32) !important;
+.site-header.scrolled{
+    background: rgba(8,8,8,0.995) !important;
+
+    border-bottom: 1px solid rgba(199,166,70,.55) !important;
 
     box-shadow:
-      0 8px 28px rgba(0, 0, 0, 0.22) !important;
+        0 10px 35px rgba(0,0,0,.55) !important;
 
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-  }
-
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+}
 
   /* Logo */
 
