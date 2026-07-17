@@ -2403,5 +2403,7 @@ app.use((err, req, res, next) => {
 });
 
 const port = process.env.PORT || 3000;
-if (require.main === module) app.listen(port, () => console.log(`TTT Outfit running at http://localhost:${port}`));
-module.exports = app;
+
+app.listen(port, '0.0.0.0', () => {
+  console.log(`TTT Outfit running on port ${port}`);
+});
