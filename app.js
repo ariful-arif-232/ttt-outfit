@@ -1424,81 +1424,75 @@ async function getValidCoupon(
 }
 
 
-/* =========================================
-   APPLY COUPON — GUEST + LOGGED-IN
-========================================= */
-
-app.post(
-  '/coupon/apply',
-  async (req, res) => {
-    try {
-      const cart =
-        req.session.cart || [];
-
-      if (!cart.length) {
-        throw new Error('Your cart is empty.');
-      }
-
-      const subtotal =
-        cart.reduce(
-          (sum, item) =>
-            sum +
-            Number(item.price || 0) *
-            Number(item.quantity || 0),
-          0
-        );
-
-      const wholesale =
-        getWholesaleSummary(cart);
-
-      const { coupon } =
-        await getValidCoupon(
-          req.body.code,
-          wholesale.subtotalAfterWholesale,
-          {
-            userId: req.session.user?.id || null,
-            wholesaleEligible:
-              wholesale.wholesaleEligible
-          }
-        );
-
-      req.session.coupon = {
-        code: coupon.code
-      };
-
-      req.session.flash = {
-        type: 'success',
-        message:
-          `Coupon ${coupon.code} applied successfully.`
-      };
-
-      res.redirect('/checkout');
-    } catch (error) {
-      delete req.session.coupon;
-
-      req.session.flash = {
-        type: 'error',
-        message: error.message
-      };
-
-      res.redirect('/checkout');
-    }
-  }
-);
-
+APPLY COUPON — GUEST + LOGGED-IN
 
 /* =========================================
-   REMOVE COUPON — GUEST + LOGGED-IN
+   REMOVE COUPON — AJAX + FALLBACK
 ========================================= */
 
 app.post(
   '/coupon/remove',
   (req, res) => {
+    const wantsJson =
+      req.xhr ||
+      req.get('accept')?.includes(
+        'application/json'
+      );
+
+    const cart =
+      req.session.cart || [];
+
+    const subtotal =
+      cart.reduce(
+        (sum, item) =>
+          sum +
+          Number(item.price || 0) *
+          Number(item.quantity || 0),
+        0
+      );
+
+    const deliveryFee =
+      subtotal >= 3000
+        ? 0
+        : 80;
+
+    const wholesale =
+      getWholesaleSummary(cart);
+
+    const discount =
+      wholesale.wholesaleDiscount;
+
+    const total = Math.max(
+      0,
+      subtotal +
+      deliveryFee -
+      discount
+    );
+
     delete req.session.coupon;
+
+    const message =
+      'Coupon removed successfully.';
+
+    if (wantsJson) {
+      return res.json({
+        success: true,
+        message,
+        subtotal,
+        deliveryFee,
+
+        wholesaleDiscount:
+          wholesale.wholesaleDiscount,
+
+        couponDiscount: 0,
+        discount,
+        total
+      });
+    }
 
     req.session.flash = {
       type: 'success',
-      message: 'Coupon removed.'
+      message
     };
 
     res.redirect('/checkout');
