@@ -1,0 +1,724 @@
+<%- include('../partials/header') %>
+
+<div class="container admin-layout">
+
+  <%- include('../partials/admin-nav') %>
+
+  <section class="panel">
+
+    <div class="admin-form-heading">
+      <div>
+        <span class="section-kicker">
+          PRODUCT MANAGEMENT
+        </span>
+
+        <h1>
+          <%= product ? 'Edit product' : 'Add product' %>
+        </h1>
+      </div>
+    </div>
+
+    <form
+      method="post"
+      enctype="multipart/form-data"
+      action="<%= product
+        ? '/admin/products/' + product._id
+        : '/admin/products'
+      %>"
+      id="productForm"
+    >
+
+      <div class="field">
+        <label>Name *</label>
+
+        <input
+          name="name"
+          value="<%= product?.name || '' %>"
+          required
+        >
+      </div>
+
+      <div class="two-col">
+
+        <div class="field">
+          <label>Slug</label>
+
+          <input
+            name="slug"
+            value="<%= product?.slug || '' %>"
+            placeholder="Generated from name if empty"
+          >
+        </div>
+
+        <div class="field">
+          <label>SKU *</label>
+
+          <input
+            name="sku"
+            value="<%= product?.sku || '' %>"
+            required
+          >
+        </div>
+
+      </div>
+
+      <div class="field">
+        <label>Description *</label>
+
+        <textarea
+          name="description"
+          rows="6"
+          required
+        ><%= product?.description || '' %></textarea>
+      </div>
+
+      <div class="two-col">
+
+        <div class="field">
+          <label>Category *</label>
+
+          <input
+            name="category"
+            value="<%= product?.category || '' %>"
+            required
+          >
+        </div>
+
+        <div class="field">
+          <label>Gender</label>
+
+          <select name="gender">
+            <% ['Unisex', 'Men', 'Women', 'Kids']
+              .forEach(gender => { %>
+
+              <option
+                value="<%= gender %>"
+                <%= product?.gender === gender
+                  ? 'selected'
+                  : ''
+                %>
+              >
+                <%= gender %>
+              </option>
+
+            <% }) %>
+          </select>
+        </div>
+
+      </div>
+
+      <div class="field">
+        <label>Material</label>
+
+        <input
+          name="material"
+          value="<%= product?.material || '' %>"
+        >
+      </div>
+
+      <div class="two-col">
+
+        <div class="field">
+          <label>Price *</label>
+
+          <input
+            type="number"
+            name="price"
+            min="0"
+            step="1"
+            value="<%= product?.price ?? '' %>"
+            required
+          >
+        </div>
+
+        <div class="field">
+          <label>Old price</label>
+
+          <input
+            type="number"
+            name="compareAtPrice"
+            min="0"
+            step="1"
+            value="<%= product?.compareAtPrice || 0 %>"
+          >
+        </div>
+
+      </div>
+
+      <!-- Added fields only: existing price fields above remain unchanged -->
+      <div class="two-col">
+
+        <div class="field">
+          <label>Cost price</label>
+
+          <input
+            type="number"
+            name="costPrice"
+            min="0"
+            step="1"
+            value="<%= product?.costPrice || 0 %>"
+            placeholder="Optional"
+          >
+        </div>
+
+        <div class="field">
+          <label>Wholesale price</label>
+
+          <input
+            type="number"
+            name="wholesalePrice"
+            min="0"
+            step="1"
+            value="<%= product?.wholesalePrice || 0 %>"
+            placeholder="Optional"
+          >
+        </div>
+
+      </div>
+
+      <div class="field">
+        <label>Minimum wholesale quantity</label>
+
+        <input
+          type="number"
+          name="wholesaleMinimumQuantity"
+          min="1"
+          step="1"
+          value="<%= product?.wholesaleMinimumQuantity || 10 %>"
+        >
+
+        <p class="small">
+          The automatic wholesale offer starts from this quantity.
+        </p>
+      </div>
+
+      <div class="variant-section">
+
+        <div class="variant-section-heading">
+          <div>
+            <h2>Color variants</h2>
+
+            <p class="small">
+              Add each product color separately.
+              First image is the main image and second
+              image is the hover image.
+            </p>
+          </div>
+
+          <button
+            class="btn"
+            type="button"
+            id="addVariantButton"
+          >
+            + Add color
+          </button>
+        </div>
+
+        <input
+          type="hidden"
+          name="variantCount"
+          id="variantCount"
+          value="<%= Math.max(
+            product?.variants?.length || 0,
+            1
+          ) %>"
+        >
+
+        <div id="variantContainer">
+
+          <%
+            let formVariants =
+              product?.variants?.length
+                ? product.variants
+                : [
+                    {
+                      color:
+                        product?.colors?.[0] || '',
+                      colorHex: '#cccccc',
+                      stock: product?.stock || 0,
+                      sizes: product?.sizes || [],
+                      images: product?.images || []
+                    }
+                  ];
+          %>
+
+          <% formVariants.forEach((variant, index) => { %>
+
+            <article
+              class="variant-admin-card"
+              data-variant-index="<%= index %>"
+            >
+
+              <div class="variant-card-heading">
+                <strong>
+                  Color option <%= index + 1 %>
+                </strong>
+
+                <button
+                  type="button"
+                  class="remove-variant-button"
+                  aria-label="Remove color"
+                >
+                  Remove
+                </button>
+              </div>
+
+              <div class="two-col">
+
+                <div class="field">
+                  <label>Color name *</label>
+
+                  <input
+                    name="variantColor_<%= index %>"
+                    value="<%= variant.color || '' %>"
+                    placeholder="Example: Navy Blue"
+                    required
+                  >
+                </div>
+
+                <div class="field">
+                  <label>Color swatch</label>
+
+                  <div class="color-picker-field">
+                    <input
+                      type="color"
+                      name="variantHex_<%= index %>"
+                      value="<%= variant.colorHex || '#cccccc' %>"
+                    >
+
+                    <span>
+                      Select the closest product color
+                    </span>
+                  </div>
+                </div>
+
+              </div>
+
+              <div class="two-col">
+
+                <div class="field">
+                  <label>Stock *</label>
+
+                  <input
+                    type="number"
+                    name="variantStock_<%= index %>"
+                    min="0"
+                    value="<%= variant.stock || 0 %>"
+                    required
+                  >
+                </div>
+
+                <div class="field">
+                  <label>Sizes</label>
+
+                  <input
+                    name="variantSizes_<%= index %>"
+                    value="<%= variant.sizes?.join(', ') || '' %>"
+                    placeholder="M, L, XL"
+                  >
+                </div>
+
+              </div>
+
+              <!-- Easier separate image selection.
+                   The old combined input is kept below as a fallback. -->
+              <div class="two-col">
+
+                <div class="field">
+                  <label>Main image</label>
+
+                  <input
+                    type="file"
+                    name="variantMainImage_<%= index %>"
+                    accept="image/*"
+                  >
+
+                  <p class="small">
+                    This is the first image shown to customers.
+                  </p>
+                </div>
+
+                <div class="field">
+                  <label>Hover image</label>
+
+                  <input
+                    type="file"
+                    name="variantHoverImage_<%= index %>"
+                    accept="image/*"
+                  >
+
+                  <p class="small">
+                    This image appears when customers hover.
+                  </p>
+                </div>
+
+              </div>
+
+              <div class="field">
+                <label>
+                  Gallery images
+                  <span class="small">
+                    Select multiple extra images
+                  </span>
+                </label>
+
+                <input
+                  type="file"
+                  name="variantGalleryImages_<%= index %>"
+                  accept="image/*"
+                  multiple
+                >
+              </div>
+
+              <details class="field">
+                <summary>Legacy combined image uploader</summary>
+
+                <input
+                  type="file"
+                  name="variantImages_<%= index %>"
+                  accept="image/*"
+                  multiple
+                >
+
+                <p class="small">
+                  Existing uploader kept unchanged for backward compatibility:
+                  first = main, second = hover, remaining = gallery.
+                </p>
+              </details>
+
+              <% if (variant.images?.length) { %>
+
+                <div class="existing-image-grid">
+
+                  <% variant.images.forEach((image, imageIndex) => { %>
+
+                    <div class="existing-image-item">
+                      <img
+                        src="<%= image.url %>"
+                        alt="Product image"
+                      >
+
+                      <small>
+                        <%= imageIndex === 0
+                          ? 'Main'
+                          : imageIndex === 1
+                            ? 'Hover'
+                            : `Gallery ${imageIndex - 1}`
+                        %>
+                      </small>
+                    </div>
+
+                  <% }) %>
+
+                </div>
+
+                <label class="replace-images-check">
+                  <input
+                    type="checkbox"
+                    name="replaceVariantImages_<%= index %>"
+                  >
+
+                  Replace existing images when new
+                  images are uploaded
+                </label>
+
+              <% } %>
+
+              <div class="field">
+                <label>Image URL fallback</label>
+
+                <input
+                  name="variantImageUrl_<%= index %>"
+                  value=""
+                  placeholder="Optional Cloudinary or HTTPS image URL"
+                >
+              </div>
+
+            </article>
+
+          <% }) %>
+
+        </div>
+
+      </div>
+
+      <div class="product-options">
+
+        <label>
+          <input
+            type="checkbox"
+            name="featured"
+            <%= product?.featured ? 'checked' : '' %>
+          >
+          Featured product
+        </label>
+
+        <label>
+          <input
+            type="checkbox"
+            name="active"
+            <%= product === null || product?.active
+              ? 'checked'
+              : ''
+            %>
+          >
+          Active product
+        </label>
+
+        <label>
+          <input
+            type="checkbox"
+            name="isNewArrival"
+            <%= product?.isNewArrival ? 'checked' : '' %>
+          >
+          New arrival
+        </label>
+
+        <label>
+          <input
+            type="checkbox"
+            name="isBestSeller"
+            <%= product?.isBestSeller ? 'checked' : '' %>
+          >
+          Best seller
+        </label>
+
+        <label>
+          <input
+            type="checkbox"
+            name="isOnSale"
+            <%= product?.isOnSale ? 'checked' : '' %>
+          >
+          On sale
+        </label>
+
+      </div>
+
+      <button class="btn gold-btn" type="submit">
+        Save product
+      </button>
+
+    </form>
+
+  </section>
+
+</div>
+
+<template id="variantTemplate">
+
+  <article
+    class="variant-admin-card"
+    data-variant-index="__INDEX__"
+  >
+
+    <div class="variant-card-heading">
+      <strong>
+        Color option __NUMBER__
+      </strong>
+
+      <button
+        type="button"
+        class="remove-variant-button"
+      >
+        Remove
+      </button>
+    </div>
+
+    <div class="two-col">
+
+      <div class="field">
+        <label>Color name *</label>
+
+        <input
+          name="variantColor___INDEX__"
+          placeholder="Example: Black"
+          required
+        >
+      </div>
+
+      <div class="field">
+        <label>Color swatch</label>
+
+        <div class="color-picker-field">
+          <input
+            type="color"
+            name="variantHex___INDEX__"
+            value="#cccccc"
+          >
+
+          <span>Select product color</span>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="two-col">
+
+      <div class="field">
+        <label>Stock *</label>
+
+        <input
+          type="number"
+          name="variantStock___INDEX__"
+          min="0"
+          value="0"
+          required
+        >
+      </div>
+
+      <div class="field">
+        <label>Sizes</label>
+
+        <input
+          name="variantSizes___INDEX__"
+          placeholder="M, L, XL"
+        >
+      </div>
+
+    </div>
+
+    <div class="two-col">
+
+      <div class="field">
+        <label>Main image</label>
+
+        <input
+          type="file"
+          name="variantMainImage___INDEX__"
+          accept="image/*"
+        >
+      </div>
+
+      <div class="field">
+        <label>Hover image</label>
+
+        <input
+          type="file"
+          name="variantHoverImage___INDEX__"
+          accept="image/*"
+        >
+      </div>
+
+    </div>
+
+    <div class="field">
+      <label>Gallery images</label>
+
+      <input
+        type="file"
+        name="variantGalleryImages___INDEX__"
+        accept="image/*"
+        multiple
+      >
+    </div>
+
+    <details class="field">
+      <summary>Legacy combined image uploader</summary>
+
+      <input
+        type="file"
+        name="variantImages___INDEX__"
+        accept="image/*"
+        multiple
+      >
+    </details>
+
+    <div class="field">
+      <label>Image URL fallback</label>
+
+      <input
+        name="variantImageUrl___INDEX__"
+        placeholder="Optional image URL"
+      >
+    </div>
+
+  </article>
+
+</template>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const container =
+      document.getElementById('variantContainer');
+
+    const addButton =
+      document.getElementById('addVariantButton');
+
+    const countInput =
+      document.getElementById('variantCount');
+
+    const template =
+      document.getElementById('variantTemplate');
+
+    let nextIndex =
+      Number(countInput?.value || 1);
+
+    function refreshVariantCount() {
+      if (!countInput || !container) return;
+
+      countInput.value = nextIndex;
+    }
+
+    function bindRemoveButtons(scope = document) {
+      scope
+        .querySelectorAll('.remove-variant-button')
+        .forEach(button => {
+          if (button.dataset.bound === 'true') return;
+
+          button.dataset.bound = 'true';
+
+          button.addEventListener('click', () => {
+            const cards =
+              container.querySelectorAll(
+                '.variant-admin-card'
+              );
+
+            if (cards.length <= 1) {
+              alert(
+                'A product must have at least one color.'
+              );
+              return;
+            }
+
+            button
+              .closest('.variant-admin-card')
+              ?.remove();
+          });
+        });
+    }
+
+    addButton?.addEventListener('click', () => {
+      if (!template || !container) return;
+
+      const html =
+        template.innerHTML
+          .replaceAll('__INDEX__', nextIndex)
+          .replaceAll('__NUMBER__', nextIndex + 1);
+
+      const wrapper =
+        document.createElement('div');
+
+      wrapper.innerHTML = html.trim();
+
+      const newCard =
+        wrapper.firstElementChild;
+
+      container.appendChild(newCard);
+
+      bindRemoveButtons(newCard);
+
+      nextIndex += 1;
+      refreshVariantCount();
+
+      newCard.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center'
+      });
+    });
+
+    bindRemoveButtons();
+    refreshVariantCount();
+  });
+</script>
+
+<%- include('../partials/footer') %>
