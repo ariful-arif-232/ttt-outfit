@@ -1,0 +1,150 @@
+<%- include('../partials/admin-header') %>
+
+<div class="admin-page">
+    <div class="page-header">
+        <h2>Manage Coupons</h2>
+
+        <a href="/admin/coupons/new" class="btn btn-primary">
+            + Add Coupon
+        </a>
+    </div>
+
+    <% if (!coupons.length) { %>
+
+        <div class="empty-state">
+            <h4>No coupons found.</h4>
+            <p>Create your first coupon.</p>
+        </div>
+
+    <% } else { %>
+
+    <table class="admin-table">
+
+        <thead>
+
+        <tr>
+            <th>Code</th>
+            <th>Type</th>
+            <th>Value</th>
+            <th>Minimum</th>
+            <th>Status</th>
+            <th>Expiry</th>
+            <th>Actions</th>
+        </tr>
+
+        </thead>
+
+        <tbody>
+
+        <% coupons.forEach(coupon => { %>
+
+        <tr>
+
+            <td>
+                <strong><%= coupon.code %></strong>
+            </td>
+
+            <td>
+                <%= coupon.type %>
+            </td>
+
+            <td>
+                <% if(coupon.type==='percentage'){ %>
+
+                    <%= coupon.value %>%
+
+                <% } else { %>
+
+                    ৳<%= money(coupon.value) %>
+
+                <% } %>
+            </td>
+
+            <td>
+                ৳<%= money(coupon.minimumOrder) %>
+            </td>
+
+            <td>
+
+                <% if(coupon.active){ %>
+
+                    <span class="badge success">
+                        Active
+                    </span>
+
+                <% }else{ %>
+
+                    <span class="badge danger">
+                        Inactive
+                    </span>
+
+                <% } %>
+
+            </td>
+
+            <td>
+
+                <% if(coupon.expiresAt){ %>
+
+                    <%= new Date(coupon.expiresAt).toLocaleDateString() %>
+
+                <% } else { %>
+
+                    Never
+
+                <% } %>
+
+            </td>
+
+            <td>
+
+                <a
+                    class="btn btn-sm"
+                    href="/admin/coupons/<%= coupon._id %>/edit">
+                    Edit
+                </a>
+
+                <form
+                    action="/admin/coupons/<%= coupon._id %>/toggle"
+                    method="POST"
+                    style="display:inline">
+
+                    <button
+                        class="btn btn-warning btn-sm">
+
+                        <%= coupon.active ? 'Disable' : 'Enable' %>
+
+                    </button>
+
+                </form>
+
+                <form
+                    action="/admin/coupons/<%= coupon._id %>/delete"
+                    method="POST"
+                    style="display:inline"
+                    onsubmit="return confirm('Delete this coupon?')">
+
+                    <button
+                        class="btn btn-danger btn-sm">
+
+                        Delete
+
+                    </button>
+
+                </form>
+
+            </td>
+
+        </tr>
+
+        <% }) %>
+
+        </tbody>
+
+    </table>
+
+    <% } %>
+
+</div>
+
+<%- include('../partials/admin-footer') %>
