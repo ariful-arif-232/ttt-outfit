@@ -1,0 +1,120 @@
+<%
+const dashboardStats = stats || {};
+const orders = Array.isArray(recentOrders) ? recentOrders : [];
+const low = Array.isArray(lowStock) ? lowStock : [];
+%>
+<%- include('../partials/header') %>
+
+<div class="container admin-layout">
+<%- include('../partials/admin-nav') %>
+
+<section class="admin-dashboard">
+
+<div class="section-head">
+<div>
+<span class="section-kicker">ADMIN DASHBOARD</span>
+<h1>Dashboard</h1>
+<p class="small">Monitor sales, inventory and recent activity.</p>
+</div>
+</div>
+
+<div class="admin-dashboard-cards">
+
+<div class="stat">
+<span>Delivered Sales</span>
+<strong>৳<%= money(dashboardStats.sales||0) %></strong>
+</div>
+
+<div class="stat">
+<span>Products</span>
+<strong><%= dashboardStats.productCount||0 %></strong>
+</div>
+
+<div class="stat">
+<span>Customers</span>
+<strong><%= dashboardStats.customerCount||0 %></strong>
+</div>
+
+<div class="stat">
+<span>Pending Orders</span>
+<strong><%= dashboardStats.pendingCount||0 %></strong>
+</div>
+
+</div>
+
+<div class="admin-dashboard-grid">
+
+<div>
+
+<div class="section-head">
+<h2>Recent Orders</h2>
+</div>
+
+<table class="admin-table">
+<thead>
+<tr>
+<th>Order</th>
+<th>Customer</th>
+<th>Total</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<% if(orders.length){ orders.forEach(o=>{ %>
+<tr>
+<td><a href="/orders/<%= o._id %>"><%= o.orderNumber %></a></td>
+<td><%= o.customer?.name || o.customerSnapshot?.name || 'Guest' %></td>
+<td>৳<%= money(o.total) %></td>
+<td>
+<span class="admin-status-badge <%= (o.status||'').toLowerCase() %>">
+<%= o.status %>
+</span>
+</td>
+</tr>
+<% }) } else { %>
+<tr><td colspan="4">No recent orders.</td></tr>
+<% } %>
+</tbody>
+</table>
+
+</div>
+
+<div>
+
+<div class="section-head">
+<h2>Low Stock Products</h2>
+</div>
+
+<table class="admin-table">
+<thead>
+<tr>
+<th>Product</th>
+<th>SKU</th>
+<th>Stock</th>
+</tr>
+</thead>
+<tbody>
+<% if(low.length){ low.forEach(p=>{ %>
+<tr>
+<td><%= p.name %></td>
+<td><%= p.sku %></td>
+<td>
+<span class="admin-stock-badge low">
+<%= p.stock %>
+</span>
+</td>
+</tr>
+<% }) } else { %>
+<tr><td colspan="3">No low stock products.</td></tr>
+<% } %>
+</tbody>
+</table>
+
+</div>
+
+</div>
+
+</section>
+</div>
+
+<%- include('../partials/footer') %>
