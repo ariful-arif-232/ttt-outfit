@@ -1,0 +1,595 @@
+<%
+  const safeProducts =
+    Array.isArray(products)
+      ? products
+      : [];
+
+  const safeCategories =
+    Array.isArray(categories)
+      ? categories
+      : [];
+
+  const safeFilters =
+    filters || {};
+
+  products = safeProducts;
+  categories = safeCategories;
+  filters = safeFilters;
+%>
+
+<%- include('partials/header') %>
+
+<section class="shop-page">
+
+  <div class="container">
+
+    <!-- Breadcrumb -->
+    <nav class="shop-breadcrumb" aria-label="Breadcrumb">
+      <a href="/">Home</a>
+      <span>›</span>
+      <a href="/shop">Shop</a>
+
+      <% if (filters.category) { %>
+        <span>›</span>
+        <strong><%= filters.category %></strong>
+      <% } %>
+    </nav>
+
+
+    <!-- Shop Heading -->
+    <header class="shop-header">
+
+      <div class="shop-heading-content">
+        <span class="section-kicker">
+          TTT OUTFIT COLLECTION
+        </span>
+
+        <h1>
+          <%= filters.category || 'Shop All' %>
+        </h1>
+
+        <p>
+          Discover premium clothing designed for
+          comfort, confidence and modern everyday style.
+        </p>
+      </div>
+
+      <div class="shop-result-count">
+        <strong><%= products.length %></strong>
+
+        <span>
+          <%= products.length === 1
+            ? 'Product'
+            : 'Products'
+          %>
+        </span>
+      </div>
+
+    </header>
+
+
+    <!-- Retail and wholesale notice -->
+    <section
+      class="shop-wholesale-banner"
+      aria-label="Retail and wholesale shopping information"
+    >
+      <div class="shop-wholesale-banner-icon">
+        <i
+          class="bi bi-box-seam"
+          aria-hidden="true"
+        ></i>
+      </div>
+
+      <div class="shop-wholesale-banner-content">
+        <strong>Retail &amp; Wholesale Available</strong>
+
+        <p>
+          Buy any combination of 10 or more items to unlock
+          the wholesale offer automatically at checkout.
+        </p>
+      </div>
+
+      <a
+        class="shop-wholesale-banner-link"
+        href="#shopProducts"
+      >
+        Shop the collection
+        <span aria-hidden="true">→</span>
+      </a>
+    </section>
+
+
+    <!-- Mobile Filter and Sort -->
+    <div class="shop-mobile-controls">
+
+      <button
+        class="shop-filter-button"
+        id="shopFilterButton"
+        type="button"
+        aria-expanded="false"
+        aria-controls="shopSidebar"
+      >
+        <span>☰</span>
+        Filter
+      </button>
+
+      <form method="get" class="mobile-sort-form">
+
+        <% if (filters.q) { %>
+          <input
+            type="hidden"
+            name="q"
+            value="<%= filters.q %>"
+          >
+        <% } %>
+
+        <% if (filters.category) { %>
+          <input
+            type="hidden"
+            name="category"
+            value="<%= filters.category %>"
+          >
+        <% } %>
+
+        <select
+          name="sort"
+          aria-label="Sort products"
+          onchange="this.form.submit()"
+        >
+          <option
+            value="newest"
+            <%= filters.sort === 'newest'
+              ? 'selected'
+              : ''
+            %>
+          >
+            Newest
+          </option>
+
+          <option
+            value="price_low"
+            <%= filters.sort === 'price_low'
+              ? 'selected'
+              : ''
+            %>
+          >
+            Price: Low to High
+          </option>
+
+          <option
+            value="price_high"
+            <%= filters.sort === 'price_high'
+              ? 'selected'
+              : ''
+            %>
+          >
+            Price: High to Low
+          </option>
+
+          <option
+            value="popular"
+            <%= filters.sort === 'popular'
+              ? 'selected'
+              : ''
+            %>
+          >
+            Popular
+          </option>
+        </select>
+
+      </form>
+
+    </div>
+
+
+    <div class="shop-layout">
+
+      <!-- Filter Sidebar -->
+      <aside
+        class="shop-sidebar"
+        id="shopSidebar"
+      >
+
+        <div class="shop-sidebar-header">
+
+          <div>
+            <span>FILTER PRODUCTS</span>
+            <strong>Find your style</strong>
+          </div>
+
+          <button
+            class="shop-filter-close"
+            id="shopFilterClose"
+            type="button"
+            aria-label="Close filter"
+          >
+            ×
+          </button>
+
+        </div>
+
+
+        <!-- Search -->
+        <form method="get" class="shop-search-form">
+
+          <label for="shopSearch">
+            Search products
+          </label>
+
+          <div class="shop-search-box">
+
+            <input
+              id="shopSearch"
+              type="search"
+              name="q"
+              placeholder="Search by product name"
+              value="<%= filters.q || '' %>"
+            >
+
+            <% if (filters.category) { %>
+              <input
+                type="hidden"
+                name="category"
+                value="<%= filters.category %>"
+              >
+            <% } %>
+
+            <% if (filters.sort) { %>
+              <input
+                type="hidden"
+                name="sort"
+                value="<%= filters.sort %>"
+              >
+            <% } %>
+
+            <button
+              type="submit"
+              aria-label="Search"
+            >
+              ⌕
+            </button>
+
+          </div>
+
+        </form>
+
+
+        <!-- Categories -->
+        <div class="shop-filter-group">
+
+          <div class="shop-filter-heading">
+            <strong>Categories</strong>
+            <span>＋</span>
+          </div>
+
+          <div class="shop-category-list">
+
+            <a
+              href="/shop?sort=<%= filters.sort || 'newest' %>"
+              class="<%= !filters.category ? 'active' : '' %>"
+            >
+              <span>All Products</span>
+              <span>›</span>
+            </a>
+
+            <% categories.forEach(category => { %>
+
+              <a
+                href="/shop?category=<%= encodeURIComponent(category) %>&sort=<%= filters.sort || 'newest' %>"
+                class="<%= filters.category === category
+                  ? 'active'
+                  : ''
+                %>"
+              >
+                <span><%= category %></span>
+                <span>›</span>
+              </a>
+
+            <% }) %>
+
+          </div>
+
+        </div>
+
+
+        <!-- Size Preview -->
+        <div class="shop-filter-group">
+
+          <div class="shop-filter-heading">
+            <strong>Popular Sizes</strong>
+          </div>
+
+          <div class="shop-size-preview">
+            <span>S</span>
+            <span>M</span>
+            <span>L</span>
+            <span>XL</span>
+            <span>XXL</span>
+          </div>
+
+          <p class="shop-filter-note">
+            Choose the exact size from the product page.
+          </p>
+
+        </div>
+
+
+        <!-- Store Information -->
+        <div class="shop-info-card">
+
+          <span class="shop-info-icon">✦</span>
+
+          <div>
+            <strong>Premium Quality</strong>
+
+            <p>
+              Carefully selected fashion with delivery
+              support across Bangladesh.
+            </p>
+          </div>
+
+        </div>
+
+
+        <div class="shop-info-card shop-wholesale-info-card">
+
+          <span class="shop-info-icon">
+            <i
+              class="bi bi-tags-fill"
+              aria-hidden="true"
+            ></i>
+          </span>
+
+          <div>
+            <strong>Wholesale Offer</strong>
+
+            <p>
+              Add 10 or more items to your cart.
+              Eligible wholesale savings are calculated
+              automatically.
+            </p>
+          </div>
+
+        </div>
+
+
+        <div class="shop-sidebar-links">
+
+          <a href="/cart">
+            <span>Shopping Cart</span>
+            <strong>→</strong>
+          </a>
+
+          <a href="/orders">
+            <span>Track My Orders</span>
+            <strong>→</strong>
+          </a>
+
+        </div>
+
+      </aside>
+
+
+      <!-- Product Area -->
+      <main
+        class="shop-products-area"
+        id="shopProducts"
+      >
+
+        <!-- Desktop Toolbar -->
+        <div class="shop-toolbar">
+
+          <div class="shop-active-filters">
+
+            <% if (filters.q) { %>
+              <span>
+                Search: “<%= filters.q %>”
+              </span>
+            <% } %>
+
+            <% if (filters.category) { %>
+              <span>
+                Category: <%= filters.category %>
+              </span>
+            <% } %>
+
+            <% if (
+              filters.sort &&
+              filters.sort !== 'newest'
+            ) { %>
+              <span>
+                Sort:
+                <%= filters.sort === 'price_low'
+                  ? 'Price low to high'
+                  : filters.sort === 'price_high'
+                    ? 'Price high to low'
+                    : 'Most popular'
+                %>
+              </span>
+            <% } %>
+
+            <% if (
+              filters.q ||
+              filters.category ||
+              (
+                filters.sort &&
+                filters.sort !== 'newest'
+              )
+            ) { %>
+              <a href="/shop">
+                Clear all ×
+              </a>
+            <% } %>
+
+          </div>
+
+
+          <form method="get" class="shop-sort-form">
+
+            <% if (filters.q) { %>
+              <input
+                type="hidden"
+                name="q"
+                value="<%= filters.q %>"
+              >
+            <% } %>
+
+            <% if (filters.category) { %>
+              <input
+                type="hidden"
+                name="category"
+                value="<%= filters.category %>"
+              >
+            <% } %>
+
+            <label for="shopSort">
+              Sort by
+            </label>
+
+            <select
+              id="shopSort"
+              name="sort"
+              onchange="this.form.submit()"
+            >
+              <option
+                value="newest"
+                <%= filters.sort === 'newest'
+                  ? 'selected'
+                  : ''
+                %>
+              >
+                Newest Arrivals
+              </option>
+
+              <option
+                value="price_low"
+                <%= filters.sort === 'price_low'
+                  ? 'selected'
+                  : ''
+                %>
+              >
+                Price: Low to High
+              </option>
+
+              <option
+                value="price_high"
+                <%= filters.sort === 'price_high'
+                  ? 'selected'
+                  : ''
+                %>
+              >
+                Price: High to Low
+              </option>
+
+              <option
+                value="popular"
+                <%= filters.sort === 'popular'
+                  ? 'selected'
+                  : ''
+                %>
+              >
+                Most Popular
+              </option>
+            </select>
+
+          </form>
+
+        </div>
+
+
+        <!-- Products -->
+        <% if (products.length) { %>
+
+          <div class="shop-collection-summary">
+
+            <div>
+              <strong>
+                Showing <%= products.length %>
+                <%= products.length === 1
+                  ? 'product'
+                  : 'products'
+                %>
+              </strong>
+
+              <span>
+                Hover over a product image to view
+                another angle.
+              </span>
+            </div>
+
+            <div class="shop-collection-benefits">
+              <span>
+                <i
+                  class="bi bi-shield-check"
+                  aria-hidden="true"
+                ></i>
+                Quality checked
+              </span>
+
+              <span>
+                <i
+                  class="bi bi-truck"
+                  aria-hidden="true"
+                ></i>
+                Nationwide delivery
+              </span>
+            </div>
+
+          </div>
+
+          <div class="shop-product-grid">
+
+            <% products.forEach((p, index) => { %>
+
+              <div
+                class="shop-product-item reveal"
+                style="transition-delay:
+                  <%= Math.min(index * 50, 300) %>ms;"
+              >
+                <%- include(
+                  'partials/product-card',
+                  { p }
+                ) %>
+              </div>
+
+            <% }) %>
+
+          </div>
+
+        <% } else { %>
+
+          <div class="shop-empty-state">
+
+            <span>⌕</span>
+
+            <h2>No products found</h2>
+
+            <p>
+              Try another search keyword or remove
+              the selected category filter.
+            </p>
+
+            <a class="btn gold-btn" href="/shop">
+              View All Products
+            </a>
+
+          </div>
+
+        <% } %>
+
+      </main>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- Mobile Filter Overlay -->
+<div
+  class="shop-filter-overlay"
+  id="shopFilterOverlay"
+></div>
+
+<%- include('partials/footer') %>
