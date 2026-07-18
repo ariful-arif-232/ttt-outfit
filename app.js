@@ -2992,10 +2992,15 @@ app.post(
           Number(req.body.perUserLimit || 0)
         ),
 
-        startsAt:
-          req.body.startsAt
-            ? new Date(req.body.startsAt)
-            : new Date(),
+startsAt:
+  parseBangladeshDateTime(
+    req.body.startsAt
+  ),
+
+expiresAt:
+  parseBangladeshDateTime(
+    req.body.expiresAt
+  ),
 
         expiresAt,
 
