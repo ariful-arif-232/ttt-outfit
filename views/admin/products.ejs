@@ -1,0 +1,435 @@
+<%
+  const safeProducts =
+    Array.isArray(products)
+      ? products
+      : [];
+
+  const getProductStock = product => {
+    if (
+      Array.isArray(product.variants) &&
+      product.variants.length
+    ) {
+      return product.variants.reduce(
+        (total, variant) =>
+          total + Number(variant.stock || 0),
+        0
+      );
+    }
+
+    return Number(product.stock || 0);
+  };
+
+  const getProductImage = product => {
+    const firstVariant =
+      product.variants?.[0];
+
+    return (
+      firstVariant?.mainImage?.url ||
+      firstVariant?.images?.[0]?.url ||
+      product.mainImage?.url ||
+      product.images?.[0]?.url ||
+      'https://via.placeholder.com/160x200?text=TTT+Outfit'
+    );
+  };
+%>
+
+<%- include('../partials/header') %>
+
+<div class="container admin-layout">
+
+  <%- include('../partials/admin-nav') %>
+
+  <section class="admin-products-page">
+
+    <div class="section-head admin-products-heading">
+
+      <div>
+        <span class="section-kicker">
+          PRODUCT MANAGEMENT
+        </span>
+
+        <h1>Products</h1>
+
+        <p class="small">
+          Manage retail pricing, wholesale offers,
+          stock, visibility and product images.
+        </p>
+      </div>
+
+      <a
+        class="btn gold-btn"
+        href="/admin/products/new"
+      >
+        <i
+          class="bi bi-plus-lg"
+          aria-hidden="true"
+        ></i>
+        Add product
+      </a>
+
+    </div>
+
+
+    <div class="admin-product-summary-grid">
+
+      <article>
+        <span>Total products</span>
+        <strong><%= safeProducts.length %></strong>
+      </article>
+
+      <article>
+        <span>Active</span>
+        <strong>
+          <%=
+            safeProducts.filter(
+              product => product.active
+            ).length
+          %>
+        </strong>
+      </article>
+
+      <article>
+        <span>Hidden</span>
+        <strong>
+          <%=
+            safeProducts.filter(
+              product => !product.active
+            ).length
+          %>
+        </strong>
+      </article>
+
+      <article>
+        <span>Low stock</span>
+        <strong>
+          <%=
+            safeProducts.filter(product => {
+              const stock =
+                getProductStock(product);
+
+              return stock > 0 && stock <= 5;
+            }).length
+          %>
+        </strong>
+      </article>
+
+    </div>
+
+
+    <% if (safeProducts.length) { %>
+
+      <div class="admin-table-wrap">
+
+        <table class="admin-products-table">
+
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Retail price</th>
+              <th>Wholesale</th>
+              <th>Stock</th>
+              <th>Labels</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+
+          <tbody>
+
+            <% safeProducts.forEach(p => {
+              const productStock =
+                getProductStock(p);
+
+              const productImage =
+                getProductImage(p);
+
+              const wholesaleMinimum =
+                Number(
+                  p.wholesaleMinimumQuantity || 10
+                );
+
+              const wholesalePrice =
+                Number(p.wholesalePrice || 0);
+
+              const hasWholesale =
+                wholesalePrice > 0;
+
+              const stockClass =
+                productStock < 1
+                  ? 'out'
+                  : productStock <= 5
+                    ? 'low'
+                    : 'available';
+            %>
+
+              <tr>
+
+                <td>
+
+                  <div class="admin-product-cell">
+
+                    <a
+                      class="admin-product-image"
+                      href="/product/<%= p.slug %>"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title="View product"
+                    >
+                      <img
+                        src="<%= productImage %>"
+                        alt="<%= p.name %>"
+                        loading="lazy"
+                      >
+                    </a>
+
+                    <div>
+
+                      <strong>
+                        <%= p.name %>
+                      </strong>
+
+                      <span class="small">
+                        SKU:
+                        <%= p.sku || 'Not set' %>
+                      </span>
+
+                      <span class="small">
+                        <%= p.category || 'Uncategorized' %>
+                      </span>
+
+                    </div>
+
+                  </div>
+
+                </td>
+
+
+                <td>
+
+                  <strong>
+                    ৳<%= money(p.price) %>
+                  </strong>
+
+                  <% if (
+                    Number(p.compareAtPrice || 0) >
+                    Number(p.price || 0)
+                  ) { %>
+
+                    <del class="small">
+                      ৳<%= money(p.compareAtPrice) %>
+                    </del>
+
+                  <% } %>
+
+                  <% if (
+                    Number(p.costPrice || 0) > 0
+                  ) { %>
+
+                    <span class="small">
+                      Cost:
+                      ৳<%= money(p.costPrice) %>
+                    </span>
+
+                  <% } %>
+
+                </td>
+
+
+                <td>
+
+                  <% if (hasWholesale) { %>
+
+                    <strong>
+                      ৳<%= money(wholesalePrice) %>
+                    </strong>
+
+                    <span class="small">
+                      Minimum
+                      <%= wholesaleMinimum %>
+                      items
+                    </span>
+
+                  <% } else { %>
+
+                    <span class="small">
+                      Automatic 20% offer
+                    </span>
+
+                    <span class="small">
+                      Minimum
+                      <%= wholesaleMinimum %>
+                      items
+                    </span>
+
+                  <% } %>
+
+                </td>
+
+
+                <td>
+
+                  <span
+                    class="
+                      admin-stock-badge
+                      <%= stockClass %>
+                    "
+                  >
+                    <%= productStock %>
+                  </span>
+
+                  <span class="small">
+
+                    <% if (productStock < 1) { %>
+                      Out of stock
+                    <% } else if (productStock <= 5) { %>
+                      Low stock
+                    <% } else { %>
+                      Available
+                    <% } %>
+
+                  </span>
+
+                </td>
+
+
+                <td>
+
+                  <div class="admin-product-labels">
+
+                    <% if (p.isNewArrival) { %>
+                      <span>New</span>
+                    <% } %>
+
+                    <% if (p.isBestSeller) { %>
+                      <span>Best seller</span>
+                    <% } %>
+
+                    <% if (p.isOnSale) { %>
+                      <span>Sale</span>
+                    <% } %>
+
+                    <% if (
+                      !p.isNewArrival &&
+                      !p.isBestSeller &&
+                      !p.isOnSale
+                    ) { %>
+                      <span class="muted">
+                        None
+                      </span>
+                    <% } %>
+
+                  </div>
+
+                </td>
+
+
+                <td>
+
+                  <span
+                    class="
+                      admin-status-badge
+                      <%= p.active
+                        ? 'active'
+                        : 'hidden'
+                      %>
+                    "
+                  >
+                    <%= p.active
+                      ? 'Active'
+                      : 'Hidden'
+                    %>
+                  </span>
+
+                </td>
+
+
+                <td>
+
+                  <div class="actions admin-product-actions">
+
+                    <a
+                      href="/admin/products/<%= p._id %>/edit"
+                    >
+                      <i
+                        class="bi bi-pencil-square"
+                        aria-hidden="true"
+                      ></i>
+                      Edit
+                    </a>
+
+                    <form
+                      method="post"
+                      action="/admin/products/<%= p._id %>/duplicate"
+                    >
+                      <button
+                        type="submit"
+                        title="Create a copy of this product"
+                      >
+                        <i
+                          class="bi bi-copy"
+                          aria-hidden="true"
+                        ></i>
+                        Duplicate
+                      </button>
+                    </form>
+
+                    <form
+                      method="post"
+                      action="/admin/products/<%= p._id %>/delete"
+                      onsubmit="return confirm('Hide this product from the shop?');"
+                    >
+                      <button type="submit">
+                        <i
+                          class="bi bi-eye-slash"
+                          aria-hidden="true"
+                        ></i>
+                        Hide
+                      </button>
+                    </form>
+
+                  </div>
+
+                </td>
+
+              </tr>
+
+            <% }) %>
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+    <% } else { %>
+
+      <div class="admin-empty-state">
+
+        <i
+          class="bi bi-box-seam"
+          aria-hidden="true"
+        ></i>
+
+        <h2>No products added yet</h2>
+
+        <p>
+          Add your first product to start selling
+          through TTT Outfit.
+        </p>
+
+        <a
+          class="btn gold-btn"
+          href="/admin/products/new"
+        >
+          Add first product
+        </a>
+
+      </div>
+
+    <% } %>
+
+  </section>
+
+</div>
+
+<%- include('../partials/footer') %>
