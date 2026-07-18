@@ -111,7 +111,7 @@ if (
           user = await User.create({
             name: googleName,
             email: googleEmail,
-            phone: null,
+            phone: undefined,
             passwordHash: null,
             googleId,
             avatar,
