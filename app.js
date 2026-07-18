@@ -2704,7 +2704,406 @@ app.post(
 );
 
 app.post('/admin/products/:id/delete', requireAdmin, async (req, res, next) => { try { await Product.findByIdAndUpdate(req.params.id, { active: false }); res.redirect('/admin/products'); } catch (e) { next(e); } });
+/* =========================================
+   ADMIN COUPON MANAGEMENT
+========================================= */
 
+/* Coupon list */
+
+app.get(
+  '/admin/coupons',
+  requireAdmin,
+  async (req, res, next) => {
+    try {
+      const coupons = await Coupon.find()
+        .sort({ createdAt: -1 })
+        .lean();
+
+      res.render('admin/coupons', {
+        title: 'Manage Coupons',
+        coupons
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+
+/* New coupon page */
+
+app.get(
+  '/admin/coupons/new',
+  requireAdmin,
+  (req, res) => {
+    res.render('admin/coupon-form', {
+      title: 'Add Coupon',
+      coupon: null
+    });
+  }
+);
+
+
+/* Create coupon */
+
+app.post(
+  '/admin/coupons',
+  requireAdmin,
+  async (req, res) => {
+    try {
+      const code = String(
+        req.body.code || ''
+      )
+        .trim()
+        .toUpperCase();
+
+      const type =
+        req.body.type === 'percentage'
+          ? 'percentage'
+          : 'fixed';
+
+      const value = Number(
+        req.body.value || 0
+      );
+
+      const minimumOrder = Math.max(
+        0,
+        Number(req.body.minimumOrder || 0)
+      );
+
+      const expiresAt =
+        req.body.expiresAt
+          ? new Date(req.body.expiresAt)
+          : null;
+
+      if (!code) {
+        throw new Error(
+          'Coupon code is required.'
+        );
+      }
+
+      if (value <= 0) {
+        throw new Error(
+          'Discount value must be greater than zero.'
+        );
+      }
+
+      if (
+        type === 'percentage' &&
+        value > 100
+      ) {
+        throw new Error(
+          'Percentage discount cannot exceed 100%.'
+        );
+      }
+
+      const existing =
+        await Coupon.findOne({ code });
+
+      if (existing) {
+        throw new Error(
+          'This coupon code already exists.'
+        );
+      }
+
+      await Coupon.create({
+        code,
+        type,
+        value,
+        minimumOrder,
+
+        maxDiscount: Math.max(
+          0,
+          Number(req.body.maxDiscount || 0)
+        ),
+
+        usageLimit: Math.max(
+          0,
+          Number(req.body.usageLimit || 0)
+        ),
+
+        perUserLimit: Math.max(
+          0,
+          Number(req.body.perUserLimit || 0)
+        ),
+
+        startsAt:
+          req.body.startsAt
+            ? new Date(req.body.startsAt)
+            : new Date(),
+
+        expiresAt,
+
+        allowWholesale:
+          req.body.allowWholesale === 'on',
+
+        active:
+          req.body.active === 'on'
+      });
+
+      req.session.flash = {
+        type: 'success',
+        message:
+          `Coupon ${code} created successfully.`
+      };
+
+      res.redirect('/admin/coupons');
+    } catch (error) {
+      req.session.flash = {
+        type: 'error',
+        message: error.message
+      };
+
+      res.redirect('/admin/coupons/new');
+    }
+  }
+);
+
+
+/* Edit coupon page */
+
+app.get(
+  '/admin/coupons/:id/edit',
+  requireAdmin,
+  async (req, res, next) => {
+    try {
+      const coupon =
+        await Coupon.findById(
+          req.params.id
+        ).lean();
+
+      if (!coupon) {
+        return res.status(404).render(
+          'message',
+          {
+            title: 'Coupon not found',
+            message:
+              'This coupon does not exist.'
+          }
+        );
+      }
+
+      res.render('admin/coupon-form', {
+        title: 'Edit Coupon',
+        coupon
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+
+/* Update coupon */
+
+app.post(
+  '/admin/coupons/:id/update',
+  requireAdmin,
+  async (req, res) => {
+    try {
+      const coupon =
+        await Coupon.findById(
+          req.params.id
+        );
+
+      if (!coupon) {
+        throw new Error(
+          'Coupon not found.'
+        );
+      }
+
+      const code = String(
+        req.body.code || ''
+      )
+        .trim()
+        .toUpperCase();
+
+      const type =
+        req.body.type === 'percentage'
+          ? 'percentage'
+          : 'fixed';
+
+      const value =
+        Number(req.body.value || 0);
+
+      if (!code) {
+        throw new Error(
+          'Coupon code is required.'
+        );
+      }
+
+      if (value <= 0) {
+        throw new Error(
+          'Discount value must be greater than zero.'
+        );
+      }
+
+      if (
+        type === 'percentage' &&
+        value > 100
+      ) {
+        throw new Error(
+          'Percentage discount cannot exceed 100%.'
+        );
+      }
+
+      const duplicate =
+        await Coupon.findOne({
+          code,
+          _id: {
+            $ne: coupon._id
+          }
+        });
+
+      if (duplicate) {
+        throw new Error(
+          'This coupon code already exists.'
+        );
+      }
+
+      coupon.code = code;
+      coupon.type = type;
+      coupon.value = value;
+
+      coupon.minimumOrder = Math.max(
+        0,
+        Number(req.body.minimumOrder || 0)
+      );
+
+      coupon.maxDiscount = Math.max(
+        0,
+        Number(req.body.maxDiscount || 0)
+      );
+
+      coupon.usageLimit = Math.max(
+        0,
+        Number(req.body.usageLimit || 0)
+      );
+
+      coupon.perUserLimit = Math.max(
+        0,
+        Number(req.body.perUserLimit || 0)
+      );
+
+      coupon.startsAt =
+        req.body.startsAt
+          ? new Date(req.body.startsAt)
+          : coupon.startsAt || new Date();
+
+      coupon.expiresAt =
+        req.body.expiresAt
+          ? new Date(req.body.expiresAt)
+          : null;
+
+      coupon.allowWholesale =
+        req.body.allowWholesale === 'on';
+
+      coupon.active =
+        req.body.active === 'on';
+
+      await coupon.save();
+
+      req.session.flash = {
+        type: 'success',
+        message:
+          `Coupon ${coupon.code} updated successfully.`
+      };
+
+      res.redirect('/admin/coupons');
+    } catch (error) {
+      req.session.flash = {
+        type: 'error',
+        message: error.message
+      };
+
+      res.redirect(
+        `/admin/coupons/${req.params.id}/edit`
+      );
+    }
+  }
+);
+
+
+/* Toggle active / inactive */
+
+app.post(
+  '/admin/coupons/:id/toggle',
+  requireAdmin,
+  async (req, res) => {
+    try {
+      const coupon =
+        await Coupon.findById(
+          req.params.id
+        );
+
+      if (!coupon) {
+        throw new Error(
+          'Coupon not found.'
+        );
+      }
+
+      coupon.active = !coupon.active;
+
+      await coupon.save();
+
+      req.session.flash = {
+        type: 'success',
+        message:
+          `Coupon ${coupon.code} is now ${
+            coupon.active
+              ? 'active'
+              : 'inactive'
+          }.`
+      };
+
+      res.redirect('/admin/coupons');
+    } catch (error) {
+      req.session.flash = {
+        type: 'error',
+        message: error.message
+      };
+
+      res.redirect('/admin/coupons');
+    }
+  }
+);
+
+
+/* Delete coupon */
+
+app.post(
+  '/admin/coupons/:id/delete',
+  requireAdmin,
+  async (req, res) => {
+    try {
+      const coupon =
+        await Coupon.findByIdAndDelete(
+          req.params.id
+        );
+
+      if (!coupon) {
+        throw new Error(
+          'Coupon not found.'
+        );
+      }
+
+      req.session.flash = {
+        type: 'success',
+        message:
+          `Coupon ${coupon.code} deleted successfully.`
+      };
+
+      res.redirect('/admin/coupons');
+    } catch (error) {
+      req.session.flash = {
+        type: 'error',
+        message: error.message
+      };
+
+      res.redirect('/admin/coupons');
+    }
+  }
+);
 app.get('/admin/orders', requireAdmin, async (req, res, next) => { try { const filter = req.query.status ? { status: req.query.status } : {}; const orders = await Order.find(filter).sort({ createdAt: -1 }).populate('customer', 'name email phone').lean(); res.render('admin/orders', { title: 'Manage orders', orders, selectedStatus: req.query.status || '' }); } catch (e) { next(e); } });
 app.post('/admin/orders/:id/update', requireAdmin, async (req, res, next) => {
   try {
