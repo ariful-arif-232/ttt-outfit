@@ -1310,28 +1310,44 @@ function parseBangladeshDateTime(value) {
   }
 
   /*
-    datetime-local sends:
-    2026-07-19T02:45
+    datetime-local value example:
+    2026-07-19T02:42
 
-    Bangladesh is UTC+6.
-    Adding +06:00 makes JavaScript
-    understand the correct timezone.
+    Treat this time as Bangladesh time (UTC+6)
+    and save the correct UTC value in MongoDB.
   */
 
-  const parsedDate =
-    new Date(`${rawValue}:00+06:00`);
+  const match =
+    rawValue.match(
+      /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/
+    );
 
-  if (
-    Number.isNaN(
-      parsedDate.getTime()
-    )
-  ) {
+  if (!match) {
     throw new Error(
       'Invalid date and time.'
     );
   }
 
-  return parsedDate;
+  const [
+    ,
+    year,
+    month,
+    day,
+    hour,
+    minute
+  ] = match;
+
+  const utcTime =
+    Date.UTC(
+      Number(year),
+      Number(month) - 1,
+      Number(day),
+      Number(hour) - 6,
+      Number(minute),
+      0
+    );
+
+  return new Date(utcTime);
 }
 
 /* =========================================
@@ -2996,8 +3012,6 @@ expiresAt:
   parseBangladeshDateTime(
     req.body.expiresAt
   ),
-
-        expiresAt,
 
         allowWholesale:
           req.body.allowWholesale === 'on',
