@@ -1301,7 +1301,38 @@ function getWholesaleSummary(items = []) {
     )
   };
 }
+function parseBangladeshDateTime(value) {
+  const rawValue =
+    String(value || '').trim();
 
+  if (!rawValue) {
+    return null;
+  }
+
+  /*
+    datetime-local sends:
+    2026-07-19T02:45
+
+    Bangladesh is UTC+6.
+    Adding +06:00 makes JavaScript
+    understand the correct timezone.
+  */
+
+  const parsedDate =
+    new Date(`${rawValue}:00+06:00`);
+
+  if (
+    Number.isNaN(
+      parsedDate.getTime()
+    )
+  ) {
+    throw new Error(
+      'Invalid date and time.'
+    );
+  }
+
+  return parsedDate;
+}
 
 /* =========================================
    COUPON HELPERS
