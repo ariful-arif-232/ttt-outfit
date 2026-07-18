@@ -3119,10 +3119,10 @@ app.post(
         Number(req.body.perUserLimit || 0)
       );
 
-      coupon.startsAt =
-        req.body.startsAt
-          ? new Date(req.body.startsAt)
-          : coupon.startsAt || new Date();
+coupon.startsAt =
+  req.body.startsAt
+    ? new Date(req.body.startsAt)
+    : null;
 
       coupon.expiresAt =
         req.body.expiresAt
