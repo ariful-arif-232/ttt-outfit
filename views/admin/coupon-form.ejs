@@ -1,0 +1,322 @@
+<%- include('../partials/admin-header') %>
+
+<div class="admin-page">
+
+  <div class="page-header">
+    <div>
+      <h2>
+        <%= coupon ? 'Edit Coupon' : 'Add Coupon' %>
+      </h2>
+
+      <p>
+        Create and manage discount coupons.
+      </p>
+    </div>
+
+    <a href="/admin/coupons" class="btn">
+      Back to Coupons
+    </a>
+  </div>
+
+  <form
+    class="admin-form"
+    method="POST"
+    action="<%= coupon
+      ? `/admin/coupons/${coupon._id}/update`
+      : '/admin/coupons' %>"
+  >
+
+    <div class="form-grid">
+
+      <div class="form-group">
+        <label for="code">
+          Coupon Code
+        </label>
+
+        <input
+          id="code"
+          name="code"
+          type="text"
+          required
+          maxlength="50"
+          autocomplete="off"
+          placeholder="Example: SAVE20"
+          value="<%= coupon?.code || '' %>"
+          oninput="this.value = this.value.toUpperCase()"
+        >
+
+        <small>
+          Customers will enter this code during checkout.
+        </small>
+      </div>
+
+
+      <div class="form-group">
+        <label for="type">
+          Discount Type
+        </label>
+
+        <select
+          id="type"
+          name="type"
+          required
+        >
+          <option
+            value="percentage"
+            <%= !coupon || coupon.type === 'percentage'
+              ? 'selected'
+              : '' %>
+          >
+            Percentage
+          </option>
+
+          <option
+            value="fixed"
+            <%= coupon?.type === 'fixed'
+              ? 'selected'
+              : '' %>
+          >
+            Fixed Amount
+          </option>
+        </select>
+      </div>
+
+
+      <div class="form-group">
+        <label for="value">
+          Discount Value
+        </label>
+
+        <input
+          id="value"
+          name="value"
+          type="number"
+          required
+          min="0.01"
+          step="0.01"
+          placeholder="Example: 20"
+          value="<%= coupon?.value ?? '' %>"
+        >
+
+        <small>
+          Use 20 for 20% or ৳20, depending on the selected type.
+        </small>
+      </div>
+
+
+      <div class="form-group">
+        <label for="minimumOrder">
+          Minimum Order
+        </label>
+
+        <input
+          id="minimumOrder"
+          name="minimumOrder"
+          type="number"
+          min="0"
+          step="1"
+          placeholder="0"
+          value="<%= coupon?.minimumOrder ?? 0 %>"
+        >
+
+        <small>
+          Enter 0 if there is no minimum order requirement.
+        </small>
+      </div>
+
+
+      <div class="form-group">
+        <label for="maxDiscount">
+          Maximum Discount
+        </label>
+
+        <input
+          id="maxDiscount"
+          name="maxDiscount"
+          type="number"
+          min="0"
+          step="1"
+          placeholder="0"
+          value="<%= coupon?.maxDiscount ?? 0 %>"
+        >
+
+        <small>
+          Mainly useful for percentage coupons. Enter 0 for no limit.
+        </small>
+      </div>
+
+
+      <div class="form-group">
+        <label for="usageLimit">
+          Total Usage Limit
+        </label>
+
+        <input
+          id="usageLimit"
+          name="usageLimit"
+          type="number"
+          min="0"
+          step="1"
+          placeholder="0"
+          value="<%= coupon?.usageLimit ?? 0 %>"
+        >
+
+        <small>
+          Enter 0 for unlimited total uses.
+        </small>
+      </div>
+
+
+      <div class="form-group">
+        <label for="perUserLimit">
+          Per User Limit
+        </label>
+
+        <input
+          id="perUserLimit"
+          name="perUserLimit"
+          type="number"
+          min="0"
+          step="1"
+          placeholder="0"
+          value="<%= coupon?.perUserLimit ?? 0 %>"
+        >
+
+        <small>
+          Enter 0 for unlimited use per customer.
+        </small>
+      </div>
+
+
+      <div class="form-group">
+        <label for="startsAt">
+          Start Date
+        </label>
+
+        <input
+          id="startsAt"
+          name="startsAt"
+          type="datetime-local"
+          value="<%=
+            coupon?.startsAt
+              ? new Date(
+                  new Date(coupon.startsAt).getTime() -
+                  new Date(coupon.startsAt).getTimezoneOffset() * 60000
+                ).toISOString().slice(0, 16)
+              : ''
+          %>"
+        >
+
+        <small>
+          Leave blank to activate immediately.
+        </small>
+      </div>
+
+
+      <div class="form-group">
+        <label for="expiresAt">
+          Expiry Date
+        </label>
+
+        <input
+          id="expiresAt"
+          name="expiresAt"
+          type="datetime-local"
+          value="<%=
+            coupon?.expiresAt
+              ? new Date(
+                  new Date(coupon.expiresAt).getTime() -
+                  new Date(coupon.expiresAt).getTimezoneOffset() * 60000
+                ).toISOString().slice(0, 16)
+              : ''
+          %>"
+        >
+
+        <small>
+          Leave blank if the coupon should not expire.
+        </small>
+      </div>
+
+    </div>
+
+
+    <div class="form-check-row">
+
+      <label class="checkbox-label">
+        <input
+          type="checkbox"
+          name="active"
+          <%= !coupon || coupon.active ? 'checked' : '' %>
+        >
+
+        <span>
+          Coupon is active
+        </span>
+      </label>
+
+
+      <label class="checkbox-label">
+        <input
+          type="checkbox"
+          name="allowWholesale"
+          <%= !coupon || coupon.allowWholesale !== false
+            ? 'checked'
+            : '' %>
+        >
+
+        <span>
+          Allow with wholesale discount
+        </span>
+      </label>
+
+    </div>
+
+
+    <% if (coupon) { %>
+
+      <div class="coupon-stats">
+
+        <div>
+          <span>Used</span>
+          <strong>
+            <%= coupon.usedCount || 0 %>
+          </strong>
+        </div>
+
+        <div>
+          <span>Status</span>
+          <strong>
+            <%= coupon.active ? 'Active' : 'Inactive' %>
+          </strong>
+        </div>
+
+      </div>
+
+    <% } %>
+
+
+    <div class="form-actions">
+
+      <button
+        type="submit"
+        class="btn btn-primary"
+      >
+        <%= coupon
+          ? 'Update Coupon'
+          : 'Create Coupon' %>
+      </button>
+
+      <a
+        href="/admin/coupons"
+        class="btn"
+      >
+        Cancel
+      </a>
+
+    </div>
+
+  </form>
+
+</div>
+
+<%- include('../partials/admin-footer') %>
