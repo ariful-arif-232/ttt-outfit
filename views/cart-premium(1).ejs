@@ -1,0 +1,580 @@
+<%- include('partials/header') %>
+
+<style>
+  .premium-cart-page {
+    padding: 70px 0 90px;
+    background:
+      radial-gradient(circle at top left, rgba(201, 159, 61, 0.10), transparent 28%),
+      linear-gradient(180deg, #f8f5ee 0%, #f3efe7 100%);
+    min-height: 65vh;
+  }
+
+  .premium-cart-page * {
+    box-sizing: border-box;
+  }
+
+  .cart-heading-wrap {
+    margin-bottom: 28px;
+  }
+
+  .cart-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    color: #a77b19;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 2.2px;
+    text-transform: uppercase;
+  }
+
+  .cart-eyebrow::before {
+    content: "";
+    width: 34px;
+    height: 1px;
+    background: #c99f3d;
+  }
+
+  .premium-cart-page h1 {
+    margin: 0;
+    font-size: clamp(36px, 4vw, 54px);
+    line-height: 1;
+    color: #111;
+    letter-spacing: -1.5px;
+  }
+
+  .cart-subtitle {
+    max-width: 620px;
+    margin: 14px 0 0;
+    color: #6f6a61;
+    font-size: 15px;
+    line-height: 1.7;
+  }
+
+  .premium-cart-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 390px;
+    gap: 28px;
+    align-items: start;
+  }
+
+  .cart-products-card,
+  .cart-summary-card,
+  .empty-cart-card {
+    background: rgba(255, 255, 255, 0.94);
+    border: 1px solid rgba(17, 17, 17, 0.08);
+    box-shadow: 0 18px 55px rgba(31, 25, 13, 0.08);
+  }
+
+  .cart-products-card {
+    border-radius: 24px;
+    padding: 10px 28px;
+  }
+
+  .premium-cart-row {
+    display: grid;
+    grid-template-columns: 112px minmax(180px, 1fr) auto auto;
+    gap: 24px;
+    align-items: center;
+    padding: 28px 0;
+    border-bottom: 1px solid #ece7dc;
+  }
+
+  .premium-cart-row:last-child {
+    border-bottom: 0;
+  }
+
+  .cart-product-image-wrap {
+    position: relative;
+    width: 112px;
+    height: 130px;
+    padding: 7px;
+    overflow: hidden;
+    border-radius: 18px;
+    background: linear-gradient(145deg, #f7f2e7, #ffffff);
+    border: 1px solid #ebe2cd;
+  }
+
+  .cart-product-image-wrap::after {
+    content: "";
+    position: absolute;
+    inset: 7px;
+    border: 1px solid rgba(201, 159, 61, 0.32);
+    border-radius: 12px;
+    pointer-events: none;
+  }
+
+  .cart-product-image {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+    border-radius: 12px;
+  }
+
+  .cart-product-info {
+    min-width: 0;
+  }
+
+  .cart-product-tag {
+    margin-bottom: 7px;
+    color: #b1872c;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1.8px;
+    text-transform: uppercase;
+  }
+
+  .cart-product-name {
+    display: block;
+    margin-bottom: 8px;
+    color: #111;
+    font-size: 20px;
+    line-height: 1.25;
+  }
+
+  .cart-product-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 0;
+  }
+
+  .cart-meta-pill {
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: #f5f0e5;
+    color: #6d6557;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .cart-quantity-block {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    align-items: center;
+  }
+
+  .cart-quantity-label {
+    color: #8b8478;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+  }
+
+  .cart-quantity-form {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .cart-quantity-input {
+    width: 72px;
+    height: 43px;
+    padding: 0 10px;
+    border: 1px solid #d8cfbe;
+    border-radius: 11px;
+    background: #fff;
+    color: #111;
+    font-size: 15px;
+    font-weight: 700;
+    text-align: center;
+    outline: none;
+    transition: 0.2s ease;
+  }
+
+  .cart-quantity-input:focus {
+    border-color: #c99f3d;
+    box-shadow: 0 0 0 4px rgba(201, 159, 61, 0.13);
+  }
+
+  .cart-update-btn,
+  .cart-remove-btn {
+    border: 0;
+    cursor: pointer;
+    transition: 0.22s ease;
+  }
+
+  .cart-update-btn {
+    height: 43px;
+    padding: 0 16px;
+    border-radius: 11px;
+    background: #171717;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .cart-update-btn:hover {
+    background: #c99f3d;
+    color: #111;
+    transform: translateY(-1px);
+  }
+
+  .cart-item-actions {
+    display: flex;
+    min-width: 112px;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 15px;
+  }
+
+  .cart-item-price {
+    color: #111;
+    font-size: 22px;
+    font-weight: 900;
+    white-space: nowrap;
+  }
+
+  .cart-remove-btn {
+    padding: 7px 0;
+    background: transparent;
+    color: #9c3434;
+    font-size: 12px;
+    font-weight: 800;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  .cart-remove-btn:hover {
+    color: #d00000;
+  }
+
+  .cart-summary-card {
+    position: sticky;
+    top: 115px;
+    overflow: hidden;
+    border-radius: 24px;
+  }
+
+  .cart-summary-header {
+    padding: 27px 28px 22px;
+    background: #111;
+    color: #fff;
+  }
+
+  .cart-summary-kicker {
+    margin-bottom: 7px;
+    color: #d8b65c;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1.8px;
+    text-transform: uppercase;
+  }
+
+  .cart-summary-header h2 {
+    margin: 0;
+    color: #fff;
+    font-size: 28px;
+  }
+
+  .cart-summary-body {
+    padding: 26px 28px 28px;
+  }
+
+  .summary-line {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    padding: 10px 0;
+    color: #5f594f;
+    font-size: 15px;
+  }
+
+  .summary-line strong {
+    color: #111;
+    font-size: 19px;
+  }
+
+  .summary-divider {
+    height: 1px;
+    margin: 13px 0 17px;
+    background: #ece6db;
+  }
+
+  .shipping-note {
+    display: flex;
+    gap: 11px;
+    margin: 0 0 22px;
+    padding: 14px;
+    border-radius: 14px;
+    background: #f8f4ea;
+    color: #6c6457;
+    font-size: 12px;
+    line-height: 1.55;
+  }
+
+  .shipping-note-icon {
+    color: #b98d25;
+    font-size: 18px;
+    line-height: 1;
+  }
+
+  .premium-checkout-btn {
+    position: relative;
+    display: flex;
+    width: 100%;
+    min-height: 54px;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #d8b55a 0%, #b98b22 100%);
+    color: #111 !important;
+    font-size: 14px;
+    font-weight: 900;
+    letter-spacing: 0.4px;
+    text-decoration: none;
+    box-shadow: 0 13px 30px rgba(185, 139, 34, 0.26);
+    transition: 0.25s ease;
+  }
+
+  .premium-checkout-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 16px 35px rgba(185, 139, 34, 0.34);
+  }
+
+  .secure-checkout {
+    margin: 14px 0 0;
+    color: #8b8479;
+    font-size: 11px;
+    text-align: center;
+  }
+
+  .empty-cart-card {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 70px 30px;
+    border-radius: 28px;
+    text-align: center;
+  }
+
+  .empty-cart-icon {
+    display: grid;
+    width: 84px;
+    height: 84px;
+    margin: 0 auto 22px;
+    place-items: center;
+    border-radius: 50%;
+    background: #f4ecda;
+    color: #b78d2e;
+    font-size: 36px;
+  }
+
+  .empty-cart-card h2 {
+    margin: 0 0 12px;
+    color: #111;
+    font-size: 32px;
+  }
+
+  .empty-cart-card p {
+    margin: 0 auto 25px;
+    max-width: 450px;
+    color: #716b61;
+    line-height: 1.7;
+  }
+
+  .empty-shop-btn {
+    display: inline-flex;
+    min-height: 50px;
+    padding: 0 25px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 13px;
+    background: #111;
+    color: #fff !important;
+    font-weight: 800;
+    text-decoration: none;
+    transition: 0.2s ease;
+  }
+
+  .empty-shop-btn:hover {
+    background: #c99f3d;
+    color: #111 !important;
+    transform: translateY(-2px);
+  }
+
+  @media (max-width: 1000px) {
+    .premium-cart-layout {
+      grid-template-columns: 1fr;
+    }
+
+    .cart-summary-card {
+      position: static;
+    }
+  }
+
+  @media (max-width: 760px) {
+    .premium-cart-page {
+      padding: 45px 0 65px;
+    }
+
+    .cart-products-card {
+      padding: 0 18px;
+      border-radius: 18px;
+    }
+
+    .premium-cart-row {
+      grid-template-columns: 92px 1fr;
+      gap: 18px;
+      padding: 22px 0;
+    }
+
+    .cart-product-image-wrap {
+      width: 92px;
+      height: 112px;
+    }
+
+    .cart-quantity-block {
+      grid-column: 1 / 3;
+      align-items: flex-start;
+    }
+
+    .cart-item-actions {
+      grid-column: 1 / 3;
+      width: 100%;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+    }
+  }
+
+  @media (max-width: 460px) {
+    .premium-cart-page h1 {
+      font-size: 38px;
+    }
+
+    .premium-cart-row {
+      grid-template-columns: 1fr;
+    }
+
+    .cart-product-image-wrap {
+      width: 100%;
+      height: 250px;
+    }
+
+    .cart-quantity-block,
+    .cart-item-actions {
+      grid-column: auto;
+    }
+
+    .cart-quantity-form {
+      width: 100%;
+    }
+
+    .cart-quantity-input {
+      flex: 1;
+    }
+  }
+</style>
+
+<section class="premium-cart-page">
+  <div class="container">
+    <div class="cart-heading-wrap">
+      <span class="cart-eyebrow">Shopping bag</span>
+      <h1>Your Cart</h1>
+      <p class="cart-subtitle">
+        Review your selected items, update the quantity and continue to secure checkout.
+      </p>
+    </div>
+
+    <% if (!cart.length) { %>
+      <div class="empty-cart-card">
+        <div class="empty-cart-icon">🛍</div>
+        <h2>Your cart is empty</h2>
+        <p>You have not added any products yet. Explore our latest premium collection and find your perfect style.</p>
+        <a class="empty-shop-btn" href="/shop">Start Shopping</a>
+      </div>
+    <% } else { %>
+      <div class="premium-cart-layout">
+        <div class="cart-products-card">
+          <% cart.forEach((i, index) => { %>
+            <article class="premium-cart-row">
+              <div class="cart-product-image-wrap">
+                <img
+                  class="cart-product-image"
+                  src="<%= i.image %>"
+                  alt="<%= i.name %>"
+                >
+              </div>
+
+              <div class="cart-product-info">
+                <div class="cart-product-tag">TTT Outfit Selection</div>
+                <strong class="cart-product-name"><%= i.name %></strong>
+
+                <p class="cart-product-meta">
+                  <span class="cart-meta-pill">Size: <%= i.size %></span>
+                  <span class="cart-meta-pill">Color: <%= i.color %></span>
+                </p>
+              </div>
+
+              <div class="cart-quantity-block">
+                <span class="cart-quantity-label">Quantity</span>
+
+                <form class="cart-quantity-form" method="post" action="/cart/update">
+                  <input type="hidden" name="index" value="<%= index %>">
+
+                  <input
+                    class="cart-quantity-input"
+                    type="number"
+                    name="quantity"
+                    value="<%= i.quantity %>"
+                    min="0"
+                    aria-label="Quantity for <%= i.name %>"
+                  >
+
+                  <button class="cart-update-btn" type="submit">Update</button>
+                </form>
+              </div>
+
+              <div class="cart-item-actions">
+                <strong class="cart-item-price">৳<%= money(i.price * i.quantity) %></strong>
+
+                <form method="post" action="/cart/remove">
+                  <input type="hidden" name="index" value="<%= index %>">
+                  <button class="cart-remove-btn" type="submit">Remove item</button>
+                </form>
+              </div>
+            </article>
+          <% }) %>
+        </div>
+
+        <aside class="cart-summary-card">
+          <div class="cart-summary-header">
+            <div class="cart-summary-kicker">Order overview</div>
+            <h2>Summary</h2>
+          </div>
+
+          <div class="cart-summary-body">
+            <div class="summary-line">
+              <span>Subtotal</span>
+              <strong>৳<%= money(subtotal) %></strong>
+            </div>
+
+            <div class="summary-divider"></div>
+
+            <p class="shipping-note">
+              <span class="shipping-note-icon">✦</span>
+              <span>
+                Delivery charge will be calculated at checkout.
+                Enjoy free delivery on orders above ৳3,000.
+              </span>
+            </p>
+
+            <a class="premium-checkout-btn" href="/checkout">
+              Proceed to Checkout →
+            </a>
+
+            <p class="secure-checkout">Secure checkout • Trusted payment options</p>
+          </div>
+        </aside>
+      </div>
+    <% } %>
+  </div>
+</section>
+
+<%- include('partials/footer') %>
