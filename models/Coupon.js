@@ -38,6 +38,39 @@ const couponSchema =
         default: null
       }
     },
+    startsAt: {
+  type: Date,
+  default: Date.now
+},
+
+maxDiscount: {
+  type: Number,
+  default: 0,
+  min: 0
+},
+
+usageLimit: {
+  type: Number,
+  default: 0,
+  min: 0
+},
+
+usedCount: {
+  type: Number,
+  default: 0,
+  min: 0
+},
+
+perUserLimit: {
+  type: Number,
+  default: 0,
+  min: 0
+},
+
+allowWholesale: {
+  type: Boolean,
+  default: true
+},
     {
       timestamps: true
     }
