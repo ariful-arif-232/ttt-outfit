@@ -1423,9 +1423,6 @@ async function getValidCoupon(
   };
 }
 
-
-APPLY COUPON — GUEST + LOGGED-IN
-
 /* =========================================
    REMOVE COUPON — AJAX + FALLBACK
 ========================================= */
