@@ -2936,11 +2936,6 @@ app.post(
         Number(req.body.minimumOrder || 0)
       );
 
-      const expiresAt =
-        req.body.expiresAt
-          ? new Date(req.body.expiresAt)
-          : null;
-
       if (!code) {
         throw new Error(
           'Coupon code is required.'
@@ -3156,15 +3151,14 @@ app.post(
       );
 
 coupon.startsAt =
-  req.body.startsAt
-    ? new Date(req.body.startsAt)
-    : null;
+  parseBangladeshDateTime(
+    req.body.startsAt
+  );
 
-      coupon.expiresAt =
-        req.body.expiresAt
-          ? new Date(req.body.expiresAt)
-          : null;
-
+coupon.expiresAt =
+  parseBangladeshDateTime(
+    req.body.expiresAt
+  );
       coupon.allowWholesale =
         req.body.allowWholesale === 'on';
 
