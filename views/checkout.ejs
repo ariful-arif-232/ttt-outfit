@@ -59,6 +59,51 @@
 .coupon-message-success{color:#14833b!important}.coupon-message-error{color:#b42a2a!important}
 @media(max-width:860px){.checkout-top-grid{grid-template-columns:1fr}.checkout-form-grid{grid-template-columns:1fr}.checkout-full-field{grid-column:auto}.checkout-submit-card{grid-template-columns:1fr}}
 @media(max-width:560px){.checkout-page-section{padding:16px 0 34px}.checkout-page-section .container{padding-left:12px;padding-right:12px}.checkout-page-heading h1{font-size:1.5rem}.checkout-card,.checkout-submit-card{border-radius:17px}.checkout-top-coupon-card{grid-template-columns:1fr;padding:18px}.checkout-card-header{padding:18px 16px 12px}.checkout-card-body{padding:0 16px 18px}.checkout-form-grid{gap:13px;padding:0 16px 18px}.checkout-coupon-form{grid-template-columns:1fr}.checkout-coupon-form button{width:100%}.checkout-summary-products{padding:0 14px;max-height:none}.checkout-summary-product{grid-template-columns:50px minmax(0,1fr)}.checkout-summary-product img{width:50px;height:58px}.checkout-summary-product>strong{grid-column:2;margin-top:-5px}.checkout-total-list{padding:14px 16px 18px}.field input,.field select,.field textarea{font-size:16px}.checkout-submit-card{padding:18px 16px}}
+.delivery-type-options {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.delivery-type-option {
+  flex: 1;
+  max-width: 220px;
+}
+
+.delivery-type-box {
+  min-height: 52px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+}
+
+.delivery-type-box strong {
+  font-size: 0.82rem;
+}
+
+.delivery-type-box small {
+  font-size: 0.68rem;
+}
+
+@media (max-width:560px){
+
+.delivery-type-options{
+gap:8px;
+}
+
+.delivery-type-box{
+min-height:48px;
+padding:8px;
+}
+
+.delivery-type-box small{
+display:none;
+}
+
+}
 </style>
 
 <section class="section checkout-page-section">
@@ -494,10 +539,6 @@
             >
 
               <div class="payment-instructions">
-
-                <div class="payment-instruction-icon">
-                  ৳
-                </div>
 
                 <div>
                   <h3 id="paymentTitle">
