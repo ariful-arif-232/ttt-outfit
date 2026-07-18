@@ -50,7 +50,62 @@
 .checkout-full-field{grid-column:1/-1}.checkout-area-picker{position:relative}
 .checkout-area-suggestions{position:absolute;z-index:40;top:calc(100% + 7px);left:0;right:0;max-height:220px;overflow:auto;padding:7px;border:1px solid #ded7ca;border-radius:14px;background:#fff;box-shadow:0 18px 38px rgba(0,0,0,.14)}
 .checkout-area-suggestions button{width:100%;min-height:42px;border:0;border-radius:10px;background:transparent;padding:9px 11px;text-align:left}.checkout-area-suggestions button:hover{background:#f5efe1}
-.delivery-type-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.delivery-type-options{
+display:flex;
+gap:10px;
+}
+
+.delivery-type-option{
+flex:1;
+cursor:pointer;
+}
+
+.delivery-type-option input{
+display:none;
+}
+
+.delivery-type-box{
+display:flex;
+align-items:center;
+justify-content:center;
+height:56px;
+padding:0 16px;
+border:2px solid #e6e6e6;
+border-radius:14px;
+background:#fff;
+transition:.3s;
+font-weight:600;
+font-size:14px;
+text-align:center;
+}
+
+.delivery-type-box strong{
+font-size:14px;
+}
+
+.delivery-type-box small{
+display:none;
+}
+
+.delivery-type-option input:checked+.delivery-type-box{
+border-color:#c89c35;
+background:#fff7e5;
+color:#c89c35;
+box-shadow:0 4px 12px rgba(200,156,53,.18);
+}
+
+@media(max-width:560px){
+
+.delivery-type-options{
+flex-direction:column;
+}
+
+.delivery-type-box{
+height:52px;
+font-size:13px;
+}
+
+}
 .checkout-submit-card{display:grid;grid-template-columns:minmax(0,1fr) minmax(240px,auto);gap:18px;align-items:center;padding:20px 22px;background:linear-gradient(135deg,#111,#2d281d);color:#fff}
 .checkout-submit-copy{display:flex;align-items:center;gap:13px}.checkout-submit-lock{width:42px;height:42px;display:grid;place-items:center;border-radius:13px;background:rgba(255,255,255,.09)}
 .checkout-submit-copy strong,.checkout-submit-copy small{display:block}.checkout-submit-copy small{margin-top:4px;color:rgba(255,255,255,.68)}
@@ -465,7 +520,10 @@ display:none;
                   >
 
                   <span class="delivery-type-box">
-                    <strong>🏠 Home</strong>
+                    <strong>
+  <i class="bi bi-house-door-fill"></i>
+  Home
+</strong>
                     <small>Deliver to home address</small>
                   </span>
                 </label>
@@ -478,7 +536,10 @@ display:none;
                   >
 
                   <span class="delivery-type-box">
-                    <strong>🏢 Office</strong>
+                 <strong>
+  <i class="bi bi-building"></i>
+  Office
+</strong>
                     <small>Deliver to office address</small>
                   </span>
                 </label>
