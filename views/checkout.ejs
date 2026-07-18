@@ -1,0 +1,1491 @@
+<%- include('partials/header') %>
+
+<%
+  const defaultAddress =
+    user?.addresses?.find(address => address.isDefault) ||
+    user?.addresses?.[0] ||
+    null;
+
+  const finalDiscount = Number(discount || 0);
+
+  const finalTotal =
+    typeof total !== 'undefined'
+      ? Number(total)
+      : Number(subtotal || 0) +
+        Number(deliveryFee || 0) -
+        finalDiscount;
+%>
+
+
+<style>
+.checkout-page-section{padding:30px 0 60px;background:radial-gradient(circle at top left,rgba(201,157,54,.1),transparent 28%),#f7f5f1}
+.checkout-page-section .container{max-width:1180px}
+.checkout-page-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin-bottom:18px}
+.checkout-page-heading h1{margin:6px 0 0;font-size:clamp(1.6rem,3vw,2.2rem);line-height:1.1;letter-spacing:-.035em}
+.checkout-top-grid{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:18px;margin-bottom:18px}
+.checkout-professional-layout{display:block}.checkout-main-form{display:grid;gap:18px}
+.checkout-card,.checkout-submit-card{border:1px solid rgba(20,20,20,.08);border-radius:22px;background:#fff;box-shadow:0 12px 38px rgba(20,20,20,.06);overflow:visible}
+.checkout-top-coupon-card{display:grid;grid-template-columns:auto 1fr;gap:16px;padding:24px;background:linear-gradient(135deg,rgba(207,166,64,.16),#fff 62%)}
+.checkout-coupon-icon{width:48px;height:48px;display:grid;place-items:center;border-radius:15px;background:#111;color:#d4ad49;font-weight:900;font-size:1.2rem}
+.checkout-mini-label{display:block;margin-bottom:5px;color:#9a7018;font-size:.66rem;font-weight:850;letter-spacing:.16em}
+.checkout-card-header{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:22px 24px 14px}
+.checkout-top-coupon-card .checkout-card-header{padding:0 0 13px}
+.checkout-card-header h2{margin:0;font-size:clamp(1.14rem,2vw,1.42rem)}.checkout-card-header p{margin:5px 0 0;color:#706a61;font-size:.88rem}
+.checkout-card-body{padding:0 24px 24px}.checkout-top-coupon-card .checkout-card-body{padding:0}
+.checkout-coupon-form{display:grid;grid-template-columns:1fr auto;gap:10px}
+.checkout-coupon-form input,.checkout-coupon-form button,.remove-coupon-button{min-height:46px;border-radius:13px}
+.checkout-coupon-form input{width:100%;border:1px solid #d9d2c6;padding:0 14px}.checkout-coupon-form button,.remove-coupon-button{border:0;padding:0 18px;background:#111;color:#fff;font-weight:800}
+.applied-coupon-box{min-height:52px;border:1px dashed #c99b31;border-radius:15px;background:#fffaf0;padding:10px 12px 10px 15px}
+.checkout-item-count{min-width:58px;min-height:32px;display:grid;place-items:center;border-radius:999px;background:#f3ead3;color:#765914;font-size:.76rem;font-weight:800}
+.checkout-summary-products{padding:0 24px;display:grid;gap:10px;max-height:176px;overflow:auto}
+.checkout-summary-product{display:grid;grid-template-columns:56px minmax(0,1fr) auto;gap:12px;align-items:center;padding:10px;border:1px solid #eee9df;border-radius:15px;background:#fcfbf8}
+.checkout-summary-product img{width:56px;height:66px;object-fit:cover;border-radius:11px}.checkout-summary-product-info{min-width:0}
+.checkout-summary-product h3{margin:0 0 3px;font-size:.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.checkout-summary-product p,.checkout-summary-product small{margin:0;color:#746f66;font-size:.75rem}
+.checkout-total-list{display:grid;gap:9px;padding:16px 24px 22px}.checkout-total-list>div{display:flex;justify-content:space-between;gap:15px;font-size:.87rem}
+.checkout-discount-row{color:#18864b}.checkout-grand-total{margin-top:2px;padding-top:12px;border-top:1px solid #e9e3d8;font-size:1.02rem!important}
+.checkout-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;padding:0 24px 24px}.checkout-card-body .checkout-form-grid{padding:0}
+.field{min-width:0}.field label{display:block;margin-bottom:7px;font-size:.82rem;font-weight:800}
+.field input,.field select,.field textarea{width:100%;min-height:48px;border:1px solid #ddd7cc;border-radius:13px;background:#fff;padding:0 14px;font:inherit;outline:0}
+.field textarea{min-height:106px;padding-top:13px;resize:vertical}.field input:focus,.field select:focus,.field textarea:focus{border-color:#c89c35;box-shadow:0 0 0 4px rgba(200,156,53,.12)}
+.checkout-full-field{grid-column:1/-1}.checkout-area-picker{position:relative}
+.checkout-area-suggestions{position:absolute;z-index:40;top:calc(100% + 7px);left:0;right:0;max-height:220px;overflow:auto;padding:7px;border:1px solid #ded7ca;border-radius:14px;background:#fff;box-shadow:0 18px 38px rgba(0,0,0,.14)}
+.checkout-area-suggestions button{width:100%;min-height:42px;border:0;border-radius:10px;background:transparent;padding:9px 11px;text-align:left}.checkout-area-suggestions button:hover{background:#f5efe1}
+.delivery-type-options{
+display:grid;
+grid-template-columns:repeat(2,minmax(0,1fr));
+gap:10px;
+margin-top:6px;
+}
+
+.delivery-type-option{
+display:block;
+min-width:0;
+cursor:pointer;
+}
+
+.delivery-type-option input{
+position:absolute;
+opacity:0;
+pointer-events:none;
+}
+
+.delivery-type-box{
+display:flex;
+align-items:center;
+justify-content:center;
+gap:8px;
+height:48px;
+padding:0 12px;
+border:1.5px solid #e2dbcf;
+border-radius:12px;
+background:#fff;
+color:#25221d;
+font-size:13px;
+font-weight:750;
+line-height:1;
+text-align:center;
+transition:border-color .2s ease,background .2s ease,box-shadow .2s ease,color .2s ease;
+}
+
+.delivery-type-box i{
+font-size:16px;
+color:#b8861b;
+}
+
+.delivery-type-box small{
+display:none;
+}
+
+.delivery-type-option:hover .delivery-type-box{
+border-color:#c89c35;
+}
+
+.delivery-type-option input:focus-visible + .delivery-type-box{
+outline:3px solid rgba(200,156,53,.18);
+outline-offset:2px;
+}
+
+.delivery-type-option input:checked + .delivery-type-box{
+border-color:#c89c35;
+background:#fff7e8;
+color:#8b6518;
+box-shadow:0 4px 12px rgba(200,156,53,.14);
+}
+
+@media(max-width:560px){
+.delivery-type-options{
+grid-template-columns:repeat(2,minmax(0,1fr));
+gap:8px;
+}
+
+.delivery-type-box{
+height:46px;
+padding:0 8px;
+font-size:12.5px;
+}
+
+.delivery-type-box i{
+font-size:15px;
+}
+}
+
+.checkout-submit-card{display:grid;grid-template-columns:minmax(0,1fr) minmax(240px,auto);gap:18px;align-items:center;padding:20px 22px;background:linear-gradient(135deg,#111,#2d281d);color:#fff}
+.checkout-submit-copy{display:flex;align-items:center;gap:13px}.checkout-submit-lock{width:42px;height:42px;display:grid;place-items:center;border-radius:13px;background:rgba(255,255,255,.09)}
+.checkout-submit-copy strong,.checkout-submit-copy small{display:block}.checkout-submit-copy small{margin-top:4px;color:rgba(255,255,255,.68)}
+.checkout-place-order-button{width:100%;min-height:54px;display:flex;align-items:center;justify-content:space-between;gap:14px;border-radius:15px;background:#d1a741;color:#111;font-weight:900}
+.checkout-policy-note{grid-column:1/-1;margin:-6px 0 0;color:rgba(255,255,255,.6);font-size:.74rem;text-align:center}
+.coupon-message-success{color:#14833b!important}.coupon-message-error{color:#b42a2a!important}
+@media(max-width:860px){.checkout-top-grid{grid-template-columns:1fr}.checkout-form-grid{grid-template-columns:1fr}.checkout-full-field{grid-column:auto}.checkout-submit-card{grid-template-columns:1fr}}
+@media(max-width:560px){.checkout-page-section{padding:16px 0 34px}.checkout-page-section .container{padding-left:12px;padding-right:12px}.checkout-page-heading h1{font-size:1.5rem}.checkout-card,.checkout-submit-card{border-radius:17px}.checkout-top-coupon-card{grid-template-columns:1fr;padding:18px}.checkout-card-header{padding:18px 16px 12px}.checkout-card-body{padding:0 16px 18px}.checkout-form-grid{gap:13px;padding:0 16px 18px}.checkout-coupon-form{grid-template-columns:1fr}.checkout-coupon-form button{width:100%}.checkout-summary-products{padding:0 14px;max-height:none}.checkout-summary-product{grid-template-columns:50px minmax(0,1fr)}.checkout-summary-product img{width:50px;height:58px}.checkout-summary-product>strong{grid-column:2;margin-top:-5px}.checkout-total-list{padding:14px 16px 18px}.field input,.field select,.field textarea{font-size:16px}.checkout-submit-card{padding:18px 16px}}
+
+/* ===== Premium Checkout Visual Upgrade ===== */
+.checkout-page-section{
+  position:relative;
+  isolation:isolate;
+  overflow:hidden;
+  background:
+    radial-gradient(circle at 8% 0%,rgba(209,167,65,.18),transparent 26%),
+    radial-gradient(circle at 92% 16%,rgba(17,17,17,.06),transparent 22%),
+    linear-gradient(180deg,#fbfaf7 0%,#f3efe7 100%);
+}
+
+.checkout-page-section::before,
+.checkout-page-section::after{
+  content:"";
+  position:absolute;
+  z-index:-1;
+  border-radius:999px;
+  filter:blur(18px);
+  pointer-events:none;
+}
+
+.checkout-page-section::before{
+  width:220px;
+  height:220px;
+  top:40px;
+  left:-80px;
+  background:rgba(209,167,65,.13);
+}
+
+.checkout-page-section::after{
+  width:260px;
+  height:260px;
+  right:-100px;
+  bottom:70px;
+  background:rgba(0,0,0,.055);
+}
+
+.checkout-page-heading{
+  padding:4px 2px 8px;
+}
+
+.checkout-page-heading .section-kicker{
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+}
+
+.checkout-page-heading .section-kicker::before{
+  content:"";
+  width:22px;
+  height:1px;
+  background:#b9891d;
+}
+
+.checkout-card,
+.checkout-submit-card{
+  border:1px solid rgba(255,255,255,.72);
+  background:rgba(255,255,255,.82);
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+  box-shadow:
+    0 18px 48px rgba(27,23,15,.08),
+    inset 0 1px 0 rgba(255,255,255,.82);
+}
+
+.checkout-card{
+  transition:transform .25s ease,box-shadow .25s ease,border-color .25s ease;
+}
+
+.checkout-card:hover{
+  transform:translateY(-2px);
+  border-color:rgba(201,157,54,.28);
+  box-shadow:
+    0 22px 56px rgba(27,23,15,.11),
+    inset 0 1px 0 rgba(255,255,255,.9);
+}
+
+.checkout-top-coupon-card{
+  position:relative;
+  overflow:hidden;
+  background:
+    linear-gradient(135deg,rgba(214,175,77,.23),rgba(255,255,255,.88) 58%),
+    rgba(255,255,255,.8);
+}
+
+.checkout-top-coupon-card::after{
+  content:"";
+  position:absolute;
+  width:150px;
+  height:150px;
+  right:-45px;
+  top:-65px;
+  border-radius:50%;
+  border:26px solid rgba(201,157,54,.09);
+  animation:couponFloat 5s ease-in-out infinite;
+}
+
+.checkout-coupon-icon{
+  position:relative;
+  z-index:1;
+  box-shadow:0 12px 28px rgba(17,17,17,.18);
+  animation:couponPulse 2.8s ease-in-out infinite;
+}
+
+@keyframes couponFloat{
+  0%,100%{transform:translate3d(0,0,0) rotate(0deg)}
+  50%{transform:translate3d(-8px,10px,0) rotate(8deg)}
+}
+
+@keyframes couponPulse{
+  0%,100%{transform:scale(1)}
+  50%{transform:scale(1.045)}
+}
+
+.checkout-coupon-form input{
+  background:rgba(255,255,255,.86);
+  border-color:rgba(174,150,99,.28);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.85);
+}
+
+.checkout-coupon-form button,
+.remove-coupon-button{
+  position:relative;
+  overflow:hidden;
+  box-shadow:0 10px 22px rgba(17,17,17,.14);
+  transition:transform .2s ease,box-shadow .2s ease;
+}
+
+.checkout-coupon-form button:hover,
+.remove-coupon-button:hover{
+  transform:translateY(-1px);
+  box-shadow:0 14px 28px rgba(17,17,17,.18);
+}
+
+.checkout-summary-card{
+  position:relative;
+}
+
+.checkout-summary-product{
+  background:linear-gradient(180deg,rgba(255,255,255,.92),rgba(250,248,243,.92));
+  border-color:rgba(224,216,201,.74);
+  box-shadow:0 8px 20px rgba(25,22,16,.035);
+  transition:transform .2s ease,border-color .2s ease;
+}
+
+.checkout-summary-product:hover{
+  transform:translateX(3px);
+  border-color:rgba(201,157,54,.34);
+}
+
+.checkout-summary-product img{
+  box-shadow:0 9px 20px rgba(0,0,0,.12);
+}
+
+.checkout-grand-total{
+  margin-top:7px!important;
+  padding:14px 14px 0!important;
+  margin-left:-14px;
+  margin-right:-14px;
+  border-top:1px solid rgba(201,157,54,.3)!important;
+  color:#8a6519;
+}
+
+.checkout-address-card .checkout-card-header::after{
+  content:"";
+  width:42px;
+  height:42px;
+  flex:0 0 42px;
+  border-radius:13px;
+  background:
+    linear-gradient(135deg,rgba(209,167,65,.2),rgba(209,167,65,.06));
+  box-shadow:inset 0 0 0 1px rgba(209,167,65,.18);
+}
+
+.checkout-icon-label{
+  display:flex!important;
+  align-items:center;
+  gap:7px;
+  width:max-content;
+  max-width:100%;
+  margin-left:11px;
+  margin-bottom:-9px!important;
+  padding:0 6px;
+  position:relative;
+  z-index:2;
+  background:linear-gradient(180deg,transparent 44%,rgba(255,255,255,.96) 44%);
+  color:#4a443b;
+  font-size:.75rem!important;
+  letter-spacing:.01em;
+}
+
+.checkout-icon-label i{
+  color:#b9891d;
+  font-size:.86rem;
+}
+
+.field input,
+.field select,
+.field textarea{
+  background:rgba(255,255,255,.86);
+  border:1px solid rgba(191,180,160,.64);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.85),
+    0 8px 20px rgba(30,25,17,.025);
+  transition:border-color .2s ease,box-shadow .2s ease,transform .2s ease,background .2s ease;
+}
+
+.field input:hover,
+.field select:hover,
+.field textarea:hover{
+  border-color:rgba(184,137,29,.54);
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus{
+  background:#fff;
+  transform:translateY(-1px);
+  border-color:#c89c35;
+  box-shadow:
+    0 0 0 4px rgba(200,156,53,.12),
+    0 12px 28px rgba(33,27,18,.06);
+}
+
+.field-help{
+  display:block;
+  margin-top:7px;
+  color:#8a8276;
+  font-size:.7rem;
+}
+
+.delivery-type-box{
+  background:rgba(255,255,255,.82);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.84);
+}
+
+.delivery-type-option input:checked + .delivery-type-box{
+  background:
+    linear-gradient(135deg,rgba(255,249,232,.98),rgba(255,255,255,.96));
+  box-shadow:
+    0 7px 18px rgba(200,156,53,.16),
+    inset 0 1px 0 #fff;
+}
+
+.manual-payment-box{
+  margin-top:16px;
+  padding:18px;
+  border:1px solid rgba(201,157,54,.22);
+  border-radius:18px;
+  background:
+    linear-gradient(135deg,rgba(255,248,228,.72),rgba(255,255,255,.9));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.85);
+}
+
+.payment-instructions{
+  position:relative;
+  padding-left:56px;
+}
+
+.payment-instructions::before{
+  content:"\F2DC";
+  font-family:"bootstrap-icons";
+  position:absolute;
+  left:0;
+  top:2px;
+  width:42px;
+  height:42px;
+  display:grid;
+  place-items:center;
+  border-radius:13px;
+  background:#111;
+  color:#d4ad49;
+  font-size:18px;
+  box-shadow:0 10px 20px rgba(0,0,0,.15);
+}
+
+.payment-instructions h3{
+  margin:0 0 6px;
+  color:#1c1914;
+  font-size:1.05rem;
+}
+
+.payment-instructions p{
+  margin:0 0 14px;
+  color:#6e665a;
+  font-size:.84rem;
+}
+
+.manual-payment-detail{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  padding:10px 12px;
+  margin-top:8px;
+  border:1px solid rgba(202,188,160,.55);
+  border-radius:12px;
+  background:rgba(255,255,255,.72);
+}
+
+.manual-payment-detail span{
+  color:#7a7165;
+  font-size:.76rem;
+}
+
+.manual-payment-detail strong{
+  color:#111;
+}
+
+.checkout-submit-card{
+  position:relative;
+  overflow:hidden;
+  background:
+    radial-gradient(circle at 85% 10%,rgba(209,167,65,.18),transparent 30%),
+    linear-gradient(135deg,#0d0d0d,#2c2619);
+  box-shadow:0 22px 52px rgba(13,13,13,.22);
+}
+
+.checkout-submit-card::after{
+  content:"";
+  position:absolute;
+  inset:auto -70px -90px auto;
+  width:190px;
+  height:190px;
+  border-radius:50%;
+  border:32px solid rgba(209,167,65,.08);
+}
+
+.checkout-submit-copy,
+.checkout-place-order-button,
+.checkout-policy-note{
+  position:relative;
+  z-index:1;
+}
+
+.checkout-place-order-button{
+  border:0;
+  box-shadow:0 12px 26px rgba(209,167,65,.22);
+  transition:transform .2s ease,box-shadow .2s ease,filter .2s ease;
+}
+
+.checkout-place-order-button:hover{
+  transform:translateY(-2px);
+  filter:brightness(1.035);
+  box-shadow:0 16px 32px rgba(209,167,65,.3);
+}
+
+.checkout-place-order-button:active{
+  transform:translateY(0);
+}
+
+@media(max-width:860px){
+  .checkout-card:hover{
+    transform:none;
+  }
+
+  .checkout-submit-card{
+    gap:14px;
+  }
+}
+
+@media(max-width:560px){
+  .checkout-page-heading{
+    align-items:flex-start;
+    flex-direction:column;
+    gap:8px;
+  }
+
+  .checkout-top-grid{
+    gap:14px;
+  }
+
+  .checkout-card,
+  .checkout-submit-card{
+    backdrop-filter:blur(12px);
+    -webkit-backdrop-filter:blur(12px);
+  }
+
+  .checkout-top-coupon-card{
+    gap:12px;
+  }
+
+  .checkout-coupon-icon{
+    width:42px;
+    height:42px;
+    border-radius:13px;
+  }
+
+  .checkout-icon-label{
+    margin-left:9px;
+    font-size:.71rem!important;
+  }
+
+  .checkout-summary-product{
+    padding:9px;
+  }
+
+  .manual-payment-box{
+    padding:14px;
+  }
+
+  .payment-instructions{
+    padding-left:0;
+    padding-top:52px;
+  }
+
+  .payment-instructions::before{
+    top:0;
+  }
+
+  .manual-payment-detail{
+    align-items:flex-start;
+    flex-direction:column;
+    gap:3px;
+  }
+
+  .checkout-submit-copy{
+    align-items:flex-start;
+  }
+
+  .checkout-submit-lock{
+    width:38px;
+    height:38px;
+    flex:0 0 38px;
+  }
+}
+
+@media(prefers-reduced-motion:reduce){
+  .checkout-top-coupon-card::after,
+  .checkout-coupon-icon{
+    animation:none;
+  }
+
+  .checkout-card,
+  .checkout-place-order-button,
+  .checkout-coupon-form button,
+  .remove-coupon-button{
+    transition:none;
+  }
+}
+
+</style>
+
+<section class="section checkout-page-section">
+
+  <div class="container">
+
+    <div class="checkout-page-heading">
+      <div>
+        <span class="section-kicker">
+          SECURE CHECKOUT
+        </span>
+
+        <h1>Complete Your Order</h1>
+      </div>
+
+      <% if (!currentUser) { %>
+        <a class="checkout-login-link" href="/login">
+          Already registered? Login
+        </a>
+      <% } %>
+    </div>
+
+
+    <div class="checkout-top-grid">
+      <section class="checkout-card checkout-top-coupon-card">
+        <div class="checkout-coupon-icon">%</div>
+        <div class="checkout-coupon-content">
+          <header class="checkout-card-header">
+            <div>
+              <span class="checkout-mini-label">SPECIAL OFFER</span>
+              <h2>Have a Coupon?</h2>
+              <p>Enter your code to unlock your discount.</p>
+            </div>
+          </header>
+
+          <div class="checkout-card-body">
+            <div class="checkout-coupon-area" id="checkoutCouponArea">
+              <div class="applied-coupon-box" id="appliedCouponBox" <%= coupon ? '' : 'hidden' %>>
+                <div>
+                  <span>Coupon applied</span>
+                  <strong id="appliedCouponCode"><%= coupon?.code || '' %></strong>
+                </div>
+                <button type="button" class="remove-coupon-button" id="removeCouponButton">Remove</button>
+              </div>
+
+              <div class="checkout-coupon-form" id="couponApplyBox" <%= coupon ? 'hidden' : '' %>>
+                <input type="text" id="couponCodeInput" placeholder="Enter coupon code" autocomplete="off">
+                <button type="button" id="applyCouponButton">Apply</button>
+              </div>
+
+              <p class="field-help" id="couponMessage" aria-live="polite"></p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <aside class="checkout-card checkout-summary-card checkout-summary-compact">
+        <header class="checkout-card-header checkout-summary-header">
+          <div>
+            <span class="checkout-mini-label">YOUR ORDER</span>
+            <h2>Order Summary</h2>
+          </div>
+          <span class="checkout-item-count"><%= cartCount %> <%= cartCount === 1 ? 'item' : 'items' %></span>
+        </header>
+
+        <div class="checkout-summary-products">
+          <% cart.forEach(item => { %>
+            <article class="checkout-summary-product">
+              <img src="<%= item.image || 'https://via.placeholder.com/160x200?text=TTT' %>" alt="<%= item.name %>">
+              <div class="checkout-summary-product-info">
+                <h3><%= item.name %></h3>
+                <p><%= item.color %> · <%= item.size %></p>
+                <small>Quantity: <%= item.quantity %></small>
+              </div>
+              <strong>৳<%= money(Number(item.price) * Number(item.quantity)) %></strong>
+            </article>
+          <% }) %>
+        </div>
+
+        <div class="checkout-total-list">
+          <div><span>Subtotal</span><strong>৳<%= money(subtotal) %></strong></div>
+          <div>
+            <span>Delivery Fee</span>
+            <strong><% if (Number(deliveryFee) === 0) { %>Free<% } else { %>৳<%= money(deliveryFee) %><% } %></strong>
+          </div>
+          <div class="checkout-discount-row" id="checkoutDiscountRow" <%= finalDiscount > 0 ? '' : 'hidden' %>>
+            <span>Discount</span>
+            <strong id="checkoutDiscountAmount">− ৳<%= money(finalDiscount) %></strong>
+          </div>
+          <div class="checkout-grand-total">
+            <span>Total</span>
+            <strong id="checkoutGrandTotal">৳<%= money(finalTotal) %></strong>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <div class="checkout-professional-layout">
+
+      <!-- =====================================
+           LEFT SIDE: CHECKOUT FORM
+      ====================================== -->
+
+      <form
+        class="checkout-main-form"
+        method="post"
+        action="/checkout"
+      >
+
+        <% if (
+          typeof wholesaleDiscount !== 'undefined' &&
+          Number(wholesaleDiscount || 0) > 0
+        ) { %>
+          <div class="checkout-wholesale-banner">
+            <strong>Wholesale discount applied</strong>
+            <span>
+              You saved ৳<%= money(wholesaleDiscount) %>
+              on this bulk order.
+            </span>
+          </div>
+        <% } %>
+
+        <!-- SHIPPING ADDRESS -->
+
+        <section class="checkout-card checkout-address-card">
+
+          <header class="checkout-card-header">
+<div>
+              <h2>Shipping Address</h2>
+
+              <p>
+                Enter the address where you want to
+                receive your order.
+              </p>
+            </div>
+          </header>
+
+          <div class="checkout-form-grid">
+
+            <div class="field">
+              <label for="customerName" class="checkout-icon-label">
+                <i class="bi bi-person-fill" aria-hidden="true"></i>
+                Recipient Name
+                <span class="required-mark">*</span>
+              </label>
+
+              <input
+                id="customerName"
+                type="text"
+                name="name"
+                value="<%= user?.name || '' %>"
+                placeholder="Full Name"
+                autocomplete="name"
+                required
+              >
+            </div>
+
+            <div class="field">
+              <label for="customerPhone" class="checkout-icon-label">
+                <i class="bi bi-telephone-fill" aria-hidden="true"></i>
+                Contact Number
+                <span class="required-mark">*</span>
+              </label>
+
+              <input
+                id="customerPhone"
+                type="tel"
+                name="phone"
+                value="<%= user?.phone || '' %>"
+                placeholder="01XXXXXXXXX"
+                maxlength="11"
+                inputmode="numeric"
+                autocomplete="tel"
+                pattern="01[0-9]{9}"
+                required
+              >
+
+              <small class="field-help">
+                Enter a valid 11-digit Bangladeshi number.
+              </small>
+            </div>
+
+            <div class="field">
+              <label for="customerEmail" class="checkout-icon-label">
+                <i class="bi bi-envelope-fill" aria-hidden="true"></i>
+                Email Address
+              </label>
+
+              <input
+                id="customerEmail"
+                type="email"
+                name="email"
+                value="<%= user?.email || '' %>"
+                placeholder="example@email.com"
+                autocomplete="email"
+              >
+
+              <small class="field-help">
+                Order confirmation will be sent to this email.
+              </small>
+            </div>
+
+            <div class="field">
+              <label for="country" class="checkout-icon-label">
+                <i class="bi bi-globe-asia-australia" aria-hidden="true"></i>
+                Country
+              </label>
+
+              <select
+                id="country"
+                name="country"
+                autocomplete="country-name"
+              >
+                <option value="Bangladesh" selected>
+                  Bangladesh
+                </option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="city" class="checkout-icon-label">
+                <i class="bi bi-geo-alt-fill" aria-hidden="true"></i>
+                District / City
+                <span class="required-mark">*</span>
+              </label>
+
+              <select id="city" name="city" autocomplete="address-level1" required>
+                <option value="">Select District / City</option>
+                <option value="Bagerhat" <%= defaultAddress?.city === 'Bagerhat' ? 'selected' : '' %>>Bagerhat</option>
+                <option value="Bandarban" <%= defaultAddress?.city === 'Bandarban' ? 'selected' : '' %>>Bandarban</option>
+                <option value="Barguna" <%= defaultAddress?.city === 'Barguna' ? 'selected' : '' %>>Barguna</option>
+                <option value="Barishal" <%= defaultAddress?.city === 'Barishal' ? 'selected' : '' %>>Barishal</option>
+                <option value="Bhola" <%= defaultAddress?.city === 'Bhola' ? 'selected' : '' %>>Bhola</option>
+                <option value="Bogura" <%= defaultAddress?.city === 'Bogura' ? 'selected' : '' %>>Bogura</option>
+                <option value="Brahmanbaria" <%= defaultAddress?.city === 'Brahmanbaria' ? 'selected' : '' %>>Brahmanbaria</option>
+                <option value="Chandpur" <%= defaultAddress?.city === 'Chandpur' ? 'selected' : '' %>>Chandpur</option>
+                <option value="Chapai Nawabganj" <%= defaultAddress?.city === 'Chapai Nawabganj' ? 'selected' : '' %>>Chapai Nawabganj</option>
+                <option value="Chattogram" <%= defaultAddress?.city === 'Chattogram' ? 'selected' : '' %>>Chattogram</option>
+                <option value="Chuadanga" <%= defaultAddress?.city === 'Chuadanga' ? 'selected' : '' %>>Chuadanga</option>
+                <option value="Cox's Bazar" <%= defaultAddress?.city === 'Cox\'s Bazar' ? 'selected' : '' %>>Cox's Bazar</option>
+                <option value="Cumilla" <%= defaultAddress?.city === 'Cumilla' ? 'selected' : '' %>>Cumilla</option>
+                <option value="Dhaka" <%= defaultAddress?.city === 'Dhaka' ? 'selected' : '' %>>Dhaka</option>
+                <option value="Dinajpur" <%= defaultAddress?.city === 'Dinajpur' ? 'selected' : '' %>>Dinajpur</option>
+                <option value="Faridpur" <%= defaultAddress?.city === 'Faridpur' ? 'selected' : '' %>>Faridpur</option>
+                <option value="Feni" <%= defaultAddress?.city === 'Feni' ? 'selected' : '' %>>Feni</option>
+                <option value="Gaibandha" <%= defaultAddress?.city === 'Gaibandha' ? 'selected' : '' %>>Gaibandha</option>
+                <option value="Gazipur" <%= defaultAddress?.city === 'Gazipur' ? 'selected' : '' %>>Gazipur</option>
+                <option value="Gopalganj" <%= defaultAddress?.city === 'Gopalganj' ? 'selected' : '' %>>Gopalganj</option>
+                <option value="Habiganj" <%= defaultAddress?.city === 'Habiganj' ? 'selected' : '' %>>Habiganj</option>
+                <option value="Jamalpur" <%= defaultAddress?.city === 'Jamalpur' ? 'selected' : '' %>>Jamalpur</option>
+                <option value="Jashore" <%= defaultAddress?.city === 'Jashore' ? 'selected' : '' %>>Jashore</option>
+                <option value="Jhalokathi" <%= defaultAddress?.city === 'Jhalokathi' ? 'selected' : '' %>>Jhalokathi</option>
+                <option value="Jhenaidah" <%= defaultAddress?.city === 'Jhenaidah' ? 'selected' : '' %>>Jhenaidah</option>
+                <option value="Joypurhat" <%= defaultAddress?.city === 'Joypurhat' ? 'selected' : '' %>>Joypurhat</option>
+                <option value="Khagrachhari" <%= defaultAddress?.city === 'Khagrachhari' ? 'selected' : '' %>>Khagrachhari</option>
+                <option value="Khulna" <%= defaultAddress?.city === 'Khulna' ? 'selected' : '' %>>Khulna</option>
+                <option value="Kishoreganj" <%= defaultAddress?.city === 'Kishoreganj' ? 'selected' : '' %>>Kishoreganj</option>
+                <option value="Kurigram" <%= defaultAddress?.city === 'Kurigram' ? 'selected' : '' %>>Kurigram</option>
+                <option value="Kushtia" <%= defaultAddress?.city === 'Kushtia' ? 'selected' : '' %>>Kushtia</option>
+                <option value="Lakshmipur" <%= defaultAddress?.city === 'Lakshmipur' ? 'selected' : '' %>>Lakshmipur</option>
+                <option value="Lalmonirhat" <%= defaultAddress?.city === 'Lalmonirhat' ? 'selected' : '' %>>Lalmonirhat</option>
+                <option value="Madaripur" <%= defaultAddress?.city === 'Madaripur' ? 'selected' : '' %>>Madaripur</option>
+                <option value="Magura" <%= defaultAddress?.city === 'Magura' ? 'selected' : '' %>>Magura</option>
+                <option value="Manikganj" <%= defaultAddress?.city === 'Manikganj' ? 'selected' : '' %>>Manikganj</option>
+                <option value="Meherpur" <%= defaultAddress?.city === 'Meherpur' ? 'selected' : '' %>>Meherpur</option>
+                <option value="Moulvibazar" <%= defaultAddress?.city === 'Moulvibazar' ? 'selected' : '' %>>Moulvibazar</option>
+                <option value="Munshiganj" <%= defaultAddress?.city === 'Munshiganj' ? 'selected' : '' %>>Munshiganj</option>
+                <option value="Mymensingh" <%= defaultAddress?.city === 'Mymensingh' ? 'selected' : '' %>>Mymensingh</option>
+                <option value="Naogaon" <%= defaultAddress?.city === 'Naogaon' ? 'selected' : '' %>>Naogaon</option>
+                <option value="Narail" <%= defaultAddress?.city === 'Narail' ? 'selected' : '' %>>Narail</option>
+                <option value="Narayanganj" <%= defaultAddress?.city === 'Narayanganj' ? 'selected' : '' %>>Narayanganj</option>
+                <option value="Narsingdi" <%= defaultAddress?.city === 'Narsingdi' ? 'selected' : '' %>>Narsingdi</option>
+                <option value="Natore" <%= defaultAddress?.city === 'Natore' ? 'selected' : '' %>>Natore</option>
+                <option value="Netrokona" <%= defaultAddress?.city === 'Netrokona' ? 'selected' : '' %>>Netrokona</option>
+                <option value="Nilphamari" <%= defaultAddress?.city === 'Nilphamari' ? 'selected' : '' %>>Nilphamari</option>
+                <option value="Noakhali" <%= defaultAddress?.city === 'Noakhali' ? 'selected' : '' %>>Noakhali</option>
+                <option value="Pabna" <%= defaultAddress?.city === 'Pabna' ? 'selected' : '' %>>Pabna</option>
+                <option value="Panchagarh" <%= defaultAddress?.city === 'Panchagarh' ? 'selected' : '' %>>Panchagarh</option>
+                <option value="Patuakhali" <%= defaultAddress?.city === 'Patuakhali' ? 'selected' : '' %>>Patuakhali</option>
+                <option value="Pirojpur" <%= defaultAddress?.city === 'Pirojpur' ? 'selected' : '' %>>Pirojpur</option>
+                <option value="Rajbari" <%= defaultAddress?.city === 'Rajbari' ? 'selected' : '' %>>Rajbari</option>
+                <option value="Rajshahi" <%= defaultAddress?.city === 'Rajshahi' ? 'selected' : '' %>>Rajshahi</option>
+                <option value="Rangamati" <%= defaultAddress?.city === 'Rangamati' ? 'selected' : '' %>>Rangamati</option>
+                <option value="Rangpur" <%= defaultAddress?.city === 'Rangpur' ? 'selected' : '' %>>Rangpur</option>
+                <option value="Satkhira" <%= defaultAddress?.city === 'Satkhira' ? 'selected' : '' %>>Satkhira</option>
+                <option value="Shariatpur" <%= defaultAddress?.city === 'Shariatpur' ? 'selected' : '' %>>Shariatpur</option>
+                <option value="Sherpur" <%= defaultAddress?.city === 'Sherpur' ? 'selected' : '' %>>Sherpur</option>
+                <option value="Sirajganj" <%= defaultAddress?.city === 'Sirajganj' ? 'selected' : '' %>>Sirajganj</option>
+                <option value="Sunamganj" <%= defaultAddress?.city === 'Sunamganj' ? 'selected' : '' %>>Sunamganj</option>
+                <option value="Sylhet" <%= defaultAddress?.city === 'Sylhet' ? 'selected' : '' %>>Sylhet</option>
+                <option value="Tangail" <%= defaultAddress?.city === 'Tangail' ? 'selected' : '' %>>Tangail</option>
+                <option value="Thakurgaon" <%= defaultAddress?.city === 'Thakurgaon' ? 'selected' : '' %>>Thakurgaon</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="area" class="checkout-icon-label">
+                <i class="bi bi-map-fill" aria-hidden="true"></i>
+                Area / Thana / Upazila
+                <span class="required-mark">*</span>
+              </label>
+
+              <div class="checkout-area-picker">
+                <input
+                  id="area"
+                  type="text"
+                  name="area"
+                  placeholder="Type or choose Area / Thana / Upazila"
+                  autocomplete="address-level2"
+                  aria-controls="areaSuggestionList"
+                  required
+                >
+                <div
+                  class="checkout-area-suggestions"
+                  id="areaSuggestionList"
+                  role="listbox"
+                  hidden
+                ></div>
+              </div>
+            </div>
+
+            <div class="field checkout-full-field">
+              <label for="shippingAddress" class="checkout-icon-label">
+                <i class="bi bi-house-check-fill" aria-hidden="true"></i>
+                Full Address
+                <span class="required-mark">*</span>
+              </label>
+
+              <textarea
+                id="shippingAddress"
+                name="address"
+                placeholder="House / Building / Road / Street"
+                autocomplete="street-address"
+                required
+              ><%= defaultAddress?.address || '' %></textarea>
+            </div>
+
+            <div class="field">
+              <label for="postalCode" class="checkout-icon-label">
+                <i class="bi bi-mailbox2-flag" aria-hidden="true"></i>
+                Postal Code
+              </label>
+
+              <input
+                id="postalCode"
+                type="text"
+                name="postalCode"
+                placeholder="Optional"
+                autocomplete="postal-code"
+              >
+            </div>
+
+            <div class="field">
+              <label class="checkout-icon-label">
+                <i class="bi bi-signpost-split-fill" aria-hidden="true"></i>
+                Address Type
+                <span class="required-mark">*</span>
+              </label>
+
+              <div class="delivery-type-options">
+
+                <label class="delivery-type-option">
+                  <input
+                    type="radio"
+                    name="deliveryType"
+                    value="Home"
+                    checked
+                  >
+
+                  <span class="delivery-type-box">
+                    <i class="bi bi-house-door-fill" aria-hidden="true"></i>
+                    <span>Home</span>
+                  </span>
+                </label>
+
+                <label class="delivery-type-option">
+                  <input
+                    type="radio"
+                    name="deliveryType"
+                    value="Office"
+                  >
+
+                  <span class="delivery-type-box">
+                    <i class="bi bi-building" aria-hidden="true"></i>
+                    <span>Office</span>
+                  </span>
+                </label>
+
+              </div>
+            </div>
+
+          </div>
+
+        </section>
+
+
+        <!-- PAYMENT METHOD -->
+
+        <section class="checkout-card">
+
+          <header class="checkout-card-header">
+<div>
+              <h2>Payment Method</h2>
+
+              <p>
+                Select your preferred payment option.
+              </p>
+            </div>
+          </header>
+
+          <div class="checkout-card-body">
+
+            <div class="field">
+              <label for="paymentMethod" class="checkout-icon-label">
+                <i class="bi bi-credit-card-2-front-fill" aria-hidden="true"></i>
+                Select Payment Method
+                <span class="required-mark">*</span>
+              </label>
+
+              <select
+                id="paymentMethod"
+                name="paymentMethod"
+                required
+              >
+                <option value="COD">
+                  Cash on Delivery
+                </option>
+
+                <option value="bKash">
+                  bKash Manual Payment
+                </option>
+
+                <option value="Nagad">
+                  Nagad Manual Payment
+                </option>
+              </select>
+            </div>
+
+            <div
+              id="manualPaymentBox"
+              class="manual-payment-box"
+              hidden
+            >
+
+              <div class="payment-instructions">
+
+                <div>
+                  <h3 id="paymentTitle">
+                    Manual Payment
+                  </h3>
+
+                  <p>
+                    Send the exact order amount using
+                    <strong>Send Money</strong>.
+                  </p>
+
+                  <div class="manual-payment-detail">
+                    <span>Payment Number</span>
+
+                    <strong id="paymentNumber"></strong>
+                  </div>
+
+                  <div class="manual-payment-detail">
+                    <span>Payable Amount</span>
+
+                    <strong>
+                      ৳<%= money(finalTotal) %>
+                    </strong>
+                  </div>
+                </div>
+
+              </div>
+
+              <div class="checkout-form-grid manual-payment-fields">
+
+                <div class="field">
+                  <label for="senderNumber" class="checkout-icon-label">
+                    <i class="bi bi-phone-fill" aria-hidden="true"></i>
+                    Sender Number
+                    <span class="required-mark">*</span>
+                  </label>
+
+                  <input
+                    id="senderNumber"
+                    type="tel"
+                    name="senderNumber"
+                    maxlength="11"
+                    placeholder="01XXXXXXXXX"
+                    inputmode="numeric"
+                  >
+                </div>
+
+                <div class="field">
+                  <label for="transactionId" class="checkout-icon-label">
+                    <i class="bi bi-receipt-cutoff" aria-hidden="true"></i>
+                    Transaction ID
+                    <span class="required-mark">*</span>
+                  </label>
+
+                  <input
+                    id="transactionId"
+                    type="text"
+                    name="transactionId"
+                    placeholder="Example: 9AB12CD34E"
+                  >
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </section>
+
+
+        <!-- ORDER NOTE -->
+
+        <section class="checkout-card">
+
+          <header class="checkout-card-header">
+<div>
+              <h2>Order Note</h2>
+
+              <p>
+                Add any special delivery instructions.
+              </p>
+            </div>
+          </header>
+
+          <div class="checkout-card-body">
+
+            <div class="field">
+              <label for="orderNotes" class="checkout-icon-label">
+                <i class="bi bi-chat-left-text-fill" aria-hidden="true"></i>
+                Note for your order
+              </label>
+
+              <textarea
+                id="orderNotes"
+                name="notes"
+                maxlength="500"
+                placeholder="Example: Please call before delivery."
+              ></textarea>
+            </div>
+
+          </div>
+
+        </section>
+
+
+        <section class="checkout-submit-card">
+          <div class="checkout-submit-copy">
+            <span class="checkout-submit-lock">🔒</span>
+            <div>
+              <strong>Secure order confirmation</strong>
+              <small>Review your information before placing the order.</small>
+            </div>
+          </div>
+
+          <button class="btn checkout-place-order-button" type="submit">
+            <span>Place Order</span>
+            <strong id="placeOrderTotal">৳<%= money(finalTotal) %></strong>
+          </button>
+
+          <p class="checkout-policy-note">
+            By placing this order, you confirm that the information provided is correct.
+          </p>
+        </section>
+
+      </form>
+
+
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const paymentMethod =
+      document.getElementById('paymentMethod');
+
+    const manualPaymentBox =
+      document.getElementById('manualPaymentBox');
+
+    const paymentTitle =
+      document.getElementById('paymentTitle');
+
+    const paymentNumber =
+      document.getElementById('paymentNumber');
+
+    const senderNumber =
+      document.getElementById('senderNumber');
+
+    const transactionId =
+      document.getElementById('transactionId');
+
+    const bkashNumber =
+      <%- JSON.stringify(bkashNumber || '') %>;
+
+    const nagadNumber =
+      <%- JSON.stringify(nagadNumber || '') %>;
+
+    function updatePaymentFields() {
+      if (
+        !paymentMethod ||
+        !manualPaymentBox ||
+        !senderNumber ||
+        !transactionId
+      ) {
+        return;
+      }
+
+      const method = paymentMethod.value;
+
+      const isManual =
+        method === 'bKash' ||
+        method === 'Nagad';
+
+      manualPaymentBox.hidden = !isManual;
+
+      senderNumber.required = isManual;
+      transactionId.required = isManual;
+
+      if (method === 'bKash') {
+        paymentTitle.textContent =
+          'Pay with bKash';
+
+        paymentNumber.textContent =
+          bkashNumber ||
+          'Number not configured';
+      }
+
+      if (method === 'Nagad') {
+        paymentTitle.textContent =
+          'Pay with Nagad';
+
+        paymentNumber.textContent =
+          nagadNumber ||
+          'Number not configured';
+      }
+
+      if (!isManual) {
+        senderNumber.value = '';
+        transactionId.value = '';
+        paymentNumber.textContent = '';
+      }
+    }
+
+    paymentMethod?.addEventListener(
+      'change',
+      updatePaymentFields
+    );
+
+    updatePaymentFields();
+
+    /* AJAX COUPON APPLY / REMOVE */
+
+    const couponCodeInput =
+      document.getElementById('couponCodeInput');
+
+    const applyCouponButton =
+      document.getElementById('applyCouponButton');
+
+    const removeCouponButton =
+      document.getElementById('removeCouponButton');
+
+    const couponApplyBox =
+      document.getElementById('couponApplyBox');
+
+    const appliedCouponBox =
+      document.getElementById('appliedCouponBox');
+
+    const appliedCouponCode =
+      document.getElementById('appliedCouponCode');
+
+    const couponMessage =
+      document.getElementById('couponMessage');
+
+    const discountRow =
+      document.getElementById('checkoutDiscountRow');
+
+    const discountAmount =
+      document.getElementById('checkoutDiscountAmount');
+
+    const grandTotal =
+      document.getElementById('checkoutGrandTotal');
+
+    const placeOrderTotal =
+      document.getElementById('placeOrderTotal');
+
+    const formatMoney = value =>
+      Number(value || 0).toLocaleString(
+        'en-BD',
+        {
+          minimumFractionDigits: 0,
+          maximumFractionDigits: 2
+        }
+      );
+
+    function setCouponMessage(message, type = '') {
+      if (!couponMessage) return;
+
+      couponMessage.textContent = message || '';
+      couponMessage.classList.remove(
+        'coupon-message-success',
+        'coupon-message-error'
+      );
+
+      if (type === 'success') {
+        couponMessage.classList.add('coupon-message-success');
+      }
+
+      if (type === 'error') {
+        couponMessage.classList.add('coupon-message-error');
+      }
+    }
+
+    function updateCheckoutTotals(data) {
+      const discount = Number(data.discount || 0);
+      const total = Number(data.total || 0);
+
+      if (discountRow) {
+        discountRow.hidden = discount <= 0;
+      }
+
+      if (discountAmount) {
+        discountAmount.textContent =
+          `− ৳${formatMoney(discount)}`;
+      }
+
+      if (grandTotal) {
+        grandTotal.textContent =
+          `৳${formatMoney(total)}`;
+      }
+
+      if (placeOrderTotal) {
+        placeOrderTotal.textContent =
+          `৳${formatMoney(total)}`;
+      }
+    }
+
+    async function sendCouponRequest(url, body = {}) {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(body)
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(
+          data.message || 'Coupon request failed.'
+        );
+      }
+
+      return data;
+    }
+
+    applyCouponButton?.addEventListener('click', async () => {
+      const code = String(couponCodeInput?.value || '')
+        .trim()
+        .toUpperCase();
+
+      if (!code) {
+        setCouponMessage('Enter a coupon code.', 'error');
+        couponCodeInput?.focus();
+        return;
+      }
+
+      applyCouponButton.disabled = true;
+      applyCouponButton.textContent = 'Applying...';
+      setCouponMessage('');
+
+      try {
+        const data = await sendCouponRequest(
+          '/coupon/apply',
+          { code }
+        );
+
+        if (appliedCouponCode) {
+          appliedCouponCode.textContent = data.coupon.code;
+        }
+
+        if (couponApplyBox) couponApplyBox.hidden = true;
+        if (appliedCouponBox) appliedCouponBox.hidden = false;
+
+        updateCheckoutTotals(data);
+        setCouponMessage(data.message, 'success');
+      } catch (error) {
+        setCouponMessage(error.message, 'error');
+      } finally {
+        applyCouponButton.disabled = false;
+        applyCouponButton.textContent = 'Apply';
+      }
+    });
+
+    couponCodeInput?.addEventListener('keydown', event => {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        applyCouponButton?.click();
+      }
+    });
+
+    removeCouponButton?.addEventListener('click', async () => {
+      removeCouponButton.disabled = true;
+      removeCouponButton.textContent = 'Removing...';
+      setCouponMessage('');
+
+      try {
+        const data = await sendCouponRequest('/coupon/remove');
+
+        if (appliedCouponBox) appliedCouponBox.hidden = true;
+        if (couponApplyBox) couponApplyBox.hidden = false;
+        if (couponCodeInput) couponCodeInput.value = '';
+
+        updateCheckoutTotals(data);
+        setCouponMessage(data.message, 'success');
+      } catch (error) {
+        setCouponMessage(error.message, 'error');
+      } finally {
+        removeCouponButton.disabled = false;
+        removeCouponButton.textContent = 'Remove';
+      }
+    });
+
+    /* Mobile-friendly area suggestions */
+    const cityField = document.getElementById('city');
+    const areaField = document.getElementById('area');
+    const areaSuggestionList = document.getElementById('areaSuggestionList');
+
+    const areaDirectory = {
+      Dhaka: ['Dhanmondi','Mirpur','Uttara','Mohammadpur','Bashundhara','Badda','Banani','Gulshan','Motijheel','Jatrabari','Savar','Ashulia','Keraniganj','Demra','Khilgaon'],
+      Gazipur: ['Gazipur Sadar','Tongi','Kaliakair','Kapasia','Kaliganj','Sreepur'],
+      Narayanganj: ['Narayanganj Sadar','Fatullah','Siddhirganj','Rupganj','Sonargaon','Araihazar'],
+      Chattogram: ['Chattogram Sadar','Pahartali','Panchlaish','Halishahar','Agrabad','Patenga','Hathazari','Sitakunda'],
+      Cumilla: ['Cumilla Sadar','Daudkandi','Debidwar','Chandina','Burichang','Laksam'],
+      Sylhet: ['Sylhet Sadar','Beanibazar','Golapganj','South Surma','Fenchuganj','Kanaighat'],
+      Rajshahi: ['Rajshahi Sadar','Boalia','Motihar','Paba','Godagari','Bagha'],
+      Khulna: ['Khulna Sadar','Sonadanga','Khalishpur','Daulatpur','Dumuria','Rupsa'],
+      Rangpur: ['Rangpur Sadar','Mithapukur','Badarganj','Kaunia','Pirganj','Gangachara'],
+      Mymensingh: ['Mymensingh Sadar','Trishal','Bhaluka','Muktagacha','Gafargaon','Fulbaria']
+    };
+
+    function getAreaSuggestions() {
+      const selectedCity = cityField?.value || '';
+      return (areaDirectory[selectedCity] || [`${selectedCity} Sadar`,'City Area','Municipality Area']).filter(Boolean);
+    }
+
+    function renderAreaSuggestions() {
+      if (!areaField || !areaSuggestionList) return;
+
+      const query = areaField.value.trim().toLowerCase();
+      const suggestions = getAreaSuggestions()
+        .filter(area => !query || area.toLowerCase().includes(query))
+        .slice(0, 10);
+
+      areaSuggestionList.innerHTML = '';
+
+      if (!suggestions.length) {
+        areaSuggestionList.hidden = true;
+        return;
+      }
+
+      suggestions.forEach(area => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.textContent = area;
+        button.setAttribute('role', 'option');
+        button.addEventListener('click', () => {
+          areaField.value = area;
+          areaSuggestionList.hidden = true;
+          areaField.focus();
+        });
+        areaSuggestionList.appendChild(button);
+      });
+
+      areaSuggestionList.hidden = false;
+    }
+
+    areaField?.addEventListener('focus', renderAreaSuggestions);
+    areaField?.addEventListener('input', renderAreaSuggestions);
+
+    cityField?.addEventListener('change', () => {
+      if (areaField) {
+        areaField.value = '';
+        areaField.focus();
+      }
+      renderAreaSuggestions();
+    });
+
+    document.addEventListener('click', event => {
+      if (!areaSuggestionList || !areaField) return;
+      if (event.target !== areaField && !areaSuggestionList.contains(event.target)) {
+        areaSuggestionList.hidden = true;
+      }
+    });
+
+  });
+</script>
+<script src="/js/bd-addresses.js"></script>
+<%- include('partials/footer') %>
