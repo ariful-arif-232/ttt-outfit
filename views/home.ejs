@@ -417,7 +417,10 @@ poster="/videos/video-poster.jpg"
             style="transition-delay:
               <%= Math.min(index * 70, 350) %>ms;"
           >
-            <%- include('partials/product-card', { p }) %>
+            <%- include('partials/product-card', {
+    p,
+    hideOfferButton: true
+}) %>
           </div>
 
         <% }) %>
