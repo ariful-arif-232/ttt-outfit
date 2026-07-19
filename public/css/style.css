@@ -11760,3 +11760,213 @@ flex-direction:column;
     display: flex;
   }
 }
+
+
+
+/* ==================================================
+   TTT OUTFIT - HERO + CATEGORY REFINEMENT
+   (Added by ChatGPT)
+================================================== */
+
+/* Smooth blend from hero to next section */
+.find-style-section,
+.find-your-style-section,
+.find-style-wrapper{
+    position:relative;
+    margin-top:-2px;
+    background:
+      linear-gradient(
+        to bottom,
+        #2F3A2E 0%,
+        rgba(47,58,46,.82) 14%,
+        rgba(108,103,78,.42) 38%,
+        #f6f4ef 100%);
+}
+
+/* Remove heavy black shadow if present */
+.find-style-section::before,
+.find-your-style-section::before,
+.find-style-wrapper::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    background:none !important;
+    box-shadow:none !important;
+}
+
+/* Desktop showcase height */
+@media (min-width:992px){
+
+  .category-showcase-layout{
+      min-height:430px;
+      align-items:stretch;
+  }
+
+  .category-video-card,
+  .showcase-video-card{
+      min-height:430px;
+  }
+
+  .category-card,
+  .showcase-card{
+      min-height:205px;
+  }
+}
+
+/* Mobile refinement */
+@media (max-width:700px){
+
+  .find-style-section,
+  .find-your-style-section,
+  .find-style-wrapper{
+      background:
+        linear-gradient(
+          to bottom,
+          #2F3A2E 0%,
+          rgba(47,58,46,.72) 10%,
+          rgba(108,103,78,.28) 26%,
+          #f6f4ef 100%);
+  }
+
+  .find-style-section h2,
+  .find-your-style-section h2{
+      font-size:34px;
+      margin-bottom:10px;
+  }
+
+  .category-video-card,
+  .showcase-video-card{
+      min-height:340px;
+  }
+
+  .category-card,
+  .showcase-card{
+      min-height:170px;
+  }
+}
+
+
+
+/* ==================================================
+   TTT OUTFIT — SMALLER MOBILE HOMEPAGE TYPOGRAPHY
+   Find Your Style + video feature + category cards
+================================================== */
+
+@media (max-width: 700px) {
+
+  /* Find Your Style */
+  .hero-matched-title {
+    padding: 22px 12px 25px !important;
+  }
+
+  .hero-matched-title h2,
+  .find-style-section h2,
+  .find-your-style-section h2 {
+    font-size: clamp(29px, 8.6vw, 36px) !important;
+    line-height: 1 !important;
+    letter-spacing: -0.7px !important;
+  }
+
+  .hero-matched-title h2::after {
+    width: 48px !important;
+    margin-top: 10px !important;
+  }
+
+  /* Main video card */
+  .category-video-content {
+    padding: 20px 17px 22px !important;
+  }
+
+  .category-video-label {
+    margin-bottom: 8px !important;
+    padding: 4px 8px !important;
+    font-size: 6px !important;
+    letter-spacing: 1.1px !important;
+  }
+
+  .category-video-content h2 {
+    max-width: 245px !important;
+    margin-bottom: 8px !important;
+    font-size: clamp(27px, 7.8vw, 33px) !important;
+    line-height: .98 !important;
+    letter-spacing: -.65px !important;
+  }
+
+  .category-video-content p {
+    max-width: 250px !important;
+    font-size: 9.5px !important;
+    line-height: 1.42 !important;
+  }
+
+  .category-video-button {
+    margin-top: 13px !important;
+    font-size: 8.5px !important;
+  }
+
+  /* Four category cards */
+  .premium-category-overlay {
+    left: 11px !important;
+    right: 11px !important;
+    bottom: 11px !important;
+  }
+
+  .category-label {
+    margin-bottom: 5px !important;
+    padding: 4px 7px !important;
+    font-size: 5.4px !important;
+    letter-spacing: .75px !important;
+  }
+
+  .premium-category-overlay h3 {
+    margin-bottom: 7px !important;
+    font-size: clamp(17px, 5vw, 21px) !important;
+    line-height: .98 !important;
+    letter-spacing: -.3px !important;
+  }
+
+  .category-shop-link {
+    gap: 4px !important;
+    padding-bottom: 2px !important;
+    font-size: 6.8px !important;
+  }
+
+  .category-shop-link strong {
+    font-size: 9px !important;
+  }
+}
+
+@media (max-width: 390px) {
+
+  .hero-matched-title {
+    padding: 19px 10px 22px !important;
+  }
+
+  .hero-matched-title h2,
+  .find-style-section h2,
+  .find-your-style-section h2 {
+    font-size: 28px !important;
+  }
+
+  .category-video-content h2 {
+    max-width: 220px !important;
+    font-size: 26px !important;
+  }
+
+  .category-video-content p {
+    max-width: 225px !important;
+    font-size: 8.8px !important;
+  }
+
+  .premium-category-overlay h3 {
+    font-size: 16.5px !important;
+  }
+
+  .category-label {
+    font-size: 5px !important;
+  }
+
+  .category-shop-link {
+    font-size: 6.3px !important;
+  }
+}
