@@ -12166,3 +12166,162 @@ font-size:9px;
     white-space: nowrap;
   }
 }
+
+
+/* =========================================================
+   DESKTOP CATEGORY SHOWCASE — TALL EDITORIAL PROPORTIONS
+========================================================= */
+
+@media (min-width: 992px) {
+
+  .category-showcase-layout {
+    min-height: 620px !important;
+    height: 620px !important;
+    gap: 18px !important;
+    align-items: stretch !important;
+  }
+
+  .category-showcase-layout .category-video-feature {
+    min-height: 620px !important;
+    height: 620px !important;
+    border-radius: 18px !important;
+  }
+
+  .category-showcase-layout .category-feature-video,
+  .category-showcase-layout .category-video-overlay {
+    height: 100% !important;
+  }
+
+  .category-showcase-layout .premium-category-grid {
+    min-height: 620px !important;
+    height: 620px !important;
+    gap: 18px !important;
+    grid-template-rows: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .category-showcase-layout .premium-category-card {
+    min-height: 301px !important;
+    height: 301px !important;
+    border-radius: 16px !important;
+  }
+
+  .category-showcase-layout .premium-category-overlay {
+    left: 22px !important;
+    right: 22px !important;
+    bottom: 21px !important;
+  }
+
+  .category-showcase-layout .premium-category-overlay h3 {
+    font-size: clamp(32px, 2.5vw, 46px) !important;
+    line-height: 0.96 !important;
+  }
+
+  .category-showcase-layout .category-video-content {
+    min-height: 620px !important;
+    padding: 44px 32px !important;
+    justify-content: flex-end !important;
+  }
+
+  .category-showcase-layout .category-video-content h2 {
+    max-width: 430px !important;
+    font-size: clamp(52px, 4.7vw, 72px) !important;
+    line-height: 0.91 !important;
+  }
+
+  .category-showcase-layout .category-video-content p {
+    max-width: 390px !important;
+    font-size: 14px !important;
+  }
+}
+
+/* Keep tablet and mobile unchanged */
+
+
+/* =========================================================
+   TRANSPARENT GLASS LABELS — CATEGORY + FEATURED OFFER
+========================================================= */
+
+/* Remove solid gold pills and replace with premium glass effect */
+.category-label,
+.category-video-label,
+.featured-offer {
+  color: #ffffff !important;
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.22),
+      rgba(255, 255, 255, 0.08)
+    ) !important;
+
+  border: 1px solid rgba(255, 255, 255, 0.36) !important;
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22) !important;
+
+  backdrop-filter: blur(10px) saturate(135%) !important;
+  -webkit-backdrop-filter: blur(10px) saturate(135%) !important;
+
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.32);
+}
+
+/* Keep offer readable on the light Featured Products background */
+.featured-offer {
+  color: #2f3a2e !important;
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.78),
+      rgba(255, 255, 255, 0.38)
+    ) !important;
+
+  border-color: rgba(47, 58, 46, 0.28) !important;
+
+  box-shadow:
+    0 8px 22px rgba(47, 58, 46, 0.10),
+    inset 0 1px 0 rgba(255, 255, 255, 0.72) !important;
+
+  text-shadow: none !important;
+}
+
+.featured-offer strong {
+  color: #9b7928 !important;
+}
+
+/* Subtle premium hover */
+.category-label,
+.category-video-label,
+.featured-offer {
+  transition:
+    transform 0.25s ease,
+    background 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease !important;
+}
+
+.premium-category-card:hover .category-label,
+.category-video-feature:hover .category-video-label,
+.featured-offer:hover {
+  transform: translateY(-2px);
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.30),
+      rgba(255, 255, 255, 0.12)
+    ) !important;
+
+  border-color: rgba(255, 255, 255, 0.55) !important;
+}
+
+/* Mobile: smaller, cleaner glass pills */
+@media (max-width: 700px) {
+  .category-label,
+  .category-video-label {
+    padding: 4px 8px !important;
+    border-radius: 999px !important;
+  }
+
+  .featured-offer {
+    padding: 5px 11px !important;
+  }
+}
