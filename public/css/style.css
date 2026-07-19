@@ -12549,3 +12549,260 @@ font-size:9px;
     letter-spacing: 1px !important;
   }
 }
+
+
+/* =========================================================
+   FINAL PREMIUM CATEGORY POLISH
+   - 2-second announcement timing
+   - premium editorial typography
+   - lower mobile text placement
+   - taller aligned desktop grid
+   - reliable mobile video control
+========================================================= */
+
+/* Announcement: change each message every 2 seconds */
+.announcement-track span {
+  animation-duration: 8s !important;
+}
+
+.announcement-track span:nth-child(1) { animation-delay: 0s !important; }
+.announcement-track span:nth-child(2) { animation-delay: 2s !important; }
+.announcement-track span:nth-child(3) { animation-delay: 4s !important; }
+.announcement-track span:nth-child(4) { animation-delay: 6s !important; }
+
+/* Typography requested from the reference */
+.category-video-content h2,
+.premium-category-overlay h3 {
+  font-family: Inter, Arial, sans-serif !important;
+  font-weight: 800 !important;
+  letter-spacing: -1.35px !important;
+  color: #ffffff !important;
+  text-shadow:
+    0 2px 12px rgba(0, 0, 0, 0.42) !important;
+}
+
+.category-video-content h2 {
+  font-size: clamp(44px, 4.25vw, 66px) !important;
+  line-height: 0.94 !important;
+}
+
+.premium-category-overlay h3 {
+  font-size: clamp(30px, 2.55vw, 42px) !important;
+  line-height: 0.96 !important;
+}
+
+.category-label,
+.category-video-label {
+  font-family: Inter, Arial, sans-serif !important;
+  font-weight: 800 !important;
+  letter-spacing: 1.35px !important;
+}
+
+.category-shop-link,
+.category-video-button {
+  font-family: Inter, Arial, sans-serif !important;
+  font-weight: 750 !important;
+}
+
+/* Video play control */
+.category-video-feature {
+  position: relative;
+}
+
+.category-video-play-button {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 7;
+
+  width: 74px;
+  height: 74px;
+  padding: 0;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #ffffff;
+  background: rgba(20, 30, 42, 0.68);
+
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 50%;
+
+  box-shadow:
+    0 16px 38px rgba(0, 0, 0, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  transform: translate(-50%, -50%);
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s ease,
+    background 0.25s ease;
+}
+
+.category-video-play-button:hover {
+  background: rgba(20, 30, 42, 0.82);
+  transform: translate(-50%, -50%) scale(1.05);
+}
+
+.category-video-play-button.is-playing {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.category-video-feature:hover .category-video-play-button.is-playing {
+  opacity: 0.72;
+  pointer-events: auto;
+}
+
+.category-video-play-icon {
+  width: 0;
+  height: 0;
+  margin-left: 5px;
+
+  border-top: 13px solid transparent;
+  border-bottom: 13px solid transparent;
+  border-left: 20px solid #ffffff;
+}
+
+/* Desktop: taller, perfectly aligned editorial grid */
+@media (min-width: 992px) {
+  .category-showcase-layout {
+    height: 690px !important;
+    min-height: 690px !important;
+
+    display: grid !important;
+    grid-template-columns: minmax(0, 1.06fr) minmax(0, 1.94fr) !important;
+    gap: 20px !important;
+    align-items: stretch !important;
+  }
+
+  .category-showcase-layout .category-video-feature {
+    height: 690px !important;
+    min-height: 690px !important;
+  }
+
+  .category-showcase-layout .premium-category-grid {
+    height: 690px !important;
+    min-height: 690px !important;
+
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    grid-template-rows: repeat(2, minmax(0, 1fr)) !important;
+    gap: 20px !important;
+  }
+
+  .category-showcase-layout .premium-category-card {
+    height: 335px !important;
+    min-height: 335px !important;
+  }
+
+  .category-showcase-layout .category-video-content {
+    min-height: 690px !important;
+    padding: 48px 34px !important;
+  }
+
+  .category-showcase-layout .premium-category-overlay {
+    left: 22px !important;
+    right: 22px !important;
+    bottom: 22px !important;
+  }
+}
+
+/* Mobile: put text lower so the product remains visible */
+@media (max-width: 700px) {
+  .category-video-play-button {
+    width: 68px;
+    height: 68px;
+  }
+
+  .category-video-content {
+    justify-content: flex-end !important;
+    padding: 18px 16px 20px !important;
+  }
+
+  .category-video-content h2 {
+    max-width: 285px !important;
+    font-size: 31px !important;
+    line-height: 0.96 !important;
+    letter-spacing: -1px !important;
+  }
+
+  .premium-category-overlay {
+    left: 16px !important;
+    right: 16px !important;
+    bottom: 13px !important;
+  }
+
+  .premium-category-overlay h3 {
+    margin-bottom: 9px !important;
+    font-size: 24px !important;
+    line-height: 0.98 !important;
+    letter-spacing: -0.75px !important;
+  }
+
+  .category-label {
+    margin-bottom: 8px !important;
+  }
+
+  .category-shop-link {
+    font-size: 7.2px !important;
+  }
+
+  .premium-category-card::before {
+    background:
+      linear-gradient(
+        to top,
+        rgba(0, 0, 0, 0.74) 0%,
+        rgba(0, 0, 0, 0.25) 36%,
+        rgba(0, 0, 0, 0.02) 64%,
+        transparent 100%
+      ) !important;
+  }
+}
+
+
+/* =========================================================
+   AUTOMATIC LAZY VIDEO — NO VISIBLE PLAY BUTTON
+   Improves initial homepage loading performance
+========================================================= */
+
+.category-video-play-button,
+.category-video-play-icon {
+  display: none !important;
+}
+
+.category-feature-video {
+  display: block;
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+  background: transparent;
+
+  opacity: 0;
+  transition: opacity 0.45s ease;
+}
+
+.category-feature-video[data-loaded="true"],
+.category-feature-video:not([poster]) {
+  opacity: 1;
+}
+
+.category-feature-video:is(:playing) {
+  opacity: 1;
+}
+
+/* Keep poster clean until the lazy-loaded video starts */
+.category-video-feature {
+  background:
+    #111 url("/videos/video-poster.jpg") center / cover no-repeat;
+}
+
+
+.category-feature-video.is-video-playing {
+  opacity: 1;
+}
