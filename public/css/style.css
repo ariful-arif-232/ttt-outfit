@@ -12021,3 +12021,148 @@ font-size:9px;
 }
 
 }
+
+
+/* =========================================================
+   FINAL HOMEPAGE REPAIR — ACTUAL HOMEPAGE CLASS NAMES
+========================================================= */
+
+/* Announcement: 1 second per message, narrow olive bar */
+.announcement-track span {
+  animation-duration: 4s !important;
+}
+
+.announcement-track span:nth-child(1) { animation-delay: 0s !important; }
+.announcement-track span:nth-child(2) { animation-delay: 1s !important; }
+.announcement-track span:nth-child(3) { animation-delay: 2s !important; }
+.announcement-track span:nth-child(4) { animation-delay: 3s !important; }
+
+/* Hero to Find Your Style: remove the heavy black block/shadow */
+.category-section {
+  position: relative;
+  margin-top: -1px;
+  padding-top: 0 !important;
+  background:
+    linear-gradient(
+      to bottom,
+      #2f3a2e 0,
+      rgba(47, 58, 46, 0.78) 44px,
+      rgba(143, 133, 101, 0.30) 105px,
+      #f6f4ef 190px,
+      #f6f4ef 100%
+    ) !important;
+}
+
+.hero-matched-title {
+  padding-top: 30px !important;
+  padding-bottom: 34px !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.hero-matched-title h2 {
+  text-shadow:
+    0 2px 12px rgba(0, 0, 0, 0.18) !important;
+}
+
+/* Featured actions stay beside View All, not pushed to the far edge */
+.featured-section-head {
+  justify-content: flex-start !important;
+  align-items: flex-end;
+}
+
+.featured-section-head .featured-actions {
+  margin-left: 24px;
+}
+
+/* Desktop category showcase: taller and balanced */
+@media (min-width: 701px) {
+  .category-showcase-layout {
+    min-height: 500px !important;
+  }
+
+  .category-showcase-layout .category-video-feature {
+    min-height: 500px !important;
+    height: 500px !important;
+  }
+
+  .category-showcase-layout .category-video-content {
+    min-height: 500px !important;
+  }
+
+  .category-showcase-layout .premium-category-grid {
+    height: 500px !important;
+  }
+
+  .category-showcase-layout .premium-category-card {
+    min-height: 242px !important;
+    height: 242px !important;
+  }
+}
+
+/* Mobile: clean compact heading, video text and category text */
+@media (max-width: 700px) {
+  .category-section {
+    background:
+      linear-gradient(
+        to bottom,
+        #2f3a2e 0,
+        rgba(47, 58, 46, 0.70) 30px,
+        rgba(143, 133, 101, 0.24) 72px,
+        #f6f4ef 128px,
+        #f6f4ef 100%
+      ) !important;
+  }
+
+  .hero-matched-title {
+    padding: 19px 10px 23px !important;
+  }
+
+  .hero-matched-title h2 {
+    font-size: 28px !important;
+    letter-spacing: -0.45px !important;
+  }
+
+  .category-video-content h2 {
+    font-size: 27px !important;
+  }
+
+  .category-video-content p {
+    font-size: 9px !important;
+  }
+
+  .premium-category-overlay h3 {
+    font-size: 18px !important;
+  }
+
+  .category-label {
+    font-size: 5.3px !important;
+  }
+
+  .category-shop-link {
+    font-size: 6.5px !important;
+  }
+
+  .featured-section-head {
+    align-items: flex-start !important;
+  }
+
+  .featured-section-head .featured-actions {
+    margin-left: 0;
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 10px;
+  }
+
+  .featured-section-head .view-all-link {
+    font-size: 13px;
+    white-space: nowrap;
+  }
+
+  .featured-section-head .featured-offer {
+    padding: 5px 10px;
+    font-size: 8px;
+    white-space: nowrap;
+  }
+}
