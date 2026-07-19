@@ -418,6 +418,8 @@ const firstVariant =
   </div>
 
 
+<% if (!locals.hideOfferButton) { %>
+
 <div class="product-footer-right">
 
   <button
@@ -426,6 +428,20 @@ const firstVariant =
     data-offer-url="/shop"
     aria-label="Get 20% wholesale offer"
   >
+
+    <i class="bi bi-tags-fill offer-tag-icon"></i>
+
+    <span class="offer-text">
+      <span class="offer-word">GET</span>
+      <span class="offer-percent">20%</span>
+      <span class="offer-word">OFF</span>
+    </span>
+
+  </button>
+
+</div>
+
+<% } %>
 
     <i
       class="bi bi-tags-fill offer-tag-icon"
