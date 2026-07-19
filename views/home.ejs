@@ -385,7 +385,7 @@ poster="/videos/video-poster.jpg"
 <section class="section products-section">
   <div class="container">
 
-    <header class="section-head reveal">
+    <header class="section-head featured-section-head reveal">
       <div>
         <span class="section-kicker">
           CURATED FOR YOU
@@ -417,10 +417,7 @@ poster="/videos/video-poster.jpg"
             style="transition-delay:
               <%= Math.min(index * 70, 350) %>ms;"
           >
-            <%- include('partials/product-card', {
-    p,
-    hideOfferButton: true
-}) %>
+            <%- include('partials/product-card', { p, hideOfferButton: true }) %>
           </div>
 
         <% }) %>
