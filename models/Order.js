@@ -42,12 +42,12 @@ const orderSchema = new mongoose.Schema({
     index: true
   },
 
-  customer: {
+customer: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
-    required: true,
+    default: null,
     index: true
-  },
+},
 
   customerSnapshot: {
     name: String,
