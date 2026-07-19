@@ -12898,3 +12898,214 @@ font-size:9px;
     font-weight: 500 !important;
   }
 }
+
+
+
+/* =========================================================
+   PROFESSIONAL EDITORIAL TYPOGRAPHY + HERO TRANSITION
+========================================================= */
+
+/* Smooth, accurate hero-to-section transition */
+.hero-slider::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  z-index: 8;
+
+  height: 96px;
+  pointer-events: none;
+
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(10, 10, 10, 0) 0%,
+      rgba(20, 20, 18, 0.10) 22%,
+      rgba(246, 244, 239, 0.52) 62%,
+      #f6f4ef 100%
+    ) !important;
+}
+
+.category-section {
+  margin-top: -1px !important;
+  padding-top: 0 !important;
+  background:
+    linear-gradient(
+      180deg,
+      #f6f4ef 0%,
+      #f8f6f1 24%,
+      #f6f4ef 100%
+    ) !important;
+}
+
+/* Elegant collection heading */
+.hero-matched-title {
+  position: relative;
+  margin: 0 auto 28px !important;
+  padding: 34px 16px 24px !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.hero-matched-title::before {
+  content: "CURATED COLLECTIONS";
+  display: block;
+  margin-bottom: 9px;
+
+  color: #9f7d2e;
+
+  font-family: Manrope, Inter, Arial, sans-serif;
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: 2.4px;
+  text-transform: uppercase;
+}
+
+.hero-matched-title h2 {
+  margin: 0 !important;
+
+  color: #262824 !important;
+
+  font-family: "Cormorant Garamond", Georgia, serif !important;
+  font-size: clamp(40px, 4.6vw, 60px) !important;
+  font-weight: 600 !important;
+  line-height: 0.95 !important;
+  letter-spacing: -0.9px !important;
+
+  text-shadow: none !important;
+}
+
+.hero-matched-title h2::after {
+  content: "";
+  display: block;
+
+  width: 46px !important;
+  height: 1px !important;
+  margin: 13px auto 0 !important;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      #b28a31,
+      transparent
+    ) !important;
+}
+
+/* Stylish, premium grid typography */
+.category-video-content h2,
+.premium-category-overlay h3 {
+  font-family: "Cormorant Garamond", Georgia, serif !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.45px !important;
+  color: #ffffff !important;
+
+  text-shadow:
+    0 2px 12px rgba(0, 0, 0, 0.34) !important;
+}
+
+.category-video-content h2 {
+  max-width: 390px !important;
+  font-size: clamp(42px, 4vw, 58px) !important;
+  line-height: 0.92 !important;
+}
+
+.premium-category-overlay h3 {
+  margin-bottom: 9px !important;
+  font-size: clamp(29px, 2.45vw, 41px) !important;
+  line-height: 0.94 !important;
+}
+
+.category-video-content p {
+  font-family: Manrope, Inter, Arial, sans-serif !important;
+  font-size: 11px !important;
+  font-weight: 400 !important;
+  line-height: 1.52 !important;
+  color: rgba(255, 255, 255, 0.84) !important;
+}
+
+.category-label,
+.category-video-label {
+  font-family: Manrope, Inter, Arial, sans-serif !important;
+  font-size: 6px !important;
+  font-weight: 600 !important;
+  letter-spacing: 1.25px !important;
+}
+
+.category-shop-link,
+.category-video-button {
+  font-family: Manrope, Inter, Arial, sans-serif !important;
+  font-size: 8px !important;
+  font-weight: 500 !important;
+}
+
+/* Keep image clear while text remains readable */
+.premium-category-card::before,
+.category-video-overlay {
+  background:
+    linear-gradient(
+      to top,
+      rgba(0, 0, 0, 0.60) 0%,
+      rgba(0, 0, 0, 0.17) 38%,
+      rgba(0, 0, 0, 0.03) 67%,
+      transparent 100%
+    ) !important;
+}
+
+/* Mobile refinements */
+@media (max-width: 700px) {
+  .hero-slider::after {
+    height: 58px !important;
+
+    background:
+      linear-gradient(
+        to bottom,
+        rgba(10, 10, 10, 0) 0%,
+        rgba(246, 244, 239, 0.34) 55%,
+        #f6f4ef 100%
+      ) !important;
+  }
+
+  .hero-matched-title {
+    padding: 27px 10px 20px !important;
+    margin-bottom: 16px !important;
+  }
+
+  .hero-matched-title::before {
+    margin-bottom: 7px;
+    font-size: 7px;
+    letter-spacing: 2px;
+  }
+
+  .hero-matched-title h2 {
+    font-size: 36px !important;
+    letter-spacing: -0.55px !important;
+  }
+
+  .category-video-content h2 {
+    font-size: 28px !important;
+    line-height: 0.95 !important;
+  }
+
+  /* Move text lower on all 4 category cards */
+  .premium-category-overlay {
+    left: 14px !important;
+    right: 14px !important;
+    bottom: 8px !important;
+  }
+
+  .premium-category-overlay h3 {
+    margin-bottom: 6px !important;
+    font-size: 22px !important;
+    line-height: 0.96 !important;
+  }
+
+  .category-label {
+    margin-bottom: 5px !important;
+  }
+
+  .category-shop-link {
+    font-size: 6.3px !important;
+  }
+}
