@@ -230,21 +230,19 @@
 <div class="category-video-feature">
 
   <video
+    id="categoryFeatureVideo"
     class="category-feature-video"
     autoplay
     muted
     loop
     playsinline
+    webkit-playsinline
     preload="none"
 poster="/videos/video-poster.jpg"
   >
-    <source
-      src="/videos/ttt-fashion.mp4"
-      type="video/mp4"
-    >
+    <source data-src="/videos/ttt-fashion.mp4" type="video/mp4">
   </video>
-
-  <div class="category-video-overlay"></div>
+<div class="category-video-overlay"></div>
 
   <div class="category-video-content">
 
@@ -574,5 +572,77 @@ poster="/videos/video-poster.jpg"
 
   </div>
 </section>
+
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const video = document.getElementById('categoryFeatureVideo');
+    if (!video) return;
+
+    video.muted = true;
+    video.defaultMuted = true;
+    video.playsInline = true;
+
+    let videoLoaded = false;
+
+    const loadAndPlayVideo = () => {
+      if (!videoLoaded) {
+        const source = video.querySelector('source[data-src]');
+
+        if (source) {
+          source.src = source.dataset.src;
+          source.removeAttribute('data-src');
+          video.load();
+        }
+
+        videoLoaded = true;
+
+        video.addEventListener('playing', function () {
+          video.classList.add('is-video-playing');
+        }, { once: true });
+      }
+
+      const playPromise = video.play();
+
+      if (playPromise && typeof playPromise.catch === 'function') {
+        playPromise.catch(() => {
+          /* Safari may block autoplay in Low Power Mode.
+             Keep the poster visible without showing a button. */
+        });
+      }
+    };
+
+    if ('IntersectionObserver' in window) {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              loadAndPlayVideo();
+              observer.unobserve(video);
+            }
+          });
+        },
+        {
+          rootMargin: '300px 0px',
+          threshold: 0.01
+        }
+      );
+
+      observer.observe(video);
+    } else {
+      loadAndPlayVideo();
+    }
+
+    document.addEventListener(
+      'visibilitychange',
+      function () {
+        if (!document.hidden && videoLoaded && video.paused) {
+          video.play().catch(() => {});
+        }
+      }
+    );
+  });
+</script>
 
 <%- include('partials/footer') %>
