@@ -68,6 +68,9 @@ const firstVariant =
     firstVariant?.color ||
     productColors[0] ||
     'Default';
+
+
+  const hideOfferButton = Boolean(locals.hideOfferButton);
 %>
 
 <article class="professional-product-card">
@@ -373,24 +376,14 @@ const firstVariant =
     <div class="product-sale-types">
 
       <span>
-        <i
-          class="bi bi-box-seam"
-          aria-hidden="true"
-        ></i>
-
+        <i class="bi bi-box-seam" aria-hidden="true"></i>
         Wholesale
       </span>
 
-      <span class="sale-type-separator">
-        •
-      </span>
+      <span class="sale-type-separator">•</span>
 
       <span>
-        <i
-          class="bi bi-bag"
-          aria-hidden="true"
-        ></i>
-
+        <i class="bi bi-bag" aria-hidden="true"></i>
         Retail
       </span>
 
@@ -405,68 +398,42 @@ const firstVariant =
         %>
       "
     >
-
       <i></i>
 
       <%= productStock > 0
         ? 'Available'
         : 'Out of stock'
       %>
-
     </span>
 
   </div>
 
+  <% if (!hideOfferButton) { %>
 
-<% if (!locals.hideOfferButton) { %>
+    <div class="product-footer-right">
 
-<div class="product-footer-right">
+      <button
+        class="product-offer-button"
+        type="button"
+        data-offer-url="/shop"
+        aria-label="Get 20% wholesale offer"
+      >
+        <i
+          class="bi bi-tags-fill offer-tag-icon"
+          aria-hidden="true"
+        ></i>
 
-  <button
-    class="product-offer-button"
-    type="button"
-    data-offer-url="/shop"
-    aria-label="Get 20% wholesale offer"
-  >
+        <span class="offer-text">
+          <span class="offer-word">GET</span>
+          <span class="offer-percent">20%</span>
+          <span class="offer-word">OFF</span>
+        </span>
+      </button>
 
-    <i class="bi bi-tags-fill offer-tag-icon"></i>
+    </div>
 
-    <span class="offer-text">
-      <span class="offer-word">GET</span>
-      <span class="offer-percent">20%</span>
-      <span class="offer-word">OFF</span>
-    </span>
+  <% } %>
 
-  </button>
-
-</div>
-
-<% } %>
-
-    <i
-      class="bi bi-tags-fill offer-tag-icon"
-      aria-hidden="true"
-    ></i>
-
-    <span class="offer-text">
-
-      <span class="offer-word">
-        GET
-      </span>
-
-      <span class="offer-percent">
-        20%
-      </span>
-
-      <span class="offer-word">
-        OFF
-      </span>
-
-    </span>
-
-  </button>
-
-</div>
 </div>
 
   </div>
