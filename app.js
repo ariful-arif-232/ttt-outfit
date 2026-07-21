@@ -1185,8 +1185,13 @@ function logoutUser(req, res, next) {
     return res.redirect('/');
   }
 
-  req.session.destroy((error) => {
+function logoutUser(req, res, next) {
+  if (!req.session) {
+    res.clearCookie('ttt.sid');
+    return res.redirect('/');
+  }
 
+  req.session.destroy((error) => {
     if (error) {
       console.error('Logout error:', error);
       return next(error);
@@ -1198,17 +1203,6 @@ function logoutUser(req, res, next) {
       secure: process.env.NODE_ENV === 'production'
     });
 
-    return res.redirect('/');
-  });
-
-}
-  req.session.destroy(error => {
-    if (error) {
-      console.error('Logout error:', error);
-      return res.redirect('/');
-    }
-
-    res.clearCookie('ttt.sid');
     return res.redirect('/');
   });
 }
