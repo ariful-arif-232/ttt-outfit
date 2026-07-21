@@ -3,7 +3,49 @@
 <div class="admin-form-heading"><div><span class="section-kicker">HOMEPAGE MANAGEMENT</span><h1><%= slider ? 'Edit hero slide' : 'Add hero slide' %></h1><p class="small">Desktop image is required. Mobile image is optional but recommended.</p></div></div>
 <form method="post" enctype="multipart/form-data" action="<%= slider ? '/admin/sliders/' + slider._id : '/admin/sliders' %>">
 <div class="two-col"><div class="field"><label>Subtitle</label><input name="subtitle" value="<%= slider?.subtitle || '' %>"></div><div class="field"><label>Title</label><input name="title" value="<%= slider?.title || '' %>"></div></div>
-<div class="field"><label>Description</label><textarea name="description" rows="4"><%= slider?.description || '' %></textarea></div>
+<div class="two-col">
+
+  <div class="field">
+    <label>Description</label>
+
+    <textarea
+      name="description"
+      rows="4"
+      placeholder="Write the vertical side description..."
+    ><%= slider?.description || '' %></textarea>
+  </div>
+
+  <div class="field">
+    <label>Description position</label>
+
+    <select name="descriptionPosition">
+      <option
+        value="left"
+        <%= (slider?.descriptionPosition || 'left') === 'left'
+          ? 'selected'
+          : ''
+        %>
+      >
+        Left side
+      </option>
+
+      <option
+        value="right"
+        <%= slider?.descriptionPosition === 'right'
+          ? 'selected'
+          : ''
+        %>
+      >
+        Right side
+      </option>
+    </select>
+
+    <p class="small">
+      Description will appear vertically on the selected edge of the hero image.
+    </p>
+  </div>
+
+</div>
 <div class="two-col"><div class="field"><label>Button text</label><input name="buttonText" value="<%= slider?.buttonText || 'Shop Now' %>"></div><div class="field"><label>Button link</label><input name="buttonLink" value="<%= slider?.buttonLink || '/shop' %>"></div></div>
 <div class="two-col"><div class="field"><label>Text position</label><select name="textPosition"><% ['left-top','left-center','left-bottom','center-top','center-center','center-bottom','right-top','right-center','right-bottom'].forEach(position => { %><option value="<%= position %>" <%= (slider?.textPosition || 'left-center') === position ? 'selected' : '' %>><%= position.replace('-', ' / ') %></option><% }) %></select></div><div class="field"><label>Display order</label><input type="number" name="displayOrder" step="1" value="<%= slider?.displayOrder ?? 0 %>"></div></div>
 <h2>Desktop image</h2><div class="two-col"><div class="field"><label>Image URL</label><input type="url" name="desktopImageUrl" value="<%= slider?.desktopImage?.url || '' %>" placeholder="https://..."></div><div class="field"><label>Upload image</label><input type="file" name="desktopImageFile" accept="image/*" <%= cloudinaryReady ? '' : 'disabled' %>></div></div>
