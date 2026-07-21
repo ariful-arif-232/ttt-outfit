@@ -1178,7 +1178,27 @@ app.post(
     }
   }
 );
-app.post('/logout', (req, res) => req.session.destroy(() => res.redirect('/')));
+function logoutUser(req, res) {
+  req.logout?.(() => {});
+
+  req.session.destroy(error => {
+    if (error) {
+      console.error('Logout error:', error);
+      return res.redirect('/');
+    }
+
+    res.clearCookie('ttt.sid');
+    return res.redirect('/');
+  });
+}
+
+app.post('/logout', logoutUser);
+
+/*
+  Compatibility route:
+  Supports any existing logout link that sends GET /logout.
+*/
+app.get('/logout', logoutUser);
 
 app.post('/cart/add', async (req, res) => {
   try {
