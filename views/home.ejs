@@ -5,9 +5,26 @@
   <div class="ttt-hero-track">
     <% activeSlides.forEach(function(slide, index) { %>
       <article class="ttt-hero-slide <%= index === 0 ? 'is-active' : '' %> ttt-position-<%= slide.textPosition || 'center-left' %>" aria-hidden="<%= index === 0 ? 'false' : 'true' %>">
+        <%
+          const desktopImageUrl =
+            (slide.desktopImage && slide.desktopImage.url)
+              ? slide.desktopImage.url
+              : (typeof slide.desktopImage === 'string' ? slide.desktopImage : '/hero-1.jpg');
+
+          const mobileImageUrl =
+            (slide.mobileImage && slide.mobileImage.url)
+              ? slide.mobileImage.url
+              : (typeof slide.mobileImage === 'string' ? slide.mobileImage : '');
+        %>
         <picture>
-          <% if (slide.mobileImage) { %><source media="(max-width: 700px)" srcset="<%= slide.mobileImage %>"><% } %>
-          <img src="<%= slide.desktopImage || '/hero-1.jpg' %>" alt="<%= slide.title || 'TTT Outfit collection' %>" <%= index === 0 ? 'fetchpriority="high"' : 'loading="lazy"' %>>
+          <% if (mobileImageUrl) { %>
+            <source media="(max-width: 700px)" srcset="<%= mobileImageUrl %>">
+          <% } %>
+          <img
+            src="<%= desktopImageUrl %>"
+            alt="<%= slide.title || 'TTT Outfit collection' %>"
+            <%= index === 0 ? 'fetchpriority="high"' : 'loading="lazy"' %>
+          >
         </picture>
         <div class="ttt-hero-overlay"></div>
         <div class="ttt-hero-content">
@@ -41,8 +58,22 @@
       {name:'Jacket', image:'/category-jacket.jpg', buttonText:'View Collection'}
     ]; %>
     <% showcase.forEach(function(cat) { %>
+      <%
+        const categoryImageUrl =
+          (cat.image && cat.image.url)
+            ? cat.image.url
+            : (typeof cat.image === 'string'
+                ? cat.image
+                : (cat.imageUrl || '/ttt-logo.jpeg'));
+      %>
       <a class="ttt-showcase-card ttt-reveal" href="/shop?category=<%= encodeURIComponent(cat.name) %>">
-        <img src="<%= cat.image || '/ttt-logo.jpeg' %>" alt="<%= cat.name %>" loading="lazy" decoding="async" data-image-fallback="/ttt-logo.jpeg">
+        <img
+          src="<%= categoryImageUrl %>"
+          alt="<%= cat.name %>"
+          loading="lazy"
+          decoding="async"
+          data-image-fallback="/ttt-logo.jpeg"
+        >
         <span class="ttt-showcase-shade"></span>
         <span class="ttt-showcase-copy"><strong><%= cat.name %></strong><em><%= cat.buttonText || 'Shop Now' %> <i class="bi bi-arrow-right"></i></em></span>
       </a>
