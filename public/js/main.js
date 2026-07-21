@@ -216,110 +216,7 @@ document.addEventListener('DOMContentLoaded', () => {
     );
 
   }
-  /* =========================
-     HERO SLIDER
-  ========================= */
-
-  const slides = Array.from(
-    document.querySelectorAll('.hero-slide')
-  );
-
-  const dots = Array.from(
-    document.querySelectorAll('.hero-dot')
-  );
-
-  const previousButton =
-    document.querySelector('.hero-prev');
-
-  const nextButton =
-    document.querySelector('.hero-next');
-
-  let currentSlide = 0;
-  let sliderTimer = null;
-
-  function showSlide(index) {
-    if (!slides.length) return;
-
-    currentSlide =
-      (index + slides.length) % slides.length;
-
-    slides.forEach((slide, slideIndex) => {
-      const isActive =
-        slideIndex === currentSlide;
-
-      slide.classList.toggle(
-        'active',
-        isActive
-      );
-
-      slide.setAttribute(
-        'aria-hidden',
-        String(!isActive)
-      );
-    });
-
-    dots.forEach((dot, dotIndex) => {
-      dot.classList.toggle(
-        'active',
-        dotIndex === currentSlide
-      );
-    });
-  }
-
-  function stopSlider() {
-    if (!sliderTimer) return;
-
-    clearInterval(sliderTimer);
-    sliderTimer = null;
-  }
-
-  function startSlider() {
-    stopSlider();
-
-    if (slides.length < 2) return;
-
-    sliderTimer = setInterval(() => {
-      showSlide(currentSlide + 1);
-    }, 2500);
-  }
-
-  previousButton?.addEventListener(
-    'click',
-    () => {
-      showSlide(currentSlide - 1);
-      startSlider();
-    }
-  );
-
-  nextButton?.addEventListener(
-    'click',
-    () => {
-      showSlide(currentSlide + 1);
-      startSlider();
-    }
-  );
-
-  dots.forEach((dot, index) => {
-    dot.addEventListener('click', () => {
-      showSlide(index);
-      startSlider();
-    });
-  });
-
-  document.addEventListener(
-    'visibilitychange',
-    () => {
-      if (document.hidden) {
-        stopSlider();
-      } else {
-        startSlider();
-      }
-    }
-  );
-
-  showSlide(0);
-  startSlider();
-
+ 
 
   /* =========================
      SCROLL REVEAL
@@ -539,7 +436,7 @@ document.addEventListener('keydown', event => {
       const stop = () => { if (timer) clearInterval(timer); timer = null; };
       const start = () => {
         stop();
-        if (slides.length > 1 && !reducedMotion.matches && !document.hidden) timer = setInterval(() => show(index + 1), 6000);
+        if (slides.length > 1 && !reducedMotion.matches && !document.hidden) timer = setInterval(() => show(index + 1), 2000);
       };
 
       prev?.addEventListener('click', () => { show(index - 1, true); start(); });
