@@ -1178,12 +1178,6 @@ app.post(
     }
   }
 );
-function logoutUser(req, res, next) {
-
-  if (!req.session) {
-    res.clearCookie('ttt.sid');
-    return res.redirect('/');
-  }
 
 function logoutUser(req, res, next) {
   if (!req.session) {
