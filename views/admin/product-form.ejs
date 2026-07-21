@@ -75,13 +75,26 @@
       <div class="two-col">
 
         <div class="field">
-          <label>Category *</label>
-
-          <input
-            name="category"
-            value="<%= product?.category || '' %>"
-            required
-          >
+          <label for="productCategory">Category *</label>
+          <select id="productCategory" name="category" required>
+            <option value="">Select a category</option>
+            <%
+              const categoryOptions = Array.isArray(managedCategories) ? managedCategories : [];
+              const categoryGroups = [...new Set(categoryOptions.map(item => item.group || 'Other'))];
+            %>
+            <% categoryGroups.forEach(group => { %>
+              <optgroup label="<%= group %>">
+                <% categoryOptions.filter(item => (item.group || 'Other') === group).forEach(item => { %>
+                  <option value="<%= item.name %>" <%= product?.category === item.name ? 'selected' : '' %>><%= item.name %></option>
+                <% }) %>
+              </optgroup>
+            <% }) %>
+          </select>
+          <% if (!categoryOptions.length) { %>
+            <p class="small">No managed category exists yet. Create one from Admin → Categories.</p>
+          <% } else { %>
+            <p class="small">Categories are managed from Admin → Categories. Existing product values remain available for compatibility.</p>
+          <% } %>
         </div>
 
         <div class="field">

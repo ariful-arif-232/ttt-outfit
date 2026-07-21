@@ -1,0 +1,17 @@
+<%- include('../partials/header') %>
+<div class="container admin-layout">
+  <%- include('../partials/admin-nav') %>
+  <section class="panel">
+    <div class="admin-form-heading"><div><span class="section-kicker">HOMEPAGE MANAGEMENT</span><h1><%= category ? 'Edit category' : 'Add category' %></h1><p class="small">One category record can control menu placement, showcase cards and product rails.</p></div></div>
+    <form method="post" enctype="multipart/form-data" action="<%= category ? '/admin/categories/' + category._id : '/admin/categories' %>">
+      <div class="two-col"><div class="field"><label>Name *</label><input name="name" value="<%= category?.name || '' %>" required></div><div class="field"><label>Slug</label><input name="slug" value="<%= category?.slug || '' %>" placeholder="Generated from name"></div></div>
+      <div class="two-col"><div class="field"><label>Parent group *</label><select name="group" required><% (groups || []).forEach(group => { %><option value="<%= group %>" <%= category?.group === group ? 'selected' : '' %>><%= group %></option><% }) %></select></div><div class="field"><label>Display order</label><input type="number" name="displayOrder" value="<%= category?.displayOrder ?? 0 %>" step="1"></div></div>
+      <div class="two-col"><div class="field"><label>Button text</label><input name="buttonText" value="<%= category?.buttonText || 'Shop Now' %>"></div><div class="field"><label>Offer text</label><input name="offerText" value="<%= category?.offerText || 'GET 20% OFF' %>"></div></div>
+      <div class="two-col"><div class="field"><label>Image URL</label><input type="url" name="imageUrl" value="<%= category?.image?.url || '' %>" placeholder="https://..."></div><div class="field"><label>Upload image</label><input type="file" name="imageFile" accept="image/*" <%= cloudinaryReady ? '' : 'disabled' %>><p class="small"><%= cloudinaryReady ? 'Uploaded image takes priority over URL.' : 'Cloudinary is not configured; use an image URL.' %></p></div></div>
+      <% if (category?.image?.url) { %><div class="admin-image-preview"><img src="<%= category.image.url %>" alt="<%= category.image.alt || category.name %>"></div><% } %>
+      <fieldset class="admin-check-grid"><legend>Visibility</legend><label><input type="checkbox" name="showInMenu" <%= category ? (category.showInMenu ? 'checked' : '') : 'checked' %>> Show in drawer menu</label><label><input type="checkbox" name="showInShowcase" <%= category ? (category.showInShowcase ? 'checked' : '') : 'checked' %>> Show in Ready to Wear</label><label><input type="checkbox" name="showOnHomepage" <%= category ? (category.showOnHomepage ? 'checked' : '') : 'checked' %>> Show product rail</label><label><input type="checkbox" name="active" <%= category ? (category.active ? 'checked' : '') : 'checked' %>> Active</label></fieldset>
+      <div class="form-actions"><button class="btn gold-btn" type="submit"><%= category ? 'Save changes' : 'Create category' %></button><a class="btn ghost-btn" href="/admin/categories">Cancel</a></div>
+    </form>
+  </section>
+</div>
+<%- include('../partials/footer') %>
