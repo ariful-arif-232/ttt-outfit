@@ -3451,18 +3451,71 @@ app.get('/admin/categories', requireAdmin, async (req, res, next) => {
   } catch (error) { next(error); }
 });
 
-app.get('/admin/categories/new', requireAdmin, (req, res) => {
-  res.render('admin/category-form', { title: 'Add category', category: null, groups: Category.GROUPS, cloudinaryReady: cloudinaryReady() });
-});
+async function getCategoryGroups() {
+  const existingGroups = await Category.distinct('group');
 
-app.get('/admin/categories/:id/edit', requireAdmin, async (req, res, next) => {
-  try {
-    const category = await Category.findById(req.params.id).lean();
-    if (!category) return res.status(404).render('message', { title: 'Not found', message: 'Category not found.' });
-    res.render('admin/category-form', { title: 'Edit category', category, groups: Category.GROUPS, cloudinaryReady: cloudinaryReady() });
-  } catch (error) { next(error); }
-});
+  return [
+    ...new Set([
+      'T-Shirts',
+      'Polo Shirts',
+      'Bottom Wear',
+      'Winter Wear',
+      'Other',
+      ...existingGroups
+    ])
+  ]
+    .map(group => cleanText(group))
+    .filter(Boolean)
+    .sort((a, b) => a.localeCompare(b));
+}
 
+app.get(
+  '/admin/categories/new',
+  requireAdmin,
+  async (req, res, next) => {
+    try {
+      const groups = await getCategoryGroups();
+
+      res.render('admin/category-form', {
+        title: 'Add category',
+        category: null,
+        groups,
+        cloudinaryReady: cloudinaryReady()
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+app.get(
+  '/admin/categories/:id/edit',
+  requireAdmin,
+  async (req, res, next) => {
+    try {
+      const [category, groups] = await Promise.all([
+        Category.findById(req.params.id).lean(),
+        getCategoryGroups()
+      ]);
+
+      if (!category) {
+        return res.status(404).render('message', {
+          title: 'Not found',
+          message: 'Category not found.'
+        });
+      }
+
+      res.render('admin/category-form', {
+        title: 'Edit category',
+        category,
+        groups,
+        cloudinaryReady: cloudinaryReady()
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
 async function categoryPayload(req, existing = null) {
   const name = cleanText(req.body.name);
   if (!name) throw new Error('Category name is required.');
@@ -3476,7 +3529,7 @@ async function categoryPayload(req, existing = null) {
   return {
     name,
     slug: slugify(cleanText(req.body.slug) || name),
-    group: Category.GROUPS.includes(req.body.group) ? req.body.group : 'Other',
+   group: cleanText(req.body.group) || 'Other',
     image,
     buttonText: cleanText(req.body.buttonText) || 'Shop Now',
     offerText: cleanText(req.body.offerText) || 'GET 20% OFF',
