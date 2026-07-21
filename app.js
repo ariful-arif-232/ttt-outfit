@@ -3612,6 +3612,10 @@ const mobileFile = req.files?.mobileImageFile?.[0] || null;
     subtitle: cleanText(req.body.subtitle),
     title: cleanText(req.body.title),
     description: cleanText(req.body.description),
+    descriptionPosition:
+  cleanText(req.body.descriptionPosition) === 'right'
+    ? 'right'
+    : 'left',
     buttonText: cleanText(req.body.buttonText) || 'Shop Now',
     buttonLink: cleanText(req.body.buttonLink) || '/shop',
     textPosition: cleanText(req.body.textPosition) || 'left-center',
