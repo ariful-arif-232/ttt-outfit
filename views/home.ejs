@@ -1,648 +1,105 @@
 <%- include('partials/header') %>
 
-<!-- =====================================
-     HERO SLIDER
-===================================== -->
-
-<section class="hero-slider" aria-label="Promotional collections">
-
-  <!-- Slide 1 -->
-  <article
-    class="hero-slide hero-slide-one active"
-    aria-hidden="false"
-  >
-    <div class="hero-content-wrap">
-      <div class="container">
-        <div class="hero-text">
-
-          <span class="hero-kicker">
-            SUMMER COLLECTION
-          </span>
-
-          <h1>
-            Up to <em>30% Off</em>
-          </h1>
-
-          <p>
-            Upgrade your everyday wardrobe with premium
-            summer essentials from TTT Outfit.
-          </p>
-
-          <div class="hero-actions">
-            <a class="btn gold-btn" href="/shop">
-              Shop Now
-            </a>
-
-            <a class="btn outline-btn" href="#categories">
-              Explore Categories
-            </a>
-          </div>
-
+<% const activeSlides = (sliders || []).length ? sliders : [{ desktopImage: '/hero-1.jpg', mobileImage: '/hero-1-mobile.jpg', subtitle: 'NEW COLLECTION', title: 'Wear Your Identity', description: 'Premium everyday fashion designed for confidence, comfort and modern life.', buttonText: 'Shop Now', buttonLink: '/shop', textPosition: 'center-left' }]; %>
+<section class="ttt-hero" data-hero-slider aria-label="Featured collections">
+  <div class="ttt-hero-track">
+    <% activeSlides.forEach(function(slide, index) { %>
+      <article class="ttt-hero-slide <%= index === 0 ? 'is-active' : '' %> ttt-position-<%= slide.textPosition || 'center-left' %>" aria-hidden="<%= index === 0 ? 'false' : 'true' %>">
+        <picture>
+          <% if (slide.mobileImage) { %><source media="(max-width: 700px)" srcset="<%= slide.mobileImage %>"><% } %>
+          <img src="<%= slide.desktopImage || '/hero-1.jpg' %>" alt="<%= slide.title || 'TTT Outfit collection' %>" <%= index === 0 ? 'fetchpriority="high"' : 'loading="lazy"' %>>
+        </picture>
+        <div class="ttt-hero-overlay"></div>
+        <div class="ttt-hero-content">
+          <% if (slide.subtitle) { %><span class="ttt-eyebrow"><%= slide.subtitle %></span><% } %>
+          <h1><%= slide.title || 'Wear Your Identity' %></h1>
+          <% if (slide.description) { %><p><%= slide.description %></p><% } %>
+          <% if (slide.buttonText) { %><a class="ttt-primary-button" href="<%= slide.buttonLink || '/shop' %>"><%= slide.buttonText %></a><% } %>
         </div>
-      </div>
-    </div>
-  </article>
-
-  <!-- Slide 2 -->
-  <article
-    class="hero-slide hero-slide-two"
-    aria-hidden="true"
-  >
-    <div class="hero-content-wrap">
-      <div class="container">
-        <div class="hero-text">
-
-          <span class="hero-kicker">
-            NEW ARRIVALS
-          </span>
-
-          <h1>
-            Fresh <em>Drop</em>
-          </h1>
-
-          <p>
-            Discover our latest casual fashion,
-            confident fits and premium everyday styles.
-          </p>
-
-          <div class="hero-actions">
-            <a class="btn gold-btn" href="/shop">
-              Explore Collection
-            </a>
-          </div>
-
-        </div>
-      </div>
-    </div>
-  </article>
-
-  <!-- Slide 3 -->
-  <article
-    class="hero-slide hero-slide-three"
-    aria-hidden="true"
-  >
-    <div class="hero-content-wrap">
-      <div class="container">
-        <div class="hero-text">
-
-          <span class="hero-kicker">
-            STREETWEAR EDIT
-          </span>
-
-          <h1>
-            Drop <em>Shoulder</em>
-          </h1>
-
-          <p>
-            Relaxed silhouettes and modern streetwear
-            designed for effortless everyday style.
-          </p>
-
-          <div class="hero-actions">
-            <a
-              class="btn gold-btn"
-              href="/shop?category=Drop%20Shoulder"
-            >
-              Shop Streetwear
-            </a>
-          </div>
-
-        </div>
-      </div>
-    </div>
-  </article>
-
-  <!-- Slide 4 -->
-  <article
-    class="hero-slide hero-slide-four"
-    aria-hidden="true"
-  >
-    <div class="hero-content-wrap">
-      <div class="container">
-        <div class="hero-text">
-
-          <span class="hero-kicker">
-            SMART CASUAL
-          </span>
-
-          <h1>
-            Classic <em>Polo</em>
-          </h1>
-
-          <p>
-            Clean, refined polo shirts made for
-            comfort, confidence and every occasion.
-          </p>
-
-          <div class="hero-actions">
-            <a
-              class="btn gold-btn"
-              href="/shop?category=Polo"
-            >
-              Shop Polo
-            </a>
-          </div>
-
-        </div>
-      </div>
-    </div>
-  </article>
-
-  <!-- Slide 5 -->
-  <article
-    class="hero-slide hero-slide-five"
-    aria-hidden="true"
-  >
-    <div class="hero-content-wrap">
-      <div class="container">
-        <div class="hero-text">
-
-          <span class="hero-kicker">
-            LIMITED OFFER
-          </span>
-
-          <h1>
-            Premium <em>Essentials</em>
-          </h1>
-
-          <p>
-            Limited-time prices on selected TTT Outfit
-            products while stocks last.
-          </p>
-
-          <div class="hero-actions">
-            <a class="btn gold-btn" href="/shop">
-              View Offers
-            </a>
-          </div>
-
-        </div>
-      </div>
-    </div>
-  </article>
-
-  <button
-    class="hero-arrow hero-prev"
-    type="button"
-    aria-label="Previous slide"
-  >
-    &#10094;
-  </button>
-
-  <button
-    class="hero-arrow hero-next"
-    type="button"
-    aria-label="Next slide"
-  >
-    &#10095;
-  </button>
-
-  <div class="hero-dots" aria-label="Choose a slide">
-
-    <% for (let i = 0; i < 5; i++) { %>
-      <button
-        class="hero-dot <%= i === 0 ? 'active' : '' %>"
-        type="button"
-        aria-label="Go to slide <%= i + 1 %>"
-      ></button>
-    <% } %>
-
-  </div>
-
-</section>
-
-
-<!-- =====================================
-     CATEGORIES
-===================================== -->
-
-<section
-  class="section category-section"
-  id="categories"
->
-  <div class="container">
-
-    <header class="section-title reveal hero-matched-title">
-      <h2>Find your style</h2>
-    </header>
-<div class="category-showcase-layout">
-
-<div class="category-video-feature">
-
-  <video
-    id="categoryFeatureVideo"
-    class="category-feature-video"
-    autoplay
-    muted
-    loop
-    playsinline
-    webkit-playsinline
-    preload="none"
-poster="/videos/video-poster.jpg"
-  >
-    <source data-src="/videos/ttt-fashion.mp4" type="video/mp4">
-  </video>
-<div class="category-video-overlay"></div>
-
-  <div class="category-video-content">
-
-    <span class="category-video-label">
-      NEW SEASON
-    </span>
-
-    <h2>
-      Style in Motion
-    </h2>
-
-    <p>
-      Premium everyday fashion designed for comfort,
-      confidence and modern life.
-    </p>
-
-    <a
-      href="/shop"
-      class="category-video-button"
-    >
-      Shop Collection
-      <i class="bi bi-arrow-right"></i>
-    </a>
-
-  </div>
-
-</div>
-    <div class="premium-category-grid">
-
-      <a
-        class="premium-category-card reveal"
-        href="/shop?category=T-Shirts"
-      >
-        <img
-          src="/category-tshirt.jpg"
-          alt="TTT Outfit T-Shirts"
-          loading="lazy"
-        >
-
-        <div class="premium-category-overlay">
-          <span class="category-label">
-            TTT ESSENTIALS
-          </span>
-
-          <h3>T-Shirts</h3>
-
-          <span class="category-shop-link">
-            Shop collection
-            <strong>→</strong>
-          </span>
-        </div>
-      </a>
-
-      <a
-        class="premium-category-card reveal"
-        href="/shop?category=Polo"
-      >
-        <img
-          src="/category-polo.jpg"
-          alt="TTT Outfit Polo Shirts"
-          loading="lazy"
-        >
-
-        <div class="premium-category-overlay">
-          <span class="category-label">
-            SMART CASUAL
-          </span>
-
-          <h3>Polo Shirts</h3>
-
-          <span class="category-shop-link">
-            Shop collection
-            <strong>→</strong>
-          </span>
-        </div>
-      </a>
-
-      <a
-        class="premium-category-card reveal"
-        href="/shop?category=Drop%20Shoulder"
-      >
-        <img
-          src="/category-drop-shoulder.jpg"
-          alt="TTT Outfit Drop Shoulder"
-          loading="lazy"
-        >
-
-        <div class="premium-category-overlay">
-          <span class="category-label">
-            STREETWEAR
-          </span>
-
-          <h3>Drop Shoulder</h3>
-
-          <span class="category-shop-link">
-            Shop collection
-            <strong>→</strong>
-          </span>
-        </div>
-      </a>
-
-      <a
-        class="premium-category-card reveal"
-        href="/shop?category=Jackets"
-      >
-        <img
-          src="/category-jacket.jpg"
-          alt="TTT Outfit Jackets"
-          loading="lazy"
-        >
-
-        <div class="premium-category-overlay">
-          <span class="category-label">
-            URBAN LAYERS
-          </span>
-
-          <h3>Jackets</h3>
-
-          <span class="category-shop-link">
-            Shop collection
-            <strong>→</strong>
-          </span>
-        </div>
-      </a>
-
-    </div>
-
-</div>
-
-  </div>
-</section>
-
-
-<!-- =====================================
-     FEATURED PRODUCTS
-===================================== -->
-
-<section class="section products-section">
-  <div class="container">
-
-    <header class="section-head featured-section-head reveal">
-      <div>
-        <span class="section-kicker">
-          CURATED FOR YOU
-        </span>
-
-        <h2>Featured products</h2>
-      </div>
-
-<div class="featured-actions">
-
-    <a class="view-all-link" href="/shop">
-        View all products →
-    </a>
-
-    <span class="featured-offer">
-        GET <strong>20%</strong> OFF
-    </span>
-
-</div>
-    </header>
-
-    <% if (featured && featured.length) { %>
-
-      <div class="grid product-grid">
-        <% featured.forEach((p, index) => { %>
-
-          <div
-            class="reveal"
-            style="transition-delay:
-              <%= Math.min(index * 70, 350) %>ms;"
-          >
-            <%- include('partials/product-card', { p, hideOfferButton: true }) %>
-          </div>
-
-        <% }) %>
-      </div>
-
-    <% } else { %>
-
-      <div class="empty-products reveal">
-        <h3>New products coming soon</h3>
-
-        <p>
-          Add featured products from your admin panel
-          to display them here.
-        </p>
-
-        <a class="btn" href="/shop">
-          Browse Shop
-        </a>
-      </div>
-
-    <% } %>
-
-  </div>
-</section>
-
-
-<!-- =====================================
-     PROMO BANNER
-===================================== -->
-
-<section class="promo-banner">
-  <div class="container promo-content reveal">
-
-    <div>
-      <span class="section-kicker gold-text">
-        TTT OUTFIT
-      </span>
-
-      <h2>
-        Fashion created for
-        <em>confidence.</em>
-      </h2>
-
-      <p>
-        Build your everyday wardrobe with premium
-        clothing designed for comfort and style.
-      </p>
-    </div>
-
-    <a class="btn gold-btn" href="/shop">
-      Discover Collection
-    </a>
-
-  </div>
-</section>
-
-
-<!-- =====================================
-     WHY CHOOSE US
-===================================== -->
-
-<section class="section">
-  <div class="container">
-
-    <header class="section-title reveal">
-      <span class="section-kicker">
-        WHY TTT OUTFIT
-      </span>
-
-      <h2>Designed around you</h2>
-    </header>
-
-    <div class="why-grid">
-
-      <article class="why-card reveal">
-        <span>01</span>
-
-        <h3>Quality Fabrics</h3>
-
-        <p>
-          Selected materials for everyday comfort,
-          durability and a premium feel.
-        </p>
       </article>
-
-      <article class="why-card reveal">
-        <span>02</span>
-
-        <h3>Modern Design</h3>
-
-        <p>
-          Clean and confident styles for casual,
-          streetwear and smart-casual occasions.
-        </p>
-      </article>
-
-      <article class="why-card reveal">
-        <span>03</span>
-
-        <h3>Nationwide Delivery</h3>
-
-        <p>
-          Convenient ordering and dependable delivery
-          support across Bangladesh.
-        </p>
-      </article>
-
+    <% }); %>
+  </div>
+  <% if (activeSlides.length > 1) { %>
+    <button class="ttt-hero-arrow ttt-hero-prev" type="button" aria-label="Previous slide"><i class="bi bi-arrow-left"></i></button>
+    <button class="ttt-hero-arrow ttt-hero-next" type="button" aria-label="Next slide"><i class="bi bi-arrow-right"></i></button>
+    <div class="ttt-hero-dots" role="tablist" aria-label="Choose slide">
+      <% activeSlides.forEach(function(_, index) { %><button type="button" class="<%= index === 0 ? 'is-active' : '' %>" role="tab" aria-selected="<%= index === 0 ? 'true' : 'false' %>" tabindex="<%= index === 0 ? '0' : '-1' %>" aria-label="Go to slide <%= index + 1 %>"></button><% }); %>
     </div>
+  <% } %>
+</section>
 
+<section class="ttt-showcase" id="categories">
+  <div class="ttt-section-heading ttt-reveal">
+    <span>READY TO WEAR</span>
+    <h2>TOP COLLECTION</h2>
+  </div>
+  <div class="ttt-showcase-grid">
+    <% const showcase = (showcaseCategories || []).length ? showcaseCategories : [
+      {name:'T-Shirt', image:'/category-tshirt.jpg', buttonText:'Explore Collection'},
+      {name:'Polo Shirt', image:'/category-polo.jpg', buttonText:'Shop Polo'},
+      {name:'Drop Shoulder T-Shirt', image:'/category-drop-shoulder.jpg', buttonText:'Discover Now'},
+      {name:'Jacket', image:'/category-jacket.jpg', buttonText:'View Collection'}
+    ]; %>
+    <% showcase.forEach(function(cat) { %>
+      <a class="ttt-showcase-card ttt-reveal" href="/shop?category=<%= encodeURIComponent(cat.name) %>">
+        <img src="<%= cat.image || '/ttt-logo.jpeg' %>" alt="<%= cat.name %>" loading="lazy" decoding="async" data-image-fallback="/ttt-logo.jpeg">
+        <span class="ttt-showcase-shade"></span>
+        <span class="ttt-showcase-copy"><strong><%= cat.name %></strong><em><%= cat.buttonText || 'Shop Now' %> <i class="bi bi-arrow-right"></i></em></span>
+      </a>
+    <% }); %>
   </div>
 </section>
 
+<section class="ttt-category-rails" aria-label="Shop by category">
+  <% if ((categorySections || []).length) { %>
+    <% categorySections.forEach(function(section, sectionIndex) { if ((section.products || []).length) { %>
+      <article class="ttt-product-section ttt-reveal" data-product-rail-section>
+        <div class="ttt-product-section-head">
+          <div><span><%= section.category.offerText || 'GET 20% OFF' %></span><h2><%= section.category.name %></h2></div>
+          <div class="ttt-product-section-actions">
+            <a href="/shop?category=<%= encodeURIComponent(section.category.name) %>">View All</a>
+            <button type="button" data-rail-prev aria-label="Previous products"><i class="bi bi-arrow-left"></i></button>
+            <button type="button" data-rail-next aria-label="Next products"><i class="bi bi-arrow-right"></i></button>
+          </div>
+        </div>
+        <div class="ttt-product-rail" data-product-rail>
+          <% section.products.forEach(function(p) { %><div class="ttt-product-rail-item"><%- include('partials/product-card', { p, hideOfferButton: true }) %></div><% }); %>
+        </div>
+      </article>
+    <% } }); %>
+  <% } else if ((featured || []).length) { %>
+    <article class="ttt-product-section ttt-reveal" data-product-rail-section>
+      <div class="ttt-product-section-head"><div><span>CURATED FOR YOU</span><h2>Featured Products</h2></div><div class="ttt-product-section-actions"><a href="/shop">View All</a><button type="button" data-rail-prev aria-label="Previous products"><i class="bi bi-arrow-left"></i></button><button type="button" data-rail-next aria-label="Next products"><i class="bi bi-arrow-right"></i></button></div></div>
+      <div class="ttt-product-rail" data-product-rail><% featured.forEach(function(p) { %><div class="ttt-product-rail-item"><%- include('partials/product-card', { p, hideOfferButton: true }) %></div><% }); %></div>
+    </article>
+  <% } %>
+</section>
 
-<!-- =====================================
-     NEWSLETTER
-===================================== -->
+<section class="ttt-confidence ttt-reveal">
+  <span>TTT OUTFIT</span>
+  <h2>Fashion created for confidence.</h2>
+  <p>Thoughtful fits, premium fabrics and versatile pieces made for the way you live.</p>
+  <a href="/shop">Explore the collection <i class="bi bi-arrow-right"></i></a>
+</section>
 
-<section class="newsletter-section">
-  <div class="container newsletter reveal">
-
-    <div>
-      <span class="section-kicker gold-text">
-        STAY UPDATED
-      </span>
-
-      <h2>Join the TTT community</h2>
-
-      <p>
-        Get updates about new collections,
-        promotions and exclusive offers.
-      </p>
-    </div>
-
-    <form
-      class="newsletter-form"
-      onsubmit="
-        event.preventDefault();
-        this.reset();
-        alert('Thank you for subscribing!');
-      "
-    >
-      <input
-        type="email"
-        name="newsletterEmail"
-        placeholder="Enter your email address"
-        aria-label="Email address"
-        required
-      >
-
-      <button class="btn gold-btn" type="submit">
-        Subscribe
-      </button>
-    </form>
-
+<section class="ttt-designed">
+  <div class="ttt-section-heading ttt-reveal"><span>OUR PROMISE</span><h2>Designed Around You</h2></div>
+  <div class="ttt-designed-rail">
+    <article class="ttt-designed-card ttt-reveal"><i class="bi bi-gem"></i><h3>Premium Quality</h3><p>Carefully selected materials with a refined finish.</p></article>
+    <article class="ttt-designed-card ttt-reveal"><i class="bi bi-rulers"></i><h3>Confident Fits</h3><p>Modern silhouettes designed for comfort and movement.</p></article>
+    <article class="ttt-designed-card ttt-reveal"><i class="bi bi-truck"></i><h3>Reliable Delivery</h3><p>Secure ordering and dependable delivery across Bangladesh.</p></article>
   </div>
 </section>
 
-
-
-<script>
-  document.addEventListener('DOMContentLoaded', function () {
-    const video = document.getElementById('categoryFeatureVideo');
-    if (!video) return;
-
-    video.muted = true;
-    video.defaultMuted = true;
-    video.playsInline = true;
-
-    let videoLoaded = false;
-
-    const loadAndPlayVideo = () => {
-      if (!videoLoaded) {
-        const source = video.querySelector('source[data-src]');
-
-        if (source) {
-          source.src = source.dataset.src;
-          source.removeAttribute('data-src');
-          video.load();
-        }
-
-        videoLoaded = true;
-
-        video.addEventListener('playing', function () {
-          video.classList.add('is-video-playing');
-        }, { once: true });
-      }
-
-      const playPromise = video.play();
-
-      if (playPromise && typeof playPromise.catch === 'function') {
-        playPromise.catch(() => {
-          /* Safari may block autoplay in Low Power Mode.
-             Keep the poster visible without showing a button. */
-        });
-      }
-    };
-
-    if ('IntersectionObserver' in window) {
-      const observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              loadAndPlayVideo();
-              observer.unobserve(video);
-            }
-          });
-        },
-        {
-          rootMargin: '300px 0px',
-          threshold: 0.01
-        }
-      );
-
-      observer.observe(video);
-    } else {
-      loadAndPlayVideo();
-    }
-
-    document.addEventListener(
-      'visibilitychange',
-      function () {
-        if (!document.hidden && videoLoaded && video.paused) {
-          video.play().catch(() => {});
-        }
-      }
-    );
-  });
-</script>
+<section class="ttt-newsletter ttt-reveal">
+  <div class="ttt-newsletter-copy"><span>STAY CONNECTED</span><h2>Join the TTT Community</h2><p>Be first to hear about new drops, exclusive offers and style updates.</p></div>
+  <form class="ttt-newsletter-form" action="/newsletter/subscribe" method="post" novalidate>
+    <label class="sr-only" for="newsletterEmail">Email address</label>
+    <input id="newsletterEmail" type="email" name="email" placeholder="Your email address" required autocomplete="email" aria-describedby="newsletterHint newsletterStatus">
+    <button type="submit">Subscribe <i class="bi bi-arrow-right"></i></button>
+    <small id="newsletterHint">By subscribing, you agree to receive TTT Outfit updates.</small>
+    <span class="ttt-newsletter-status" id="newsletterStatus" aria-live="polite"></span>
+  </form>
+</section>
 
 <%- include('partials/footer') %>

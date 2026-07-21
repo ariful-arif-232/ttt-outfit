@@ -2,437 +2,146 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1"
-  >
-
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title><%= title %> | TTT Outfit</title>
-
-  <meta
-    name="description"
-    content="TTT Outfit — Premium fashion and everyday clothing for Bangladesh."
-  >
-
+  <meta name="description" content="TTT Outfit — premium fashion and everyday clothing for Bangladesh.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-  <link
-    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Inter:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap"
-    rel="stylesheet"
-  >
-<link
-  rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
->
-<link rel="stylesheet" href="/css/style.css?v=132">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="/css/style.css?v=phase6-1">
 </head>
+<body data-logged-in="<%= currentUser ? 'true' : 'false' %>">
 
-<body
-  data-logged-in="<%= currentUser ? 'true' : 'false' %>"
->
-
-<div class="announcement-bar">
-  <div class="announcement-track">
-
+<div class="ttt-announcement" aria-label="Store announcements">
+  <div class="ttt-announcement-track">
     <span>FREE DELIVERY ON ORDERS OVER ৳3,000</span>
     <span>PREMIUM QUALITY CLOTHING</span>
     <span>WHOLESALE • RETAIL • AVAILABLE</span>
     <span>NEW COLLECTION AVAILABLE NOW</span>
-
-    <span>FREE DELIVERY ON ORDERS OVER ৳3,000</span>
-    <span>PREMIUM QUALITY CLOTHING</span>
-    <span>WHOLESALE • RETAIL • AVAILABLE</span>
-    <span>NEW COLLECTION AVAILABLE NOW</span>
-
+    <span aria-hidden="true">FREE DELIVERY ON ORDERS OVER ৳3,000</span>
+    <span aria-hidden="true">PREMIUM QUALITY CLOTHING</span>
   </div>
 </div>
 
-<header class="site-header" id="siteHeader">
-  <div class="container nav">
+<header class="ttt-header" id="siteHeader">
+  <div class="ttt-header-inner">
+    <button class="ttt-icon-button ttt-menu-trigger" type="button" aria-label="Open menu" aria-controls="tttDrawer" aria-expanded="false">
+      <i class="bi bi-list"></i><span class="ttt-icon-label">Menu</span>
+    </button>
 
-   <a class="brand" href="/">
-  <img
-    class="brand-logo"
-    src="/ttt-logo.jpeg"
-    alt="TTT Outfit logo"
-  >
-
-  <span>
-    TTT <strong>OUTFIT</strong>
-  </span>
-</a>
-
-
-<!-- Mobile navigation icons -->
-
-<div class="mobile-header-actions">
-
-  <!-- Search -->
-
-  <button
-    class="mobile-header-icon mobile-search-toggle"
-    id="mobileSearchToggle"
-    type="button"
-    aria-label="Search products"
-    aria-expanded="false"
-    aria-controls="mobileSearchPanel"
-  >
-    <i class="bi bi-search"></i>
-  </button>
-
-
-  <!-- Shop -->
-
-  <a
-    class="mobile-header-icon"
-    href="/shop"
-    aria-label="Shop"
-  >
-    <i class="bi bi-bag"></i>
-  </a>
-
-
-  <!-- Cart -->
-
-  <a
-    class="mobile-header-icon mobile-header-cart"
-    href="/cart"
-    aria-label="Cart"
-  >
-    <i class="bi bi-cart3"></i>
-
-    <span
-      class="mobile-header-badge"
-      data-cart-count
-    >
-      <%= cartCount %>
-    </span>
-  </a>
-
-
-  <!-- Menu -->
-
-  <button
-    class="mobile-menu-button"
-    id="mobileMenuButton"
-    type="button"
-    aria-label="Open navigation menu"
-    aria-expanded="false"
-    aria-controls="navLinks"
-  >
-    <span></span>
-    <span></span>
-    <span></span>
-  </button>
-
-</div>
-<nav class="nav-links" id="navLinks">
-
-<div class="mobile-menu-brand">
-  <img
-    src="/ttt-logo.jpeg"
-    alt="TTT Outfit logo"
-  >
-
-  <span>
-    TTT <strong>OUTFIT</strong>
-  </span>
-</div>
-
-  <a
-    href="/"
-    class="<%= currentPath === '/' ? 'active-nav' : '' %>"
-  >
-    <span class="nav-item-left">
-<div class="mobile-icon-box">
-  <i class="bi bi-house-door"></i>
-</div>
-
-<span>Home</span>
-    </span>
-    <span class="nav-arrow">›</span>
-  </a>
-
-  <a
-    href="/shop"
-    class="<%= currentPath.startsWith('/shop') || currentPath.startsWith('/product') ? 'active-nav' : '' %>"
-  >
-    <span class="nav-item-left">
-<div class="mobile-icon-box">
-  <i class="bi bi-bag"></i>
-</div>
-
-<span>Shop</span>
-    </span>
-    <span class="nav-arrow">›</span>
-  </a>
-<a
-  href="/track-order"
-  class="<%= currentPath.startsWith('/track-order') ? 'active-nav' : '' %>"
->
-  <span class="nav-item-left">
-<div class="mobile-icon-box">
-  <i class="bi bi-truck"></i>
-</div>
-
-<span>Track Order</span>
-  </span>
-
-  <span class="nav-arrow">›</span>
-</a>
-<a
-  href="/wishlist"
-  class="<%= currentPath.startsWith('/wishlist') ? 'active-nav' : '' %>"
->
-  <span class="nav-item-left">
- <div class="mobile-icon-box">
-
-    <i class="bi bi-heart"></i>
-
-    <span
-        class="mobile-badge wishlist-badge"
-        data-wishlist-count>
-        0
-    </span>
-
-</div>
-    <span>Wishlist</span>
-  </span>
-<span class="nav-arrow">›</span>
-</a>
-  <a
-    href="/cart"
-    class="cart-link <%= currentPath.startsWith('/cart') ? 'active-nav' : '' %>"
-  >
-    <span class="nav-item-left">
-     <div class="mobile-icon-box">
-
-    <i class="bi bi-cart3"></i>
-
-    <span
-        class="mobile-badge cart-badge"
-        data-cart-count>
-        <%= cartCount %>
-    </span>
-
-</div>
-      <span>Cart</span>
-    </span>
-
-<span class="nav-arrow">›</span>
-  </a>
-
-  <% if (currentUser) { %>
-
-    <a
-      href="/orders"
-      class="<%= currentPath.startsWith('/orders') ? 'active-nav' : '' %>"
-    >
-      <span class="nav-item-left">
-<div class="mobile-icon-box">
-  <i class="bi bi-box-seam"></i>
-</div>
-
-<span>My Orders</span>
-      </span>
-      <span class="nav-arrow">›</span>
+    <a class="ttt-brand" href="/" aria-label="TTT Outfit home">
+      <img src="/ttt-logo.jpeg" alt="TTT Outfit logo">
+      <span>TTT <strong>OUTFIT</strong></span>
     </a>
 
-    <a
-      href="/account"
-      class="<%= currentPath.startsWith('/account') ? 'active-nav' : '' %>"
-    >
-      <span class="nav-item-left">
-<div class="mobile-icon-box">
-  <i class="bi bi-person"></i>
-</div>
-
-<span>Account</span>
-      </span>
-      <span class="nav-arrow">›</span>
-    </a>
-
-    <% if (currentUser.role === 'admin') { %>
-      <a
-        href="/admin"
-        class="admin-link <%= currentPath.startsWith('/admin') ? 'active-nav' : '' %>"
-      >
-        <span class="nav-item-left">
-<div class="mobile-icon-box">
-  <i class="bi bi-gear"></i>
-</div>
-
-<span>Admin</span>
-        </span>
-        <span class="nav-arrow">›</span>
+    <nav class="ttt-header-actions" aria-label="Quick links">
+      <button class="ttt-icon-button ttt-search-trigger" type="button" aria-label="Search" aria-controls="tttSearchPanel" aria-expanded="false">
+        <i class="bi bi-search"></i><span class="ttt-icon-label">Search</span>
+      </button>
+      <a class="ttt-icon-button" href="<%= currentUser ? '/account' : '/login' %>" aria-label="Account">
+        <i class="bi bi-person"></i><span class="ttt-icon-label">Account</span>
       </a>
-    <% } %>
+      <a class="ttt-icon-button ttt-badge-link" href="/wishlist" aria-label="Wishlist">
+        <i class="bi bi-heart"></i><span class="ttt-icon-label">Wishlist</span>
+        <span class="ttt-count-badge wishlist-badge" data-wishlist-count>0</span>
+      </a>
+      <a class="ttt-icon-button ttt-badge-link" href="/cart" aria-label="Cart">
+        <i class="bi bi-bag"></i><span class="ttt-icon-label">Cart</span>
+        <span class="ttt-count-badge" data-cart-count><%= cartCount %></span>
+      </a>
+    </nav>
+  </div>
 
-    <form action="/logout" method="post">
-      <button class="link-btn logout-btn" type="submit">
-        <span>↪ Logout</span>
-      </button>
+  <div class="ttt-search-panel" id="tttSearchPanel" hidden>
+    <form action="/shop" method="get" role="search">
+      <i class="bi bi-search" aria-hidden="true"></i>
+      <input type="search" name="q" placeholder="Search products..." aria-label="Search products" autocomplete="off">
+      <button type="submit">Search</button>
+      <button class="ttt-search-close" type="button" aria-label="Close search"><i class="bi bi-x-lg"></i></button>
     </form>
-
-  <% } else { %>
-
-<a
-  href="/auth"
-  class="<%=
-    currentPath.startsWith('/auth') ||
-    currentPath.startsWith('/login') ||
-    currentPath.startsWith('/register')
-      ? 'active-nav'
-      : ''
-  %>"
->
-  <span class="nav-item-left">
-
-    <div class="mobile-icon-box">
-      <i class="bi bi-person-circle"></i>
-    </div>
-
-    <span>Login / Register</span>
-
-  </span>
-
-  <span class="nav-arrow">›</span>
-</a>
-  <% } %>
-
-<div class="mobile-menu-social">
-
-  <span>Follow us</span>
-
-  <div class="mobile-social-links">
-
-    <a
-      href="https://www.facebook.com/share/198YBpPR7T/?mibextid=wwXIfr"
-      target="_blank"
-      rel="noopener noreferrer"
-      aria-label="Facebook"
-    >
-      <i class="bi bi-facebook"></i>
-    </a>
-
-    <a
-      href="https://www.facebook.com/share/198YBpPR7T/?mibextid=wwXIfr"
-      target="_blank"
-      rel="noopener noreferrer"
-      aria-label="Instagram"
-    >
-      <i class="bi bi-instagram"></i>
-    </a>
-
-    <a
-      href="https://www.facebook.com/share/198YBpPR7T/?mibextid=wwXIfr"
-      target="_blank"
-      rel="noopener noreferrer"
-      aria-label="TikTok"
-    >
-      <i class="bi bi-tiktok"></i>
-    </a>
-
-    <a
-      href="https://wa.me/8801608397497"
-      target="_blank"
-      rel="noopener noreferrer"
-      aria-label="WhatsApp"
-    >
-      <i class="bi bi-whatsapp"></i>
-    </a>
-
   </div>
-
-</div>
-
-</nav>
-
-  </div>
-
-
-  <!-- Mobile search panel -->
-
-  <div
-    class="mobile-search-panel"
-    id="mobileSearchPanel"
-  >
-
-    <form
-      class="mobile-search-form"
-      action="/shop"
-      method="get"
-    >
-
-      <i
-        class="bi bi-search"
-        aria-hidden="true"
-      ></i>
-
-      <input
-        type="search"
-        name="q"
-        placeholder="Search products..."
-        aria-label="Search products"
-        autocomplete="off"
-      >
-
-      <button
-        type="submit"
-        aria-label="Submit search"
-      >
-        Search
-      </button>
-
-    </form>
-
-  </div>
-
 </header>
 
-<main>
+<div class="ttt-drawer-backdrop" data-drawer-close hidden></div>
+<aside class="ttt-drawer" id="tttDrawer" aria-hidden="true" aria-label="Main menu">
+  <div class="ttt-drawer-head">
+    <span>MENU</span>
+    <button type="button" data-drawer-close aria-label="Close menu"><i class="bi bi-x-lg"></i></button>
+  </div>
 
-<% if (flash) { %>
-  <div
-    class="flash-toast <%= flash.type %>"
-    id="flashToast"
-    role="alert"
-    aria-live="polite"
-  >
-    <div class="flash-icon">
-      <% if (flash.type === 'success') { %>
-        <i class="bi bi-check-circle-fill"></i>
-      <% } else if (flash.type === 'error') { %>
-        <i class="bi bi-exclamation-circle-fill"></i>
-      <% } else { %>
-        <i class="bi bi-info-circle-fill"></i>
+  <div class="ttt-drawer-body">
+    <nav class="ttt-drawer-primary">
+      <a href="/">Home</a>
+      <a href="/shop">Shop All</a>
+      <a href="/track-order">Track Order</a>
+    </nav>
+
+    <div class="ttt-drawer-categories">
+      <% const groupOrder = ['T-Shirts', 'Polo Shirts', 'Bottom Wear', 'Winter Wear', 'Other']; %>
+      <% const groupedMenu = {}; %>
+      <% (menuCategories || []).forEach(function(cat) { const key = cat.parentGroup || 'Other'; if (!groupedMenu[key]) groupedMenu[key] = []; groupedMenu[key].push(cat); }); %>
+      <% groupOrder.forEach(function(group) { const items = groupedMenu[group] || []; if (items.length) { %>
+        <section class="ttt-drawer-group">
+          <button class="ttt-drawer-group-toggle" type="button" aria-expanded="false">
+            <span><%= group %></span><i class="bi bi-chevron-down"></i>
+          </button>
+          <div class="ttt-drawer-submenu" hidden>
+            <% items.forEach(function(cat) { %>
+              <a href="/shop?category=<%= encodeURIComponent(cat.name) %>"><%= cat.name %></a>
+            <% }); %>
+          </div>
+        </section>
+      <% } }); %>
+
+      <% if (!(menuCategories || []).length) { %>
+        <section class="ttt-drawer-group">
+          <button class="ttt-drawer-group-toggle" type="button" aria-expanded="false"><span>T-Shirts</span><i class="bi bi-chevron-down"></i></button>
+          <div class="ttt-drawer-submenu" hidden>
+            <a href="/shop?category=T-Shirts">T-Shirt</a>
+            <a href="/shop?category=Drop%20Shoulder">Drop Shoulder T-Shirt</a>
+            <a href="/shop?category=Tank%20Top">Tank Top</a>
+            <a href="/shop?category=Meegi%20T-Shirt">Meegi T-Shirt</a>
+            <a href="/shop?category=Two%20Quarter">Two Quarter</a>
+          </div>
+        </section>
+        <section class="ttt-drawer-group">
+          <button class="ttt-drawer-group-toggle" type="button" aria-expanded="false"><span>Polo Shirts</span><i class="bi bi-chevron-down"></i></button>
+          <div class="ttt-drawer-submenu" hidden><a href="/shop?category=Polo">Polo Shirt</a><a href="/shop?category=Old%20Money%20Polo">Old Money Polo Shirt</a></div>
+        </section>
+        <section class="ttt-drawer-group">
+          <button class="ttt-drawer-group-toggle" type="button" aria-expanded="false"><span>Bottom Wear</span><i class="bi bi-chevron-down"></i></button>
+          <div class="ttt-drawer-submenu" hidden><a href="/shop?category=Trouser">Trouser</a><a href="/shop?category=Joggers">Joggers</a><a href="/shop?category=Formal%20Pant">Formal Pant</a></div>
+        </section>
+        <section class="ttt-drawer-group">
+          <button class="ttt-drawer-group-toggle" type="button" aria-expanded="false"><span>Winter Wear</span><i class="bi bi-chevron-down"></i></button>
+          <div class="ttt-drawer-submenu" hidden><a href="/shop?category=Sweatshirt">Sweatshirt</a><a href="/shop?category=Hoodie">Hoodie</a><a href="/shop?category=Zipper%20Hoodie">Zipper Hoodie</a><a href="/shop?category=Jackets">Jacket</a></div>
+        </section>
       <% } %>
     </div>
 
-    <div class="flash-content">
-      <strong>
-        <%= flash.type === 'success'
-          ? 'Success'
-          : flash.type === 'error'
-            ? 'Something went wrong'
-            : 'Notice'
-        %>
-      </strong>
+    <nav class="ttt-drawer-account">
+      <a href="/wishlist"><i class="bi bi-heart"></i> Wishlist</a>
+      <a href="/cart"><i class="bi bi-bag"></i> Cart (<span data-cart-count><%= cartCount %></span>)</a>
+      <% if (currentUser) { %>
+        <a href="/account"><i class="bi bi-person"></i> My Account</a>
+        <a href="/orders"><i class="bi bi-box-seam"></i> My Orders</a>
+        <% if (currentUser.role === 'admin') { %><a href="/admin"><i class="bi bi-speedometer2"></i> Admin Panel</a><% } %>
+        <a href="/logout"><i class="bi bi-box-arrow-right"></i> Logout</a>
+      <% } else { %>
+        <a href="/login"><i class="bi bi-person"></i> Login</a>
+        <a href="/register"><i class="bi bi-person-plus"></i> Create Account</a>
+      <% } %>
+    </nav>
+  </div>
+</aside>
 
-      <span><%= flash.message %></span>
-    </div>
-
-    <button
-      class="flash-close"
-      type="button"
-      aria-label="Close message"
-      onclick="this.parentElement.remove()"
-    >
-      <i class="bi bi-x-lg"></i>
-    </button>
-
+<main>
+<% if (flash) { %>
+  <div class="flash-toast <%= flash.type %>" id="flashToast" role="alert" aria-live="polite">
+    <div class="flash-icon"><i class="bi <%= flash.type === 'success' ? 'bi-check-circle-fill' : flash.type === 'error' ? 'bi-exclamation-circle-fill' : 'bi-info-circle-fill' %>"></i></div>
+    <div class="flash-content"><strong><%= flash.type === 'success' ? 'Success' : flash.type === 'error' ? 'Something went wrong' : 'Notice' %></strong><span><%= flash.message %></span></div>
+    <button class="flash-close" type="button" aria-label="Close message" onclick="this.parentElement.remove()"><i class="bi bi-x-lg"></i></button>
     <div class="flash-progress"></div>
   </div>
 <% } %>

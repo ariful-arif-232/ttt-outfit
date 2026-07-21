@@ -1,0 +1,29 @@
+<%- include('../partials/header') %>
+<div class="container admin-layout">
+  <%- include('../partials/admin-nav') %>
+  <section class="admin-products-page">
+    <div class="section-head admin-products-heading">
+      <div><span class="section-kicker">HOMEPAGE MANAGEMENT</span><h1>Categories</h1><p class="small">Control the drawer menu, Ready to Wear showcase and homepage product rails.</p></div>
+      <a class="btn gold-btn" href="/admin/categories/new"><i class="bi bi-plus-lg"></i> Add category</a>
+    </div>
+    <% const safeCategories = Array.isArray(categories) ? categories : []; %>
+    <div class="admin-product-summary-grid">
+      <article><span>Total</span><strong><%= safeCategories.length %></strong></article>
+      <article><span>Active</span><strong><%= safeCategories.filter(c => c.active).length %></strong></article>
+      <article><span>Menu</span><strong><%= safeCategories.filter(c => c.active && c.showInMenu).length %></strong></article>
+      <article><span>Homepage</span><strong><%= safeCategories.filter(c => c.active && (c.showInShowcase || c.showOnHomepage)).length %></strong></article>
+    </div>
+    <% if (safeCategories.length) { %>
+      <div class="admin-table-wrap"><table class="admin-products-table"><thead><tr><th>Category</th><th>Group</th><th>Placement</th><th>Order</th><th>Status</th><th>Action</th></tr></thead><tbody>
+      <% safeCategories.forEach(category => { %><tr>
+        <td><div class="admin-product-cell"><div class="admin-product-image"><img src="<%= category.image?.url || 'https://via.placeholder.com/160x200?text=Category' %>" alt="<%= category.image?.alt || category.name %>"></div><div><strong><%= category.name %></strong><small>/<%= category.slug %></small><small><%= category.offerText || '' %></small></div></div></td>
+        <td><%= category.group %></td>
+        <td><div class="admin-label-list"><span class="status-pill <%= category.showInMenu ? 'active' : 'inactive' %>">Menu</span><span class="status-pill <%= category.showInShowcase ? 'active' : 'inactive' %>">Showcase</span><span class="status-pill <%= category.showOnHomepage ? 'active' : 'inactive' %>">Rail</span></div></td>
+        <td><%= category.displayOrder || 0 %></td>
+        <td><span class="status-pill <%= category.active ? 'active' : 'inactive' %>"><%= category.active ? 'Active' : 'Inactive' %></span></td>
+        <td><div class="table-actions"><a class="btn small-btn" href="/admin/categories/<%= category._id %>/edit">Edit</a><% if (category.active) { %><form method="post" action="/admin/categories/<%= category._id %>/delete" onsubmit="return confirm('Deactivate this category?')"><button class="btn ghost-btn small-btn" type="submit">Deactivate</button></form><% } %></div></td>
+      </tr><% }) %></tbody></table></div>
+    <% } else { %><div class="empty-state"><h2>No categories yet</h2><p>Create the first category to power the menu and homepage.</p><a class="btn gold-btn" href="/admin/categories/new">Add category</a></div><% } %>
+  </section>
+</div>
+<%- include('../partials/footer') %>

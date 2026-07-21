@@ -17,6 +17,9 @@ const { slugify, money, makeOrderNumber } = require('./utils/helpers');
 const Review = require('./models/Review');
 const Coupon = require('./models/Coupon');
 const Wishlist = require('./models/Wishlist');
+const Category = require('./models/Category');
+const HomeSlider = require('./models/HomeSlider');
+const Subscriber = require('./models/Subscriber');
 const crypto = require('crypto');
 const ProductView =
   require('./models/ProductView');
@@ -69,11 +72,69 @@ app.use((req, res, next) => {
   next();
 });
 
+/*
+  Homepage navigation data is intentionally non-blocking.
+  If categories have not been seeded yet, existing pages continue to render.
+*/
+app.use(async (req, res, next) => {
+  try {
+    res.locals.menuCategories = await Category.find({
+      active: true,
+      showInMenu: true
+    }).sort({ displayOrder: 1, name: 1 }).lean();
+  } catch (error) {
+    console.error('Menu category lookup failed:', error.message);
+    res.locals.menuCategories = [];
+  }
+  next();
+});
+
+function categoryProductNames(categoryName) {
+  const aliases = {
+    'T-Shirt': ['T-Shirt', 'T-Shirts'],
+    'Drop Shoulder T-Shirt': ['Drop Shoulder T-Shirt', 'Drop Shoulder'],
+    'Polo Shirt': ['Polo Shirt', 'Polo', 'Polo Shirts'],
+    'Old Money Polo Shirt': ['Old Money Polo Shirt', 'Old Money Polo'],
+    'Jacket': ['Jacket', 'Jackets'],
+    'Trouser': ['Trouser', 'Trousers'],
+    'Joggers': ['Joggers', 'Jogger'],
+    'Formal Pant': ['Formal Pant', 'Formal Pants'],
+    'Sweatshirt': ['Sweatshirt', 'Sweatshirts'],
+    'Hoodie': ['Hoodie', 'Hoodies'],
+    'Zipper Hoodie': ['Zipper Hoodie', 'Zip Hoodie']
+  };
+  return aliases[categoryName] || [categoryName];
+}
+
 app.get('/', async (req, res, next) => {
   try {
-    const featured = await Product.find({ active: true, featured: true }).sort({ createdAt: -1 }).limit(8).lean();
-    const categories = await Product.distinct('category', { active: true });
-    res.render('home', { title: 'TTT Outfit — Wear Your Identity', featured, categories });
+    const [featured, productCategories, sliders, showcaseCategories, homepageCategories] = await Promise.all([
+      Product.find({ active: true, featured: true }).sort({ createdAt: -1 }).limit(8).lean(),
+      Product.distinct('category', { active: true }),
+      HomeSlider.find({ active: true }).sort({ displayOrder: 1, createdAt: 1 }).lean(),
+      Category.find({ active: true, showInShowcase: true }).sort({ displayOrder: 1, name: 1 }).lean(),
+      Category.find({ active: true, showOnHomepage: true }).sort({ displayOrder: 1, name: 1 }).lean()
+    ]);
+
+    const categorySections = await Promise.all(
+      homepageCategories.map(async category => ({
+        category,
+        products: await Product.find({
+          active: true,
+          category: { $in: categoryProductNames(category.name) }
+        }).sort({ featured: -1, soldCount: -1, createdAt: -1 }).limit(12).lean()
+      }))
+    );
+
+    res.render('home', {
+      title: 'TTT Outfit — Wear Your Identity',
+      featured,
+      categories: productCategories,
+      sliders,
+      showcaseCategories,
+      homepageCategories,
+      categorySections
+    });
   } catch (e) { next(e); }
 });
 
@@ -2467,8 +2528,40 @@ app.get('/admin', requireAdmin, async (req, res, next) => {
 });
 
 app.get('/admin/products', requireAdmin, async (req, res, next) => { try { const products = await Product.find().sort({ createdAt: -1 }).lean(); res.render('admin/products', { title: 'Manage products', products }); } catch (e) { next(e); } });
-app.get('/admin/products/new', requireAdmin, (req, res) => res.render('admin/product-form', { title: 'Add product', product: null, cloudinaryReady: cloudinaryReady() }));
-app.get('/admin/products/:id/edit', requireAdmin, async (req, res, next) => { try { const product = await Product.findById(req.params.id).lean(); res.render('admin/product-form', { title: 'Edit product', product, cloudinaryReady: cloudinaryReady() }); } catch (e) { next(e); } });
+async function getProductFormCategories(currentCategory = '') {
+  const [managedCategories, legacyCategories] = await Promise.all([
+    Category.find({ active: true }).sort({ group: 1, displayOrder: 1, name: 1 }).select('name group').lean(),
+    Product.distinct('category')
+  ]);
+
+  const byName = new Map();
+  managedCategories.forEach(category => {
+    const name = cleanText(category.name);
+    if (name) byName.set(name.toLowerCase(), { name, group: category.group || 'Other', managed: true });
+  });
+  legacyCategories.forEach(value => {
+    const name = cleanText(value);
+    if (name && !byName.has(name.toLowerCase())) byName.set(name.toLowerCase(), { name, group: 'Existing product categories', managed: false });
+  });
+  const current = cleanText(currentCategory);
+  if (current && !byName.has(current.toLowerCase())) byName.set(current.toLowerCase(), { name: current, group: 'Current value', managed: false });
+  return [...byName.values()].sort((a, b) => a.group.localeCompare(b.group) || a.name.localeCompare(b.name));
+}
+
+app.get('/admin/products/new', requireAdmin, async (req, res, next) => {
+  try {
+    const managedCategories = await getProductFormCategories();
+    res.render('admin/product-form', { title: 'Add product', product: null, managedCategories, cloudinaryReady: cloudinaryReady() });
+  } catch (error) { next(error); }
+});
+app.get('/admin/products/:id/edit', requireAdmin, async (req, res, next) => {
+  try {
+    const product = await Product.findById(req.params.id).lean();
+    if (!product) return res.status(404).render('message', { title: 'Not found', message: 'Product not found.' });
+    const managedCategories = await getProductFormCategories(product.category);
+    res.render('admin/product-form', { title: 'Edit product', product, managedCategories, cloudinaryReady: cloudinaryReady() });
+  } catch (error) { next(error); }
+});
 
 function splitCommaValues(value) {
   return String(value || '')
@@ -3282,6 +3375,232 @@ app.post(
     }
   }
 );
+/* =========================
+   Homepage CMS and newsletter
+   ========================= */
+
+function formBoolean(value) {
+  return value === 'on' || value === 'true' || value === true || value === '1';
+}
+
+function cleanText(value) {
+  return String(value || '').trim();
+}
+
+app.post('/newsletter/subscribe', async (req, res) => {
+  const email = cleanText(req.body.email).toLowerCase();
+  const returnTo = cleanText(req.body.returnTo) || '/';
+
+  try {
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new Error('Please enter a valid email address.');
+    const existing = await Subscriber.findOne({ email });
+    if (existing) {
+      if (existing.status !== 'active') {
+        existing.status = 'active';
+        existing.subscribedAt = new Date();
+        existing.unsubscribedAt = null;
+        await existing.save();
+        req.session.flash = { type: 'success', message: 'Welcome back to the TTT Community.' };
+      } else {
+        req.session.flash = { type: 'success', message: 'You are already subscribed to the TTT Community.' };
+      }
+      return res.redirect(returnTo.startsWith('/') ? returnTo : '/');
+    }
+    await Subscriber.create({ email, source: cleanText(req.body.source) || 'homepage' });
+    req.session.flash = { type: 'success', message: 'Thank you for joining the TTT Community.' };
+    return res.redirect(returnTo.startsWith('/') ? returnTo : '/');
+  } catch (error) {
+    req.session.flash = { type: 'error', message: error.code === 11000 ? 'You are already subscribed.' : error.message };
+    return res.redirect(returnTo.startsWith('/') ? returnTo : '/');
+  }
+});
+
+app.get('/admin/categories', requireAdmin, async (req, res, next) => {
+  try {
+    const categories = await Category.find().sort({ group: 1, displayOrder: 1, name: 1 }).lean();
+    res.render('admin/categories', { title: 'Homepage categories', categories });
+  } catch (error) { next(error); }
+});
+
+app.get('/admin/categories/new', requireAdmin, (req, res) => {
+  res.render('admin/category-form', { title: 'Add category', category: null, groups: Category.GROUPS, cloudinaryReady: cloudinaryReady() });
+});
+
+app.get('/admin/categories/:id/edit', requireAdmin, async (req, res, next) => {
+  try {
+    const category = await Category.findById(req.params.id).lean();
+    if (!category) return res.status(404).render('message', { title: 'Not found', message: 'Category not found.' });
+    res.render('admin/category-form', { title: 'Edit category', category, groups: Category.GROUPS, cloudinaryReady: cloudinaryReady() });
+  } catch (error) { next(error); }
+});
+
+async function categoryPayload(req, existing = null) {
+  const name = cleanText(req.body.name);
+  if (!name) throw new Error('Category name is required.');
+  let image = existing?.image || { url: '', publicId: '', alt: '' };
+  if (req.file) {
+    const uploaded = await uploadBuffer(req.file.buffer, 'ttt-outfit/categories');
+    image = { url: uploaded.secure_url || uploaded.url, publicId: uploaded.public_id || '', alt: name };
+  } else if (cleanText(req.body.imageUrl)) {
+    image = { url: cleanText(req.body.imageUrl), publicId: '', alt: name };
+  }
+  return {
+    name,
+    slug: slugify(cleanText(req.body.slug) || name),
+    group: Category.GROUPS.includes(req.body.group) ? req.body.group : 'Other',
+    image,
+    buttonText: cleanText(req.body.buttonText) || 'Shop Now',
+    offerText: cleanText(req.body.offerText) || 'GET 20% OFF',
+    showInMenu: formBoolean(req.body.showInMenu),
+    showInShowcase: formBoolean(req.body.showInShowcase),
+    showOnHomepage: formBoolean(req.body.showOnHomepage),
+    displayOrder: Number(req.body.displayOrder) || 0,
+    active: formBoolean(req.body.active)
+  };
+}
+
+app.post('/admin/categories', requireAdmin, upload.single('imageFile'), async (req, res) => {
+  try {
+    await Category.create(await categoryPayload(req));
+    req.session.flash = { type: 'success', message: 'Category created.' };
+    res.redirect('/admin/categories');
+  } catch (error) {
+    req.session.flash = { type: 'error', message: error.code === 11000 ? 'Category name or slug already exists.' : error.message };
+    res.redirect('/admin/categories/new');
+  }
+});
+
+app.post('/admin/categories/:id', requireAdmin, upload.single('imageFile'), async (req, res) => {
+  try {
+    const category = await Category.findById(req.params.id);
+    if (!category) throw new Error('Category not found.');
+    Object.assign(category, await categoryPayload(req, category));
+    await category.save();
+    req.session.flash = { type: 'success', message: 'Category updated.' };
+    res.redirect('/admin/categories');
+  } catch (error) {
+    req.session.flash = { type: 'error', message: error.code === 11000 ? 'Category name or slug already exists.' : error.message };
+    res.redirect(`/admin/categories/${req.params.id}/edit`);
+  }
+});
+
+app.post('/admin/categories/:id/delete', requireAdmin, async (req, res) => {
+  try {
+    await Category.findByIdAndUpdate(req.params.id, { active: false });
+    req.session.flash = { type: 'success', message: 'Category deactivated.' };
+  } catch (error) { req.session.flash = { type: 'error', message: error.message }; }
+  res.redirect('/admin/categories');
+});
+
+app.get('/admin/sliders', requireAdmin, async (req, res, next) => {
+  try {
+    const sliders = await HomeSlider.find().sort({ displayOrder: 1, createdAt: 1 }).lean();
+    res.render('admin/sliders', { title: 'Homepage sliders', sliders });
+  } catch (error) { next(error); }
+});
+
+app.get('/admin/sliders/new', requireAdmin, (req, res) => {
+  res.render('admin/slider-form', { title: 'Add hero slide', slider: null, cloudinaryReady: cloudinaryReady() });
+});
+
+app.get('/admin/sliders/:id/edit', requireAdmin, async (req, res, next) => {
+  try {
+    const slider = await HomeSlider.findById(req.params.id).lean();
+    if (!slider) return res.status(404).render('message', { title: 'Not found', message: 'Hero slide not found.' });
+    res.render('admin/slider-form', { title: 'Edit hero slide', slider, cloudinaryReady: cloudinaryReady() });
+  } catch (error) { next(error); }
+});
+
+async function sliderPayload(req, existing = null) {
+  let desktopImage = existing?.desktopImage || { url: '', publicId: '' };
+  let mobileImage = existing?.mobileImage || { url: '', publicId: '' };
+  const desktopFile = (req.files || []).find(file => file.fieldname === 'desktopImageFile');
+  const mobileFile = (req.files || []).find(file => file.fieldname === 'mobileImageFile');
+  if (desktopFile) {
+    const uploaded = await uploadBuffer(desktopFile.buffer, 'ttt-outfit/home-sliders');
+    desktopImage = { url: uploaded.secure_url || uploaded.url, publicId: uploaded.public_id || '' };
+  } else if (cleanText(req.body.desktopImageUrl)) desktopImage = { url: cleanText(req.body.desktopImageUrl), publicId: '' };
+  if (mobileFile) {
+    const uploaded = await uploadBuffer(mobileFile.buffer, 'ttt-outfit/home-sliders');
+    mobileImage = { url: uploaded.secure_url || uploaded.url, publicId: uploaded.public_id || '' };
+  } else if (cleanText(req.body.mobileImageUrl)) mobileImage = { url: cleanText(req.body.mobileImageUrl), publicId: '' };
+  if (!desktopImage.url) throw new Error('Desktop hero image is required.');
+  return {
+    desktopImage, mobileImage,
+    subtitle: cleanText(req.body.subtitle),
+    title: cleanText(req.body.title),
+    description: cleanText(req.body.description),
+    buttonText: cleanText(req.body.buttonText) || 'Shop Now',
+    buttonLink: cleanText(req.body.buttonLink) || '/shop',
+    textPosition: cleanText(req.body.textPosition) || 'left-center',
+    displayOrder: Number(req.body.displayOrder) || 0,
+    active: formBoolean(req.body.active)
+  };
+}
+
+const sliderUpload = upload.fields([{ name: 'desktopImageFile', maxCount: 1 }, { name: 'mobileImageFile', maxCount: 1 }]);
+
+app.post('/admin/sliders', requireAdmin, sliderUpload, async (req, res) => {
+  try {
+    await HomeSlider.create(await sliderPayload(req));
+    req.session.flash = { type: 'success', message: 'Hero slide created.' };
+    res.redirect('/admin/sliders');
+  } catch (error) {
+    req.session.flash = { type: 'error', message: error.message };
+    res.redirect('/admin/sliders/new');
+  }
+});
+
+app.post('/admin/sliders/:id', requireAdmin, sliderUpload, async (req, res) => {
+  try {
+    const slider = await HomeSlider.findById(req.params.id);
+    if (!slider) throw new Error('Hero slide not found.');
+    Object.assign(slider, await sliderPayload(req, slider));
+    await slider.save();
+    req.session.flash = { type: 'success', message: 'Hero slide updated.' };
+    res.redirect('/admin/sliders');
+  } catch (error) {
+    req.session.flash = { type: 'error', message: error.message };
+    res.redirect(`/admin/sliders/${req.params.id}/edit`);
+  }
+});
+
+app.post('/admin/sliders/:id/delete', requireAdmin, async (req, res) => {
+  try {
+    await HomeSlider.findByIdAndUpdate(req.params.id, { active: false });
+    req.session.flash = { type: 'success', message: 'Hero slide deactivated.' };
+  } catch (error) { req.session.flash = { type: 'error', message: error.message }; }
+  res.redirect('/admin/sliders');
+});
+
+app.get('/admin/subscribers', requireAdmin, async (req, res, next) => {
+  try {
+    const subscribers = await Subscriber.find().sort({ createdAt: -1 }).lean();
+    res.render('admin/subscribers', { title: 'Newsletter subscribers', subscribers });
+  } catch (error) { next(error); }
+});
+
+app.post('/admin/subscribers/:id/toggle', requireAdmin, async (req, res) => {
+  try {
+    const subscriber = await Subscriber.findById(req.params.id);
+    if (!subscriber) throw new Error('Subscriber not found.');
+    subscriber.status = subscriber.status === 'active' ? 'unsubscribed' : 'active';
+    subscriber.unsubscribedAt = subscriber.status === 'unsubscribed' ? new Date() : null;
+    if (subscriber.status === 'active') subscriber.subscribedAt = new Date();
+    await subscriber.save();
+    req.session.flash = { type: 'success', message: 'Subscriber status updated.' };
+  } catch (error) { req.session.flash = { type: 'error', message: error.message }; }
+  res.redirect('/admin/subscribers');
+});
+
+app.post('/admin/subscribers/:id/delete', requireAdmin, async (req, res) => {
+  try {
+    await Subscriber.findByIdAndDelete(req.params.id);
+    req.session.flash = { type: 'success', message: 'Subscriber deleted.' };
+  } catch (error) { req.session.flash = { type: 'error', message: error.message }; }
+  res.redirect('/admin/subscribers');
+});
+
 app.get('/admin/orders', requireAdmin, async (req, res, next) => { try { const filter = req.query.status ? { status: req.query.status } : {}; const orders = await Order.find(filter).sort({ createdAt: -1 }).populate('customer', 'name email phone').lean(); res.render('admin/orders', { title: 'Manage orders', orders, selectedStatus: req.query.status || '' }); } catch (e) { next(e); } });
 app.post('/admin/orders/:id/update', requireAdmin, async (req, res, next) => {
   try {
