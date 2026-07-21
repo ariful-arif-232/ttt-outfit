@@ -27,12 +27,36 @@
           >
         </picture>
         <div class="ttt-hero-overlay"></div>
-        <div class="ttt-hero-content">
-          <% if (slide.subtitle) { %><span class="ttt-eyebrow"><%= slide.subtitle %></span><% } %>
-          <h1><%= slide.title || 'Wear Your Identity' %></h1>
-          <% if (slide.description) { %><p><%= slide.description %></p><% } %>
-          <% if (slide.buttonText) { %><a class="ttt-primary-button" href="<%= slide.buttonLink || '/shop' %>"><%= slide.buttonText %></a><% } %>
-        </div>
+<% if (slide.description) { %>
+  <p
+    class="ttt-hero-side-description ttt-description-<%= slide.descriptionPosition || 'left' %>"
+  >
+    <%= slide.description %>
+  </p>
+<% } %>
+
+<div class="ttt-hero-content">
+
+  <% if (slide.subtitle) { %>
+    <span class="ttt-eyebrow">
+      <%= slide.subtitle %>
+    </span>
+  <% } %>
+
+  <h1>
+    <%= slide.title || 'Wear Your Identity' %>
+  </h1>
+
+  <% if (slide.buttonText) { %>
+    <a
+      class="ttt-primary-button"
+      href="<%= slide.buttonLink || '/shop' %>"
+    >
+      <%= slide.buttonText %>
+    </a>
+  <% } %>
+
+</div>
       </article>
     <% }); %>
   </div>
