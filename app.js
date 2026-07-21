@@ -3514,8 +3514,8 @@ app.get('/admin/sliders/:id/edit', requireAdmin, async (req, res, next) => {
 async function sliderPayload(req, existing = null) {
   let desktopImage = existing?.desktopImage || { url: '', publicId: '' };
   let mobileImage = existing?.mobileImage || { url: '', publicId: '' };
-  const desktopFile = (req.files || []).find(file => file.fieldname === 'desktopImageFile');
-  const mobileFile = (req.files || []).find(file => file.fieldname === 'mobileImageFile');
+const desktopFile = req.files?.desktopImageFile?.[0] || null;
+const mobileFile = req.files?.mobileImageFile?.[0] || null;
   if (desktopFile) {
     const uploaded = await uploadBuffer(desktopFile.buffer, 'ttt-outfit/home-sliders');
     desktopImage = { url: uploaded.secure_url || uploaded.url, publicId: uploaded.public_id || '' };
