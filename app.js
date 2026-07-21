@@ -2528,8 +2528,40 @@ app.get('/admin', requireAdmin, async (req, res, next) => {
 });
 
 app.get('/admin/products', requireAdmin, async (req, res, next) => { try { const products = await Product.find().sort({ createdAt: -1 }).lean(); res.render('admin/products', { title: 'Manage products', products }); } catch (e) { next(e); } });
-app.get('/admin/products/new', requireAdmin, (req, res) => res.render('admin/product-form', { title: 'Add product', product: null, cloudinaryReady: cloudinaryReady() }));
-app.get('/admin/products/:id/edit', requireAdmin, async (req, res, next) => { try { const product = await Product.findById(req.params.id).lean(); res.render('admin/product-form', { title: 'Edit product', product, cloudinaryReady: cloudinaryReady() }); } catch (e) { next(e); } });
+async function getProductFormCategories(currentCategory = '') {
+  const [managedCategories, legacyCategories] = await Promise.all([
+    Category.find({ active: true }).sort({ group: 1, displayOrder: 1, name: 1 }).select('name group').lean(),
+    Product.distinct('category')
+  ]);
+
+  const byName = new Map();
+  managedCategories.forEach(category => {
+    const name = cleanText(category.name);
+    if (name) byName.set(name.toLowerCase(), { name, group: category.group || 'Other', managed: true });
+  });
+  legacyCategories.forEach(value => {
+    const name = cleanText(value);
+    if (name && !byName.has(name.toLowerCase())) byName.set(name.toLowerCase(), { name, group: 'Existing product categories', managed: false });
+  });
+  const current = cleanText(currentCategory);
+  if (current && !byName.has(current.toLowerCase())) byName.set(current.toLowerCase(), { name: current, group: 'Current value', managed: false });
+  return [...byName.values()].sort((a, b) => a.group.localeCompare(b.group) || a.name.localeCompare(b.name));
+}
+
+app.get('/admin/products/new', requireAdmin, async (req, res, next) => {
+  try {
+    const managedCategories = await getProductFormCategories();
+    res.render('admin/product-form', { title: 'Add product', product: null, managedCategories, cloudinaryReady: cloudinaryReady() });
+  } catch (error) { next(error); }
+});
+app.get('/admin/products/:id/edit', requireAdmin, async (req, res, next) => {
+  try {
+    const product = await Product.findById(req.params.id).lean();
+    if (!product) return res.status(404).render('message', { title: 'Not found', message: 'Product not found.' });
+    const managedCategories = await getProductFormCategories(product.category);
+    res.render('admin/product-form', { title: 'Edit product', product, managedCategories, cloudinaryReady: cloudinaryReady() });
+  } catch (error) { next(error); }
+});
 
 function splitCommaValues(value) {
   return String(value || '')
