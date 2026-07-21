@@ -3,14 +3,30 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+
   <title><%= title %> | TTT Outfit</title>
-  <meta name="description" content="TTT Outfit — premium fashion and everyday clothing for Bangladesh.">
+
+  <meta
+    name="description"
+    content="TTT Outfit — premium fashion and everyday clothing for Bangladesh."
+  >
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  >
+
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+  >
+
   <link rel="stylesheet" href="/css/style.css?v=phase6-1">
 </head>
+
 <body data-logged-in="<%= currentUser ? 'true' : 'false' %>">
 
 <div class="ttt-announcement" aria-label="Store announcements">
@@ -19,58 +35,157 @@
     <span>PREMIUM QUALITY CLOTHING</span>
     <span>WHOLESALE • RETAIL • AVAILABLE</span>
     <span>NEW COLLECTION AVAILABLE NOW</span>
-    <span aria-hidden="true">FREE DELIVERY ON ORDERS OVER ৳3,000</span>
-    <span aria-hidden="true">PREMIUM QUALITY CLOTHING</span>
+
+    <span aria-hidden="true">
+      FREE DELIVERY ON ORDERS OVER ৳3,000
+    </span>
+
+    <span aria-hidden="true">
+      PREMIUM QUALITY CLOTHING
+    </span>
   </div>
 </div>
 
 <header class="ttt-header" id="siteHeader">
   <div class="ttt-header-inner">
-    <button class="ttt-icon-button ttt-menu-trigger" type="button" aria-label="Open menu" aria-controls="tttDrawer" aria-expanded="false">
-      <i class="bi bi-list"></i><span class="ttt-icon-label">Menu</span>
+
+    <button
+      class="ttt-icon-button ttt-menu-trigger"
+      type="button"
+      aria-label="Open menu"
+      aria-controls="tttDrawer"
+      aria-expanded="false"
+    >
+      <i class="bi bi-list"></i>
+      <span class="ttt-icon-label">Menu</span>
     </button>
 
     <a class="ttt-brand" href="/" aria-label="TTT Outfit home">
       <img src="/ttt-logo.jpeg" alt="TTT Outfit logo">
-      <span>TTT <strong>OUTFIT</strong></span>
+
+      <span>
+        TTT <strong>OUTFIT</strong>
+      </span>
     </a>
 
     <nav class="ttt-header-actions" aria-label="Quick links">
-      <button class="ttt-icon-button ttt-search-trigger" type="button" aria-label="Search" aria-controls="tttSearchPanel" aria-expanded="false">
-        <i class="bi bi-search"></i><span class="ttt-icon-label">Search</span>
+
+      <button
+        class="ttt-icon-button ttt-search-trigger"
+        type="button"
+        aria-label="Search"
+        aria-controls="tttSearchPanel"
+        aria-expanded="false"
+      >
+        <i class="bi bi-search"></i>
+        <span class="ttt-icon-label">Search</span>
       </button>
-      <a class="ttt-icon-button" href="<%= currentUser ? '/account' : '/login' %>" aria-label="Account">
-        <i class="bi bi-person"></i><span class="ttt-icon-label">Account</span>
+
+      <a
+        class="ttt-icon-button"
+        href="<%= currentUser ? '/account' : '/login' %>"
+        aria-label="Account"
+      >
+        <i class="bi bi-person"></i>
+        <span class="ttt-icon-label">Account</span>
       </a>
-      <a class="ttt-icon-button ttt-badge-link" href="/wishlist" aria-label="Wishlist">
-        <i class="bi bi-heart"></i><span class="ttt-icon-label">Wishlist</span>
-        <span class="ttt-count-badge wishlist-badge" data-wishlist-count>0</span>
+
+      <a
+        class="ttt-icon-button ttt-badge-link"
+        href="/wishlist"
+        aria-label="Wishlist"
+      >
+        <i class="bi bi-heart"></i>
+        <span class="ttt-icon-label">Wishlist</span>
+
+        <span
+          class="ttt-count-badge wishlist-badge"
+          data-wishlist-count
+        >
+          0
+        </span>
       </a>
-      <a class="ttt-icon-button ttt-badge-link" href="/cart" aria-label="Cart">
-        <i class="bi bi-bag"></i><span class="ttt-icon-label">Cart</span>
-        <span class="ttt-count-badge" data-cart-count><%= cartCount %></span>
+
+      <a
+        class="ttt-icon-button ttt-badge-link"
+        href="/cart"
+        aria-label="Cart"
+      >
+        <i class="bi bi-bag"></i>
+        <span class="ttt-icon-label">Cart</span>
+
+        <span
+          class="ttt-count-badge"
+          data-cart-count
+        >
+          <%= cartCount %>
+        </span>
       </a>
+
     </nav>
   </div>
 
-  <div class="ttt-search-panel" id="tttSearchPanel" hidden>
-    <form action="/shop" method="get" role="search">
+  <div
+    class="ttt-search-panel"
+    id="tttSearchPanel"
+    hidden
+  >
+    <form
+      action="/shop"
+      method="get"
+      role="search"
+    >
       <i class="bi bi-search" aria-hidden="true"></i>
-      <input type="search" name="q" placeholder="Search products..." aria-label="Search products" autocomplete="off">
-      <button type="submit">Search</button>
-      <button class="ttt-search-close" type="button" aria-label="Close search"><i class="bi bi-x-lg"></i></button>
+
+      <input
+        type="search"
+        name="q"
+        placeholder="Search products..."
+        aria-label="Search products"
+        autocomplete="off"
+      >
+
+      <button type="submit">
+        Search
+      </button>
+
+      <button
+        class="ttt-search-close"
+        type="button"
+        aria-label="Close search"
+      >
+        <i class="bi bi-x-lg"></i>
+      </button>
     </form>
   </div>
 </header>
 
-<div class="ttt-drawer-backdrop" data-drawer-close hidden></div>
-<aside class="ttt-drawer" id="tttDrawer" aria-hidden="true" aria-label="Main menu">
+<div
+  class="ttt-drawer-backdrop"
+  data-drawer-close
+  hidden
+></div>
+
+<aside
+  class="ttt-drawer"
+  id="tttDrawer"
+  aria-hidden="true"
+  aria-label="Main menu"
+>
   <div class="ttt-drawer-head">
     <span>MENU</span>
-    <button type="button" data-drawer-close aria-label="Close menu"><i class="bi bi-x-lg"></i></button>
+
+    <button
+      type="button"
+      data-drawer-close
+      aria-label="Close menu"
+    >
+      <i class="bi bi-x-lg"></i>
+    </button>
   </div>
 
   <div class="ttt-drawer-body">
+
     <nav class="ttt-drawer-primary">
       <a href="/">Home</a>
       <a href="/shop">Shop All</a>
@@ -78,70 +193,194 @@
     </nav>
 
     <div class="ttt-drawer-categories">
-      <% const groupOrder = ['T-Shirts', 'Polo Shirts', 'Bottom Wear', 'Winter Wear', 'Other']; %>
-      <% const groupedMenu = {}; %>
-      <% (menuCategories || []).forEach(function(cat) { const key = cat.parentGroup || 'Other'; if (!groupedMenu[key]) groupedMenu[key] = []; groupedMenu[key].push(cat); }); %>
-      <% groupOrder.forEach(function(group) { const items = groupedMenu[group] || []; if (items.length) { %>
-        <section class="ttt-drawer-group">
-          <button class="ttt-drawer-group-toggle" type="button" aria-expanded="false">
-            <span><%= group %></span><i class="bi bi-chevron-down"></i>
-          </button>
-          <div class="ttt-drawer-submenu" hidden>
-            <% items.forEach(function(cat) { %>
-              <a href="/shop?category=<%= encodeURIComponent(cat.name) %>"><%= cat.name %></a>
-            <% }); %>
-          </div>
-        </section>
-      <% } }); %>
+      <%
+        const groupedMenu = {};
 
-      <% if (!(menuCategories || []).length) { %>
-        <section class="ttt-drawer-group">
-          <button class="ttt-drawer-group-toggle" type="button" aria-expanded="false"><span>T-Shirts</span><i class="bi bi-chevron-down"></i></button>
-          <div class="ttt-drawer-submenu" hidden>
-            <a href="/shop?category=T-Shirts">T-Shirt</a>
-            <a href="/shop?category=Drop%20Shoulder">Drop Shoulder T-Shirt</a>
-            <a href="/shop?category=Tank%20Top">Tank Top</a>
-            <a href="/shop?category=Meegi%20T-Shirt">Meegi T-Shirt</a>
-            <a href="/shop?category=Two%20Quarter">Two Quarter</a>
-          </div>
-        </section>
-        <section class="ttt-drawer-group">
-          <button class="ttt-drawer-group-toggle" type="button" aria-expanded="false"><span>Polo Shirts</span><i class="bi bi-chevron-down"></i></button>
-          <div class="ttt-drawer-submenu" hidden><a href="/shop?category=Polo">Polo Shirt</a><a href="/shop?category=Old%20Money%20Polo">Old Money Polo Shirt</a></div>
-        </section>
-        <section class="ttt-drawer-group">
-          <button class="ttt-drawer-group-toggle" type="button" aria-expanded="false"><span>Bottom Wear</span><i class="bi bi-chevron-down"></i></button>
-          <div class="ttt-drawer-submenu" hidden><a href="/shop?category=Trouser">Trouser</a><a href="/shop?category=Joggers">Joggers</a><a href="/shop?category=Formal%20Pant">Formal Pant</a></div>
-        </section>
-        <section class="ttt-drawer-group">
-          <button class="ttt-drawer-group-toggle" type="button" aria-expanded="false"><span>Winter Wear</span><i class="bi bi-chevron-down"></i></button>
-          <div class="ttt-drawer-submenu" hidden><a href="/shop?category=Sweatshirt">Sweatshirt</a><a href="/shop?category=Hoodie">Hoodie</a><a href="/shop?category=Zipper%20Hoodie">Zipper Hoodie</a><a href="/shop?category=Jackets">Jacket</a></div>
-        </section>
+        (menuCategories || []).forEach(function (cat) {
+          if (!cat) return;
+
+          if (cat.active === false) return;
+          if (cat.showInMenu === false) return;
+
+          const groupName =
+            cat.group && String(cat.group).trim()
+              ? String(cat.group).trim()
+              : 'Other';
+
+          if (!groupedMenu[groupName]) {
+            groupedMenu[groupName] = [];
+          }
+
+          groupedMenu[groupName].push(cat);
+        });
+
+        const groupOrder = Object.keys(groupedMenu).sort(function (a, b) {
+          if (a === 'Other' && b !== 'Other') return 1;
+          if (b === 'Other' && a !== 'Other') return -1;
+
+          return a.localeCompare(b);
+        });
+      %>
+
+      <% groupOrder.forEach(function (group) { %>
+        <%
+          const items = groupedMenu[group] || [];
+
+          items.sort(function (a, b) {
+            const orderA = Number(a.displayOrder) || 0;
+            const orderB = Number(b.displayOrder) || 0;
+
+            if (orderA !== orderB) {
+              return orderA - orderB;
+            }
+
+            return String(a.name || '').localeCompare(
+              String(b.name || '')
+            );
+          });
+        %>
+
+        <% if (items.length) { %>
+          <section class="ttt-drawer-group">
+
+            <button
+              class="ttt-drawer-group-toggle"
+              type="button"
+              aria-expanded="false"
+            >
+              <span><%= group %></span>
+              <i class="bi bi-chevron-down"></i>
+            </button>
+
+            <div
+              class="ttt-drawer-submenu"
+              hidden
+            >
+              <% items.forEach(function (cat) { %>
+
+                <a
+                  href="/shop?category=<%= encodeURIComponent(cat.name) %>"
+                >
+                  <%= cat.name %>
+                </a>
+
+              <% }); %>
+            </div>
+
+          </section>
+        <% } %>
+      <% }); %>
+
+      <% if (!groupOrder.length) { %>
+        <p class="small">
+          No categories are currently available.
+        </p>
       <% } %>
     </div>
 
     <nav class="ttt-drawer-account">
-      <a href="/wishlist"><i class="bi bi-heart"></i> Wishlist</a>
-      <a href="/cart"><i class="bi bi-bag"></i> Cart (<span data-cart-count><%= cartCount %></span>)</a>
+
+      <a href="/wishlist">
+        <i class="bi bi-heart"></i>
+        Wishlist
+      </a>
+
+      <a href="/cart">
+        <i class="bi bi-bag"></i>
+        Cart (
+        <span data-cart-count>
+          <%= cartCount %>
+        </span>
+        )
+      </a>
+
       <% if (currentUser) { %>
-        <a href="/account"><i class="bi bi-person"></i> My Account</a>
-        <a href="/orders"><i class="bi bi-box-seam"></i> My Orders</a>
-        <% if (currentUser.role === 'admin') { %><a href="/admin"><i class="bi bi-speedometer2"></i> Admin Panel</a><% } %>
-        <a href="/logout"><i class="bi bi-box-arrow-right"></i> Logout</a>
+
+        <a href="/account">
+          <i class="bi bi-person"></i>
+          My Account
+        </a>
+
+        <a href="/orders">
+          <i class="bi bi-box-seam"></i>
+          My Orders
+        </a>
+
+        <% if (currentUser.role === 'admin') { %>
+          <a href="/admin">
+            <i class="bi bi-speedometer2"></i>
+            Admin Panel
+          </a>
+        <% } %>
+
+        <a href="/logout">
+          <i class="bi bi-box-arrow-right"></i>
+          Logout
+        </a>
+
       <% } else { %>
-        <a href="/login"><i class="bi bi-person"></i> Login</a>
-        <a href="/register"><i class="bi bi-person-plus"></i> Create Account</a>
+
+        <a href="/login">
+          <i class="bi bi-person"></i>
+          Login
+        </a>
+
+        <a href="/register">
+          <i class="bi bi-person-plus"></i>
+          Create Account
+        </a>
+
       <% } %>
     </nav>
+
   </div>
 </aside>
 
 <main>
+
 <% if (flash) { %>
-  <div class="flash-toast <%= flash.type %>" id="flashToast" role="alert" aria-live="polite">
-    <div class="flash-icon"><i class="bi <%= flash.type === 'success' ? 'bi-check-circle-fill' : flash.type === 'error' ? 'bi-exclamation-circle-fill' : 'bi-info-circle-fill' %>"></i></div>
-    <div class="flash-content"><strong><%= flash.type === 'success' ? 'Success' : flash.type === 'error' ? 'Something went wrong' : 'Notice' %></strong><span><%= flash.message %></span></div>
-    <button class="flash-close" type="button" aria-label="Close message" onclick="this.parentElement.remove()"><i class="bi bi-x-lg"></i></button>
+  <div
+    class="flash-toast <%= flash.type %>"
+    id="flashToast"
+    role="alert"
+    aria-live="polite"
+  >
+
+    <div class="flash-icon">
+      <i
+        class="bi <%= flash.type === 'success'
+          ? 'bi-check-circle-fill'
+          : flash.type === 'error'
+            ? 'bi-exclamation-circle-fill'
+            : 'bi-info-circle-fill'
+        %>"
+      ></i>
+    </div>
+
+    <div class="flash-content">
+      <strong>
+        <%= flash.type === 'success'
+          ? 'Success'
+          : flash.type === 'error'
+            ? 'Something went wrong'
+            : 'Notice'
+        %>
+      </strong>
+
+      <span>
+        <%= flash.message %>
+      </span>
+    </div>
+
+    <button
+      class="flash-close"
+      type="button"
+      aria-label="Close message"
+      onclick="this.parentElement.remove()"
+    >
+      <i class="bi bi-x-lg"></i>
+    </button>
+
     <div class="flash-progress"></div>
   </div>
 <% } %>
