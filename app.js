@@ -1178,9 +1178,30 @@ app.post(
     }
   }
 );
-function logoutUser(req, res) {
-  req.logout?.(() => {});
+function logoutUser(req, res, next) {
 
+  if (!req.session) {
+    res.clearCookie('ttt.sid');
+    return res.redirect('/');
+  }
+
+  req.session.destroy((error) => {
+
+    if (error) {
+      console.error('Logout error:', error);
+      return next(error);
+    }
+
+    res.clearCookie('ttt.sid', {
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production'
+    });
+
+    return res.redirect('/');
+  });
+
+}
   req.session.destroy(error => {
     if (error) {
       console.error('Logout error:', error);
