@@ -6,15 +6,25 @@ document.addEventListener('DOMContentLoaded', () => {
   const siteHeader =
     document.getElementById('siteHeader');
 
-  function updateHeaderOnScroll() {
-    if (!siteHeader) return;
+let lastScrollY = window.scrollY;
 
-    siteHeader.classList.toggle(
-      'scrolled',
-      window.scrollY > 25
-    );
+function updateHeaderOnScroll() {
+  if (!siteHeader) return;
+
+  const currentScrollY = window.scrollY;
+
+  if (currentScrollY <= 25) {
+    siteHeader.classList.remove('scrolled');
+  } else if (currentScrollY > lastScrollY) {
+    // নিচের দিকে scroll
+    siteHeader.classList.add('scrolled');
+  } else {
+    // যেকোনো জায়গা থেকে উপরের দিকে scroll
+    siteHeader.classList.remove('scrolled');
   }
 
+  lastScrollY = currentScrollY;
+}
   window.addEventListener(
     'scroll',
     updateHeaderOnScroll,
