@@ -13295,6 +13295,12 @@ body.ttt-drawer-open { overflow: hidden; }
     text-transform: uppercase;
     letter-spacing: 0.18em;
 }
+@media (max-width:768px){
+    .ttt-showcase-copy strong{
+        font-size:13px;
+        letter-spacing:.05em;
+    }
+}
 .ttt-showcase-copy em {
     font-family: "Montserrat", sans-serif;
     font-style: normal;
