@@ -13281,7 +13281,7 @@ body.ttt-drawer-open { overflow: hidden; }
 .ttt-section-heading span { display: block; margin-bottom: 6px; color: var(--ttt-green-soft); font-size: 11px; font-weight: 700; letter-spacing: .25em; }
 .ttt-section-heading h2 { margin: 0; color: var(--ttt-green-deep); font: 600 clamp(38px,5vw,64px)/.95 var(--ttt-serif); }
 .ttt-showcase { padding: clamp(60px,8vw,110px) clamp(15px,4vw,60px); background: var(--ttt-cream); }
-.ttt-showcase-grid { width: min(1300px, 100%); margin: auto; display: grid; grid-template-columns: repeat(2, 1fr); gap: clamp(12px,2vw,24px); }
+.ttt-showcase-grid { width: min(1300px, 100%); margin: auto; display: grid; grid-template-columns: repeat(4, 1fr); gap: clamp(12px,2vw,24px); }
 .ttt-showcase-card { position: relative; min-height: clamp(330px,45vw,630px); overflow: hidden; color: #fff; text-decoration: none; background: var(--ttt-green); }
 .ttt-showcase-card img { width: 100%; height: 100%; object-fit: cover; transition: transform .75s ease; }
 .ttt-showcase-card:hover img { transform: scale(1.045); }
@@ -13295,12 +13295,7 @@ body.ttt-drawer-open { overflow: hidden; }
     text-transform: uppercase;
     letter-spacing: 0.18em;
 }
-@media (max-width:768px){
-    .ttt-showcase-copy strong{
-        font-size:13px;
-        letter-spacing:.05em;
-    }
-}
+
 .ttt-showcase-copy em {
     font-family: "Montserrat", sans-serif;
     font-style: normal;
@@ -13764,4 +13759,24 @@ body.ttt-drawer-open { overflow: hidden; touch-action: none; }
     transform: none;
     animation: none !important;
   }
+}
+/* ===== Category card text - Mobile only ===== */
+@media (max-width: 768px){
+
+    .ttt-showcase-copy{
+        padding:16px;
+        gap:4px;
+    }
+
+    .ttt-showcase-copy strong{
+        font-size:11px !important;
+        line-height:1.15;
+        letter-spacing:.05em;
+    }
+
+    .ttt-showcase-copy em{
+        font-size:9px !important;
+        letter-spacing:.08em;
+    }
+
 }
