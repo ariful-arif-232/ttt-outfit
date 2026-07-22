@@ -70,10 +70,29 @@
 </section>
 
 <section class="ttt-showcase" id="categories">
-  <div class="ttt-section-heading ttt-reveal">
-    <span>READY TO WEAR</span>
-    <h2>TOP COLLECTION</h2>
-  </div>
+<div class="ttt-section-heading ttt-reveal">
+  <span class="ttt-ready-title" aria-label="Ready To Wear">
+    <i style="--delay:0.05s">R</i>
+    <i style="--delay:0.10s">E</i>
+    <i style="--delay:0.15s">A</i>
+    <i style="--delay:0.20s">D</i>
+    <i style="--delay:0.25s">Y</i>
+
+    <i class="ttt-ready-space">&nbsp;</i>
+
+    <i style="--delay:0.30s">T</i>
+    <i style="--delay:0.35s">O</i>
+
+    <i class="ttt-ready-space">&nbsp;</i>
+
+    <i style="--delay:0.40s">W</i>
+    <i style="--delay:0.45s">E</i>
+    <i style="--delay:0.50s">A</i>
+    <i style="--delay:0.55s">R</i>
+  </span>
+
+  <h2>TOP COLLECTION</h2>
+</div>
   <div class="ttt-showcase-grid">
     <% const showcase = (showcaseCategories || []).length ? showcaseCategories : [
       {name:'T-Shirt', image:'/category-tshirt.jpg', buttonText:'Explore Collection'},
@@ -156,5 +175,27 @@
     <span class="ttt-newsletter-status" id="newsletterStatus" aria-live="polite"></span>
   </form>
 </section>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const readyTitle = document.querySelector(".ttt-ready-title");
 
+    if (!readyTitle) return;
+
+    const readyObserver = new IntersectionObserver(
+      function (entries, observer) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            readyTitle.classList.add("ttt-ready-show");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      {
+        threshold: 0.35
+      }
+    );
+
+    readyObserver.observe(readyTitle);
+  });
+</script>
 <%- include('partials/footer') %>
