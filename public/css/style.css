@@ -2007,7 +2007,7 @@ th {
   }
 
   .hero-text {
-    max-width: 310px;
+    max-width: 340px;
   }
 
   .hero-kicker {
@@ -2030,7 +2030,7 @@ th {
   }
 
   .hero-text p {
-    max-width: 290px;
+    max-width: 340px;
 
     font-size: 12px;
     line-height: 1.45;
@@ -2226,7 +2226,7 @@ th {
   }
 
   .hero-text p {
-    max-width: 270px;
+    max-width: 310px;
     font-size: 11px;
   }
 
