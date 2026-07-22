@@ -562,9 +562,11 @@ h3 {
 
   color: #ffffff;
 
-  font-size: clamp(48px, 6vw, 78px);
-  line-height: 0.94;
-  letter-spacing: -1.7px;
+font-family: Inter, Arial, sans-serif;
+font-size: clamp(42px, 5vw, 62px);
+font-weight: 800;
+line-height: 1.05;
+letter-spacing: -1px;
 }
 
 .hero-text h1 em {
