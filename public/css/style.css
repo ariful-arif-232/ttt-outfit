@@ -8661,7 +8661,7 @@ body.ttt-drawer-open { overflow: hidden; touch-action: none; }
 
   .ttt-hero .ttt-hero-content h1 {
     margin-bottom: 8px;
-    font-size: clamp(16px, 4.8vw, 21px) !important;
+    font-size: clamp(12px, 4.8vw, 21px) !important;
     line-height: 1.08;
   }
 
@@ -8671,12 +8671,15 @@ body.ttt-drawer-open { overflow: hidden; touch-action: none; }
     font-size: 6.5px;
   }
 
-  .ttt-hero .ttt-hero-side-description {
-    max-height: 72%;
-    font-size: 6px;
-    line-height: 1.3;
-    letter-spacing: .075em;
-  }
+.ttt-hero .ttt-hero-side-description {
+  max-height: 82%;
+  font-size: 6px;
+  line-height: 1.55;
+  letter-spacing: .075em;
+
+   text-align: center;
+text-wrap: balance;
+}
 
   .ttt-hero .ttt-hero-side-description.ttt-description-left { left: 12px; }
   .ttt-hero .ttt-hero-side-description.ttt-description-right { right: 12px; }
