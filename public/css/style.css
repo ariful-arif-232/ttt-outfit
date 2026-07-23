@@ -9013,3 +9013,17 @@ body.ttt-drawer-lock { overflow: hidden; }
     background:#d4af37;
     color:#111;
 }
+/* Mobile drawer full visible height fix */
+
+.ttt-drawer{
+    height: 100dvh;
+    max-height: 100dvh;
+    overflow: hidden;
+}
+
+.ttt-drawer-body{
+    height: calc(100dvh - 86px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: calc(32px + env(safe-area-inset-bottom));
+}
