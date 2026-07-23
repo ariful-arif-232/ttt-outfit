@@ -9027,3 +9027,27 @@ body.ttt-drawer-lock { overflow: hidden; }
     -webkit-overflow-scrolling: touch;
     padding-bottom: calc(32px + env(safe-area-inset-bottom));
 }
+/* Mobile Wishlist & Cart Badge */
+
+.ttt-mobile-badge-link{
+    position:relative;
+    display:flex;
+    align-items:center;
+    gap:14px;
+}
+
+.ttt-mobile-badge-link .ttt-count-badge{
+    position:absolute;
+    left:18px;
+    top:-4px;
+
+    min-width:18px;
+    height:18px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    font-size:11px;
+    border-radius:999px;
+}
