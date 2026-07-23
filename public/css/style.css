@@ -7702,9 +7702,9 @@ flex-direction:column;
 
   .professional-product-card .product-wishlist-button,
   .product-wishlist-button {
-    width: 30px !important;
-    height: 30px !important;
-    font-size: 18px !important;
+    width: 24px !important;
+    height: 24px !important;
+    font-size: 14px !important;
     background: rgba(15,15,15,.3) !important;
   }
 
