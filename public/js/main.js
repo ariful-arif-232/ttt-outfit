@@ -509,7 +509,50 @@ document.addEventListener('keydown', event => {
       rail.addEventListener('pointerup', endDrag);
       rail.addEventListener('pointercancel', endDrag);
       rail.addEventListener('lostpointercapture', endDrag);
+
+      // Automatic product sliding on desktop and mobile.
+      // Pauses while the user hovers, touches, drags, or leaves the tab.
+      let railAutoTimer = null;
+      let railAutoPaused = false;
+      const getStep = () => {
+        const firstItem = rail.querySelector('.ttt-product-rail-item');
+        if (!firstItem) return amount();
+        const styles = window.getComputedStyle(rail);
+        return firstItem.getBoundingClientRect().width + (parseFloat(styles.columnGap || styles.gap) || 0);
+      };
+      const stopRailAuto = () => {
+        if (railAutoTimer) window.clearInterval(railAutoTimer);
+        railAutoTimer = null;
+      };
+      const startRailAuto = () => {
+        stopRailAuto();
+        if (reducedMotion.matches || rail.scrollWidth <= rail.clientWidth + 4 || railAutoPaused || document.hidden) return;
+        railAutoTimer = window.setInterval(() => {
+          const max = Math.max(0, rail.scrollWidth - rail.clientWidth);
+          if (rail.scrollLeft >= max - 8) {
+            rail.scrollTo({ left: 0, behavior: 'smooth' });
+          } else {
+            rail.scrollBy({ left: getStep(), behavior: 'smooth' });
+          }
+        }, 2800);
+      };
+      const pauseRailAuto = () => { railAutoPaused = true; stopRailAuto(); };
+      const resumeRailAuto = () => { railAutoPaused = false; window.setTimeout(startRailAuto, 900); };
+
+      rail.addEventListener('mouseenter', pauseRailAuto);
+      rail.addEventListener('mouseleave', resumeRailAuto);
+      rail.addEventListener('touchstart', pauseRailAuto, { passive: true });
+      rail.addEventListener('touchend', resumeRailAuto, { passive: true });
+      rail.addEventListener('pointerdown', pauseRailAuto);
+      rail.addEventListener('pointerup', resumeRailAuto);
+      rail.addEventListener('pointercancel', resumeRailAuto);
+      prev?.addEventListener('click', resumeRailAuto);
+      next?.addEventListener('click', resumeRailAuto);
+      document.addEventListener('visibilitychange', () => document.hidden ? stopRailAuto() : startRailAuto());
+      reducedMotion.addEventListener?.('change', startRailAuto);
+
       updateButtons();
+      startRailAuto();
     });
 
 
