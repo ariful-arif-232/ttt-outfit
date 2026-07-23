@@ -8572,18 +8572,28 @@ body.ttt-drawer-open { overflow: hidden; touch-action: none; }
   position: absolute;
   top: 50%;
   z-index: 3;
-  max-height: 68%;
+
+  height: 82%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
   margin: 0;
   overflow: hidden;
+
   color: rgba(255,255,255,.9);
+
   font-family: "Manrope", Arial, sans-serif;
   font-size: 9px;
   font-weight: 500;
-  line-height: 1.45;
-  letter-spacing: .11em;
+
+  line-height: 1.6;
+  letter-spacing: .09em;
+
   writing-mode: vertical-rl;
   text-orientation: mixed;
-  white-space: normal;
+
+  text-align: center;
 }
 
 .ttt-hero .ttt-hero-side-description.ttt-description-left {
@@ -8672,17 +8682,20 @@ body.ttt-drawer-open { overflow: hidden; touch-action: none; }
   }
 
 .ttt-hero .ttt-hero-side-description {
-  max-height: 82%;
-  font-size: 6px;
-  line-height: 1.55;
-  letter-spacing: .075em;
+    height: 92%;
+    font-size: 6px;
+    line-height: 1.6;
+    letter-spacing: .07em;
 
-   text-align: center;
-text-wrap: balance;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    text-align: center;
 }
 
-  .ttt-hero .ttt-hero-side-description.ttt-description-left { left: 12px; }
-  .ttt-hero .ttt-hero-side-description.ttt-description-right { right: 12px; }
+  .ttt-hero .ttt-hero-side-description.ttt-description-left { left: 5px; }
+  .ttt-hero .ttt-hero-side-description.ttt-description-right { right: 5px; }
 
   .ttt-hero .ttt-hero-dots {
     bottom: 8px;
