@@ -8978,16 +8978,12 @@ body.ttt-drawer-lock { overflow: hidden; }
 .ttt-product-swiper .ttt-product-rail-item {
   scroll-snap-align: unset;
 }
-/* Follow Us */
-
-.ttt-drawer-follow{
-    margin-top:24px;
-    padding-top:20px;
-    border-top:1px solid rgba(255,255,255,.12);
-}
-
 .ttt-drawer-follow p{
-    margin:0 0 12px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+
+    margin:0;
     color:#fff;
     font-size:15px;
     font-weight:600;
@@ -8995,12 +8991,13 @@ body.ttt-drawer-lock { overflow: hidden; }
 
 .ttt-drawer-social{
     display:flex;
-    gap:14px;
+    align-items:center;
+    gap:8px;
 }
 
 .ttt-drawer-social a{
-    width:42px;
-    height:42px;
+    width:32px;
+    height:32px;
 
     display:flex;
     align-items:center;
@@ -9010,13 +9007,7 @@ body.ttt-drawer-lock { overflow: hidden; }
     background:rgba(255,255,255,.08);
 
     color:#fff;
-    font-size:20px;
+    font-size:15px;
 
     transition:.25s;
-}
-
-.ttt-drawer-social a:hover{
-    background:#d4af37;
-    color:#111;
-    transform:translateY(-2px);
 }
