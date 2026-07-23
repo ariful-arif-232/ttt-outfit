@@ -9455,49 +9455,51 @@ body.ttt-drawer-lock { overflow: hidden; }
 .ttt-developer i{
     font-size:14px;
 }
-/* =========================================
-   HEADER CART / WISHLIST COUNT
-========================================= */
+/* =====================================
+   Premium Glass Badge
+===================================== */
 
-.ttt-badge-link{
-    position:relative;
-}
-
-.ttt-count-badge{
+.ttt-count-badge,
+.ttt-drawer-count{
 
     position:absolute;
 
-    top:2px;
-    right:4px;
+    top:-8px;
+    right:-8px;
 
-    background:transparent !important;
-    border:none !important;
-    box-shadow:none !important;
+    min-width:20px;
+    height:20px;
 
-    min-width:auto;
-    width:auto;
-    height:auto;
+    padding:0 6px;
 
-    padding:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
 
-    color:#d4af37;
-
-    font-size:13px;
-    font-weight:900;
+    color:#ffffff;
+    font-size:11px;
+    font-weight:700;
     line-height:1;
 
-    text-shadow:0 0 8px rgba(212,175,55,.65);
+    background:rgba(255,255,255,.40);
+
+    border:1.5px solid rgba(255,255,255,.95);
+
+    border-radius:999px;
+
+    backdrop-filter:blur(8px);
+    -webkit-backdrop-filter:blur(8px);
+
+    box-shadow:
+        0 4px 10px rgba(0,0,0,.18);
 
     transition:.25s ease;
-
-    pointer-events:none;
 }
 
-.ttt-badge-link:hover .ttt-count-badge{
+.ttt-badge-link:hover .ttt-count-badge,
+.ttt-drawer-badge-link:hover .ttt-drawer-count{
 
-    color:#ffe08a;
+    background:rgba(255,255,255,.55);
 
-    transform:translateY(-2px) scale(1.1);
-
-    text-shadow:0 0 14px rgba(255,224,138,.9);
+    transform:scale(1.08);
 }
