@@ -430,12 +430,11 @@
           Wishlist
         </span>
 
-        <span
-          class="ttt-count-badge wishlist-badge"
-          data-wishlist-count
-        >
-          0
-        </span>
+<span
+  class="ttt-count-badge wishlist-badge"
+  data-wishlist-count
+  style="display:none"
+></span>
       </a>
 
 
@@ -450,12 +449,13 @@
           Cart
         </span>
 
-        <span
-          class="ttt-count-badge"
-          data-cart-count
-        >
-          <%= cartCount %>
-        </span>
+<span
+  class="ttt-count-badge"
+  data-cart-count
+  style="<%= cartCount > 0 ? 'display:flex' : 'display:none' %>"
+>
+  <%= cartCount %>
+</span>
       </a>
 
     </nav>
@@ -697,12 +697,7 @@
     <span class="ttt-drawer-link-icon">
       <i class="bi bi-heart"></i>
 
-      <span
-        class="ttt-drawer-count wishlist-badge"
-        data-wishlist-count
-      >
-        0
-      </span>
+class="ttt-drawer-count wishlist-badge"
     </span>
 
     <span>Wishlist</span>
@@ -716,12 +711,13 @@
     <span class="ttt-drawer-link-icon">
       <i class="bi bi-bag"></i>
 
-      <span
-        class="ttt-drawer-count"
-        data-cart-count
-      >
-        <%= cartCount %>
-      </span>
+<span
+  class="ttt-drawer-count"
+  data-cart-count
+  style="<%= cartCount > 0 ? 'display:flex' : 'display:none' %>"
+>
+  <%= cartCount %>
+</span>
     </span>
 
     <span>Cart</span>
