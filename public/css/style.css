@@ -9138,3 +9138,81 @@ body.ttt-drawer-lock { overflow: hidden; }
   text-align: center;
   font-size: 16px;
 }
+/* =========================================
+   DESIGNED AROUND YOU — COMPACT ROW
+========================================= */
+
+.ttt-designed-compact {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+
+  border-top: 1px solid rgba(0, 0, 0, 0.11);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.11);
+}
+
+.ttt-designed-item {
+  min-width: 0;
+  padding: 18px 22px;
+
+  display: flex;
+  align-items: center;
+  gap: 13px;
+}
+
+.ttt-designed-item:not(:last-child) {
+  border-right: 1px solid rgba(0, 0, 0, 0.11);
+}
+
+.ttt-designed-item > i {
+  flex: 0 0 auto;
+
+  color: var(--gold);
+  font-size: 23px;
+}
+
+.ttt-designed-item h3 {
+  margin: 0 0 3px;
+
+  font-family: Manrope, Arial, sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.ttt-designed-item p {
+  margin: 0;
+
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.45;
+}
+
+@media (max-width: 700px) {
+
+  .ttt-designed-compact {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .ttt-designed-item {
+    padding: 12px 7px;
+
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+
+    text-align: center;
+  }
+
+  .ttt-designed-item > i {
+    font-size: 18px;
+  }
+
+  .ttt-designed-item h3 {
+    font-size: 10px;
+    line-height: 1.25;
+  }
+
+  .ttt-designed-item p {
+    display: none;
+  }
+
+}
