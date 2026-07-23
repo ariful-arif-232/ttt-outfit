@@ -419,25 +419,23 @@
       </a>
 
 
-<a
-  class="ttt-drawer-badge-link"
-  href="/wishlist"
->
-  <span class="ttt-drawer-link-icon">
+      <a
+        class="ttt-icon-button ttt-badge-link ttt-mobile-hide-wishlist"
+        href="/wishlist"
+        aria-label="Wishlist"
+      >
+        <i class="bi bi-heart"></i>
 
-    <i class="bi bi-heart"></i>
+        <span class="ttt-icon-label">
+          Wishlist
+        </span>
 
-    <span
-      class="ttt-drawer-count wishlist-badge"
-      data-wishlist-count
-      style="display:none"
-    ></span>
-
-  </span>
-
-  <span>Wishlist</span>
-
-</a>
+        <span
+          class="ttt-count-badge wishlist-badge"
+          data-wishlist-count
+          style="display:none"
+        ></span>
+      </a>
 
 
       <a
@@ -451,13 +449,13 @@
           Cart
         </span>
 
-<span
-  class="ttt-count-badge"
-  data-cart-count
-  style="<%= cartCount > 0 ? 'display:flex' : 'display:none' %>"
->
-  <%= cartCount %>
-</span>
+        <span
+          class="ttt-count-badge"
+          data-cart-count
+          style="<%= cartCount > 0 ? 'display:flex' : 'display:none' %>"
+        >
+          <%= cartCount %>
+        </span>
       </a>
 
     </nav>
@@ -687,10 +685,10 @@
 
 <nav class="ttt-drawer-account">
 
-  <a href="/track-order">
-    <i class="bi bi-truck"></i>
-    <span>Track Order</span>
-  </a>
+<a href="/track-order">
+  <i class="bi bi-truck"></i>
+  <span>Track Order</span>
+</a>
 
   <a
     class="ttt-drawer-badge-link"
@@ -708,6 +706,7 @@
 
     <span>Wishlist</span>
   </a>
+
 
   <a
     class="ttt-drawer-badge-link"
@@ -727,7 +726,6 @@
 
     <span>Cart</span>
   </a>
-
 
 
   <% if (currentUser) { %>
