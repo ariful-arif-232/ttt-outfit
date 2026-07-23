@@ -9216,3 +9216,216 @@ body.ttt-drawer-lock { overflow: hidden; }
   }
 
 }
+/* =========================================
+   FOOTER — CLEAN TWO-ROW MOBILE LAYOUT
+========================================= */
+
+.ttt-footer-main {
+  padding: 48px clamp(18px, 5vw, 70px);
+}
+
+.ttt-footer-top {
+  width: min(1400px, 100%);
+  margin: 0 auto;
+
+  display: grid;
+  grid-template-columns: 1.35fr repeat(4, 1fr);
+  gap: 38px;
+}
+
+.ttt-footer-brand,
+.ttt-footer-section {
+  min-width: 0;
+  padding: 0;
+  margin: 0;
+
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.ttt-footer-section {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+
+  font-style: normal;
+}
+
+.ttt-footer-section h3 {
+  margin: 0 0 8px;
+
+  color: var(--ttt-gold-light);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+}
+
+.ttt-footer-section a,
+.ttt-footer-section span {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+
+  color: rgba(255, 255, 255, 0.74);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.ttt-footer-section i {
+  width: 16px;
+  flex: 0 0 16px;
+
+  color: var(--ttt-gold-light);
+  font-size: 13px;
+  text-align: center;
+}
+
+.ttt-footer-section a:hover {
+  color: var(--ttt-gold-light);
+}
+
+/* Payment methods */
+
+.ttt-footer-payments {
+  width: min(1400px, 100%);
+  margin: 35px auto 0;
+  padding-top: 20px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.ttt-payment-title {
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.ttt-payment-list {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ttt-payment-badge {
+  min-height: 29px;
+  padding: 5px 11px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.09);
+
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 5px;
+
+  font-size: 10px;
+  font-weight: 700;
+}
+
+/* Mobile */
+
+@media (max-width: 700px) {
+
+  .ttt-footer-main {
+    padding: 38px 18px 28px;
+  }
+
+  .ttt-footer-top {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 28px 18px;
+
+    overflow: visible;
+  }
+
+  .ttt-footer-brand {
+    grid-column: 1 / -1;
+    min-width: 0;
+  }
+
+  .ttt-footer-brand p {
+    max-width: 320px;
+    margin-top: 12px;
+  }
+
+  .ttt-footer-section {
+    min-width: 0;
+  }
+
+  .ttt-footer-section h3 {
+    font-size: 10px;
+  }
+
+  .ttt-footer-section a,
+  .ttt-footer-section span {
+    font-size: 10px;
+    gap: 6px;
+  }
+
+  .ttt-footer-section i {
+    width: 14px;
+    flex-basis: 14px;
+    font-size: 11px;
+  }
+
+  .ttt-footer-payments {
+    margin-top: 28px;
+
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .ttt-payment-list {
+    width: 100%;
+  }
+
+  .ttt-payment-badge {
+    min-height: 27px;
+    padding: 4px 9px;
+    font-size: 9px;
+  }
+
+}
+/* Payment logos */
+
+.ttt-payment-list{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    flex-wrap:wrap;
+}
+
+.ttt-payment-logo{
+    height:32px;
+    width:auto;
+
+    padding:5px 8px;
+
+    background:#fff;
+    border-radius:6px;
+
+    object-fit:contain;
+
+    transition:.25s;
+}
+
+.ttt-payment-logo:hover{
+    transform:translateY(-2px);
+}
+
+@media(max-width:700px){
+
+.ttt-payment-logo{
+    height:26px;
+}
+
+}
