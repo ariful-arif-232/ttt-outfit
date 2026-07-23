@@ -563,7 +563,7 @@ h3 {
   color: #ffffff;
 
 font-family: Inter, Arial, sans-serif;
-font-size: clamp(42px, 5vw, 62px);
+font-size: clamp(32px, 4vw, 48px);
 font-weight: 800;
 line-height: 1.05;
 letter-spacing: -1px;
@@ -2022,7 +2022,7 @@ th {
   .hero-text h1 {
     margin-bottom: 9px;
 
-    font-size: 32px;
+    font-size: 28px;
     line-height: 0.95;
     letter-spacing: -0.6px;
   }
@@ -2230,7 +2230,7 @@ th {
   }
 
   .hero-text h1 {
-    font-size: 28px;
+    font-size: 24px;
   }
 
 .hero-text p {
@@ -13815,4 +13815,44 @@ body.ttt-drawer-open { overflow: hidden; touch-action: none; }
         letter-spacing:.08em;
     }
 
+}
+/* =========================================
+   FINAL MOBILE HERO TEXT FIX
+========================================= */
+
+@media (max-width: 700px) {
+  .hero-content-wrap .container {
+    width: 94% !important;
+  }
+
+  .hero-text {
+    width: 100% !important;
+    max-width: none !important;
+  }
+
+  .hero-text p {
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+
+    font-size: 12px !important;
+    line-height: 1.45 !important;
+
+    text-align: justify !important;
+    text-align-last: justify !important;
+    text-justify: inter-word;
+  }
+}
+
+@media (max-width: 430px) {
+  .hero-text {
+    width: 100% !important;
+    max-width: none !important;
+  }
+
+  .hero-text p {
+    width: 100% !important;
+    max-width: none !important;
+    font-size: 11px !important;
+  }
 }
