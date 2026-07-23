@@ -8774,12 +8774,31 @@ body.ttt-drawer-open { overflow: hidden; touch-action: none; }
   pointer-events: none;
 }
 .ttt-card-bottom-icons > * {
-  pointer-events: auto; border: 0 !important; background: transparent !important;
-  box-shadow: none !important; padding: 0 !important; margin: 0 !important;
-  color: #111 !important; font-size: 21px; line-height: 1;
-  transition: transform .2s ease, opacity .2s ease;
+  pointer-events: auto;
+  width: 40px !important;
+  height: 40px !important;
+  min-width: 40px !important;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255,255,255,.55) !important;
+  border-radius: 50% !important;
+  background: rgba(255,255,255,.46) !important;
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 14px rgba(0,0,0,.12) !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  color: #111 !important;
+  font-size: 22px;
+  line-height: 1;
+  transition: transform .2s ease, background-color .2s ease, box-shadow .2s ease;
 }
-.ttt-card-bottom-icons > *:hover { transform: translateY(-2px); }
+.ttt-card-bottom-icons > *:hover {
+  transform: translateY(-2px) scale(1.04);
+  background: rgba(255,255,255,.68) !important;
+  box-shadow: 0 6px 18px rgba(0,0,0,.16) !important;
+}
 .ttt-card-cart-icon.is-disabled { opacity: .38; cursor: not-allowed; }
 .ttt-compact-product-info {
   background: #fff !important; padding: 10px 1px 3px !important; color: #111 !important;
@@ -8852,10 +8871,83 @@ body.ttt-drawer-lock { overflow: hidden; }
 @media (min-width: 768px) and (max-width: 1179px) { .ttt-product-rail { grid-auto-columns: calc((100% - 48px) / 4); } }
 @media (max-width: 767px) {
   .ttt-product-rail { grid-auto-columns: calc((100% - 10px) / 2); gap: 10px !important; }
-  .ttt-card-bottom-icons { left: 10px; right: 10px; bottom: 8px; }
-  .ttt-card-bottom-icons > * { font-size: 19px; }
+  .ttt-card-bottom-icons { left: 9px; right: 9px; bottom: 8px; }
+  .ttt-card-bottom-icons > * {
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 36px !important;
+    font-size: 20px;
+    background: rgba(255,255,255,.52) !important;
+    -webkit-backdrop-filter: blur(7px);
+    backdrop-filter: blur(7px);
+  }
   .ttt-compact-product-info h3 a { font-size: 12px !important; }
   .ttt-quick-cart-drawer { padding: 22px 16px 22px; border-radius: 15px 15px 0 0; }
   .ttt-quick-cart-product { grid-template-columns: 78px 1fr; gap: 12px; }
   .ttt-quick-cart-product img { width: 78px; }
+}
+
+/* ===== v3: larger screenshot-matched product typography ===== */
+.ttt-compact-product-info {
+  padding: 13px 2px 5px !important;
+  font-family: "Manrope", Arial, sans-serif !important;
+}
+.ttt-compact-product-info h3 {
+  margin: 0 0 8px !important;
+  line-height: 1.35 !important;
+}
+.ttt-compact-product-info h3 a {
+  font-family: "Manrope", Arial, sans-serif !important;
+  font-size: 16px !important;
+  font-weight: 400 !important;
+  line-height: 1.35 !important;
+  letter-spacing: .01em !important;
+  color: #050505 !important;
+}
+.ttt-compact-product-info .product-price-row {
+  gap: 12px !important;
+  align-items: baseline !important;
+  flex-wrap: wrap;
+}
+.ttt-compact-product-info .product-current-price {
+  font-family: "Manrope", Arial, sans-serif !important;
+  color: #050505 !important;
+  font-size: 18px !important;
+  line-height: 1.2 !important;
+  font-weight: 700 !important;
+  letter-spacing: .01em !important;
+}
+.ttt-compact-product-info .product-compare-price {
+  font-family: "Manrope", Arial, sans-serif !important;
+  color: #888 !important;
+  font-size: 15px !important;
+  line-height: 1.2 !important;
+  font-weight: 400 !important;
+  letter-spacing: .01em !important;
+  text-decoration-thickness: 1px;
+}
+
+@media (max-width: 767px) {
+  .ttt-compact-product-info {
+    padding: 12px 1px 5px !important;
+  }
+  .ttt-compact-product-info h3 {
+    margin-bottom: 7px !important;
+  }
+  .ttt-compact-product-info h3 a {
+    font-size: 15px !important;
+    font-weight: 400 !important;
+    line-height: 1.32 !important;
+  }
+  .ttt-compact-product-info .product-price-row {
+    gap: 9px !important;
+  }
+  .ttt-compact-product-info .product-current-price {
+    font-size: 17px !important;
+    font-weight: 700 !important;
+  }
+  .ttt-compact-product-info .product-compare-price {
+    font-size: 14px !important;
+    font-weight: 400 !important;
+  }
 }
