@@ -145,30 +145,79 @@
   </div>
 </section>
 
-<section class="ttt-category-rails" aria-label="Shop by category">
-  <% if ((categorySections || []).length) { %>
-    <% categorySections.forEach(function(section, sectionIndex) { if ((section.products || []).length) { %>
-      <article class="ttt-product-section ttt-reveal" data-product-rail-section>
-        <div class="ttt-product-section-head">
-          <div><span><%= section.category.offerText || 'GET 20% OFF' %></span><h2><%= section.category.name %></h2></div>
-          <div class="ttt-product-section-actions">
-            <a href="/shop?category=<%= encodeURIComponent(section.category.name) %>">View All</a>
-            <button type="button" data-rail-prev aria-label="Previous products"><i class="bi bi-arrow-left"></i></button>
-            <button type="button" data-rail-next aria-label="Next products"><i class="bi bi-arrow-right"></i></button>
-          </div>
-        </div>
-        <div class="ttt-product-rail" data-product-rail>
-          <% section.products.forEach(function(p) { %><div class="ttt-product-rail-item"><%- include('partials/product-card', { p, hideOfferButton: true }) %></div><% }); %>
-        </div>
-      </article>
-    <% } }); %>
-  <% } else if ((featured || []).length) { %>
+<section class="ttt-category-rails" aria-label="Men's collections">
+  <%
+    const allCategorySections = Array.isArray(categorySections) ? categorySections : [];
+    const groupRules = [
+      { name: "Men's Top Wear", keywords: ['top wear','t-shirt','tshirt','polo','shirt','panjabi','jersey','tank top'] },
+      { name: "Men's Bottom Wear", keywords: ['bottom wear','jeans','pants','pant','trouser','cargo','shorts','jogger'] },
+      { name: "Men's Outer Wear", keywords: ['outer wear','outerwear','hoodie','jacket','blazer','sweater','coat','windbreaker'] }
+    ];
+    const groupedSections = groupRules.map(group => {
+      const products = [];
+      const seen = new Set();
+      allCategorySections.forEach(section => {
+        const categoryName = String(section?.category?.name || '').toLowerCase();
+        if (group.keywords.some(keyword => categoryName.includes(keyword))) {
+          (section.products || []).forEach(product => {
+            const key = String(product?._id || product?.slug || product?.name || '');
+            if (key && !seen.has(key)) { seen.add(key); products.push(product); }
+          });
+        }
+      });
+      return { name: group.name, products };
+    });
+  %>
+
+  <% groupedSections.forEach(function(section) { if (section.products.length) { %>
     <article class="ttt-product-section ttt-reveal" data-product-rail-section>
-      <div class="ttt-product-section-head"><div><span>CURATED FOR YOU</span><h2>Featured Products</h2></div><div class="ttt-product-section-actions"><a href="/shop">View All</a><button type="button" data-rail-prev aria-label="Previous products"><i class="bi bi-arrow-left"></i></button><button type="button" data-rail-next aria-label="Next products"><i class="bi bi-arrow-right"></i></button></div></div>
+      <div class="ttt-product-section-head">
+        <div><span>TTT OUTFIT COLLECTION</span><h2><%= section.name %></h2></div>
+        <div class="ttt-product-section-actions">
+          <a href="/shop">View All</a>
+          <button type="button" data-rail-prev aria-label="Previous products"><i class="bi bi-arrow-left"></i></button>
+          <button type="button" data-rail-next aria-label="Next products"><i class="bi bi-arrow-right"></i></button>
+        </div>
+      </div>
+      <div class="ttt-product-rail" data-product-rail>
+        <% section.products.forEach(function(p) { %><div class="ttt-product-rail-item"><%- include('partials/product-card', { p, hideOfferButton: true }) %></div><% }); %>
+      </div>
+    </article>
+  <% } }); %>
+
+  <% if (!groupedSections.some(section => section.products.length) && (featured || []).length) { %>
+    <article class="ttt-product-section ttt-reveal" data-product-rail-section>
+      <div class="ttt-product-section-head"><div><span>CURATED FOR YOU</span><h2>Men's Collection</h2></div></div>
       <div class="ttt-product-rail" data-product-rail><% featured.forEach(function(p) { %><div class="ttt-product-rail-item"><%- include('partials/product-card', { p, hideOfferButton: true }) %></div><% }); %></div>
     </article>
   <% } %>
 </section>
+
+<div class="ttt-quick-cart-backdrop" data-quick-cart-backdrop hidden></div>
+<aside class="ttt-quick-cart-drawer" data-quick-cart-drawer aria-hidden="true" aria-label="Add product to cart">
+  <button class="ttt-quick-cart-close" type="button" data-quick-cart-close aria-label="Close"><i class="bi bi-x-lg"></i></button>
+  <div class="ttt-quick-cart-product">
+    <img src="/ttt-logo.jpeg" alt="" data-drawer-image>
+    <div>
+      <h3 data-drawer-name>Product</h3>
+      <div class="ttt-drawer-price"><strong data-drawer-price></strong><del data-drawer-compare></del></div>
+      <div class="ttt-drawer-rating"><span>★</span> <strong data-drawer-rating>0.0</strong> <small data-drawer-reviews></small></div>
+      <p class="ttt-drawer-stock" data-drawer-stock></p>
+    </div>
+  </div>
+  <form method="post" action="/cart/add" data-quick-cart-form>
+    <input type="hidden" name="productId" data-drawer-product-id>
+    <input type="hidden" name="color" data-drawer-color>
+    <input type="hidden" name="size" data-drawer-size>
+    <div class="ttt-drawer-option" data-drawer-color-wrap><span>Color</span><div data-drawer-colors></div></div>
+    <div class="ttt-drawer-option" data-drawer-size-wrap><span>Size</span><div data-drawer-sizes></div></div>
+    <div class="ttt-drawer-quantity-row">
+      <span>Quantity</span>
+      <div class="ttt-drawer-quantity"><button type="button" data-qty-minus>−</button><input type="number" name="quantity" value="1" min="1" data-drawer-qty><button type="button" data-qty-plus>+</button></div>
+    </div>
+    <button class="ttt-drawer-submit" type="submit">Add to Cart</button>
+  </form>
+</aside>
 
 <section class="ttt-confidence ttt-reveal">
   <span>TTT OUTFIT</span>
