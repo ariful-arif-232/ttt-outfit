@@ -8614,20 +8614,20 @@ body.ttt-drawer-open { overflow: hidden; touch-action: none; }
 }
 
 .ttt-hero .ttt-hero-dots button {
-  width: 8px;
-  height: 8px;
-  min-width: 8px;
-  min-height: 8px;
+  width: 5px;
+  height: 5px;
+  min-width: 5px;
+  min-height: 5px;
   padding: 0;
-  border: 1px solid rgba(255,255,255,.8);
-  border-radius: 50%;
+  border: 0.5px solid rgba(255,255,255,.8);
+  border-radius: 30%;
   background: rgba(255,255,255,.35);
 }
 
 .ttt-hero .ttt-hero-dots button.is-active {
   border-color: var(--ttt-gold-light);
   background: var(--ttt-gold-light);
-  transform: scale(1.12);
+  transform: scale(1);
 }
 
 @media (max-width: 700px) {
@@ -8708,10 +8708,10 @@ body.ttt-drawer-open { overflow: hidden; touch-action: none; }
   }
 
   .ttt-hero .ttt-hero-dots button {
-    width: 7px;
-    height: 7px;
-    min-width: 7px;
-    min-height: 7px;
+    width: 4px;
+    height: 4px;
+    min-width: 4px;
+    min-height: 4px;
   }
 }
 
