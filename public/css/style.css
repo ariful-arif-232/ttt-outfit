@@ -8554,11 +8554,11 @@ body.ttt-drawer-open { overflow: hidden; touch-action: none; }
   max-width: 620px;
   margin: 0 0 12px;
   color: #fff;
-  font-family: "Manrope", Arial, sans-serif !important;
+ font-family: "Montserrat", sans-serif !important;
   font-size: clamp(26px, 3vw, 40px) !important;
-  font-weight: 600;
+  font-weight: 500;
   line-height: 1.08;
-  letter-spacing: -.025em;
+ letter-spacing: 0.18em;
    text-transform: uppercase;
 }
 
@@ -8670,12 +8670,15 @@ body.ttt-drawer-open { overflow: hidden; touch-action: none; }
     letter-spacing: .16em;
   }
 
-  .ttt-hero .ttt-hero-content h1 {
+.ttt-hero .ttt-hero-content h1 {
     margin-bottom: 8px;
-    font-size: clamp(8px, 4.8vw, 21px) !important;
+    font-family: "Montserrat", sans-serif !important;
+    font-weight: 500;
+    font-size: clamp(14px, 4.8vw, 21px) !important;
     line-height: 1.08;
-     text-transform: uppercase;
-  }
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+}
 
   .ttt-hero .ttt-primary-button {
     min-height: 29px;
@@ -8684,7 +8687,7 @@ body.ttt-drawer-open { overflow: hidden; touch-action: none; }
   }
 
 .ttt-hero .ttt-hero-side-description {
-    height: 92%;
+    height: 82%;
     font-size: 6px;
     line-height: 1.6;
     letter-spacing: .07em;
@@ -8696,8 +8699,8 @@ body.ttt-drawer-open { overflow: hidden; touch-action: none; }
     text-align: center;
 }
 
-  .ttt-hero .ttt-hero-side-description.ttt-description-left { left: 8px; }
-  .ttt-hero .ttt-hero-side-description.ttt-description-right { right: 8px; }
+  .ttt-hero .ttt-hero-side-description.ttt-description-left { left: 5px; }
+  .ttt-hero .ttt-hero-side-description.ttt-description-right { right: 5px; }
 
   .ttt-hero .ttt-hero-dots {
     bottom: 8px;
