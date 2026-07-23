@@ -9491,13 +9491,82 @@ body.ttt-drawer-lock { overflow: hidden; }
   pointer-events: none;
 }
 /* =========================================
-   FINAL MOBILE HEADER FIX
-   Add this once at the very end of style.css
+   FINAL CART BADGE + DRAWER COMPACT FIX
 ========================================= */
 
-@media (max-width: 768px) {
-  /* Restore the original mobile header: hide Wishlist completely */
-  .ttt-mobile-hide-wishlist {
-    display: none !important;
+/* Header cart badge icon-এর আরও কাছে */
+
+.ttt-header-actions .ttt-badge-link {
+  position: relative;
+}
+
+.ttt-header-actions .ttt-count-badge {
+  top: -1px !important;
+  right: -1px !important;
+
+  min-width: 15px;
+  height: 15px;
+  padding: 0 3px;
+
+  font-size: 8px;
+}
+
+/* Drawer Cart/Wishlist compact spacing */
+
+.ttt-drawer-account {
+  margin-top: 14px !important;
+  gap: 1px !important;
+}
+
+.ttt-drawer-account > a {
+  min-height: 38px;
+  padding: 7px 0 !important;
+  gap: 8px !important;
+
+  font-size: 12px !important;
+}
+
+/* Drawer icon compact */
+
+.ttt-drawer-link-icon {
+  width: 18px !important;
+  height: 20px !important;
+  flex: 0 0 18px !important;
+}
+
+.ttt-drawer-link-icon > i {
+  font-size: 16px !important;
+}
+
+/* Drawer badge icon-এর কাছে */
+
+.ttt-drawer-count {
+  top: -4px !important;
+  right: -7px !important;
+
+  min-width: 14px !important;
+  height: 14px !important;
+  padding: 0 3px !important;
+
+  font-size: 8px !important;
+}
+
+/* Phone header আরও balanced */
+
+@media (max-width: 700px) {
+  .ttt-header-actions {
+    gap: 2px !important;
+  }
+
+  .ttt-header-actions .ttt-icon-button {
+    min-width: 40px;
+    width: 40px;
+    height: 42px;
+    padding: 0 6px;
+  }
+
+  .ttt-header-actions .ttt-count-badge {
+    top: 1px !important;
+    right: 0 !important;
   }
 }
