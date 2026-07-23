@@ -684,26 +684,30 @@
     </div>
 
 
-    <nav class="ttt-drawer-account">
+<a class="ttt-mobile-badge-link" href="/wishlist">
+    <i class="bi bi-heart"></i>
 
-      <a href="/wishlist">
-        <i class="bi bi-heart"></i>
+    <span>Wishlist</span>
 
-        Wishlist
-      </a>
+    <span
+        class="ttt-count-badge wishlist-badge"
+        data-wishlist-count>
+        0
+    </span>
+</a>
 
 
-      <a href="/cart">
-        <i class="bi bi-bag"></i>
+<a class="ttt-mobile-badge-link" href="/cart">
+    <i class="bi bi-bag"></i>
 
-        Cart (
+    <span>Cart</span>
 
-        <span data-cart-count>
-          <%= cartCount %>
-        </span>
-
-        )
-      </a>
+    <span
+        class="ttt-count-badge"
+        data-cart-count>
+        <%= cartCount %>
+    </span>
+</a>
 
 
       <% if (currentUser) { %>
