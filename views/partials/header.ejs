@@ -684,83 +684,96 @@
     </div>
 
 
-<a class="ttt-mobile-badge-link" href="/wishlist">
-    <i class="bi bi-heart"></i>
+<nav class="ttt-drawer-account">
+
+  <a
+    class="ttt-drawer-badge-link"
+    href="/wishlist"
+  >
+    <span class="ttt-drawer-link-icon">
+      <i class="bi bi-heart"></i>
+
+      <span
+        class="ttt-drawer-count wishlist-badge"
+        data-wishlist-count
+      >
+        0
+      </span>
+    </span>
 
     <span>Wishlist</span>
+  </a>
 
-    <span
-        class="ttt-count-badge wishlist-badge"
-        data-wishlist-count>
-        0
+
+  <a
+    class="ttt-drawer-badge-link"
+    href="/cart"
+  >
+    <span class="ttt-drawer-link-icon">
+      <i class="bi bi-bag"></i>
+
+      <span
+        class="ttt-drawer-count"
+        data-cart-count
+      >
+        <%= cartCount %>
+      </span>
     </span>
-</a>
-
-
-<a class="ttt-mobile-badge-link" href="/cart">
-    <i class="bi bi-bag"></i>
 
     <span>Cart</span>
-
-    <span
-        class="ttt-count-badge"
-        data-cart-count>
-        <%= cartCount %>
-    </span>
-</a>
+  </a>
 
 
-      <% if (currentUser) { %>
+  <% if (currentUser) { %>
 
-        <a href="/account">
-          <i class="bi bi-person"></i>
+    <a href="/account">
+      <i class="bi bi-person"></i>
+      <span>My Account</span>
+    </a>
 
-          My Account
-        </a>
+    <a href="/orders">
+      <i class="bi bi-box-seam"></i>
+      <span>My Orders</span>
+    </a>
 
+    <% if (currentUser.role === 'admin') { %>
 
-        <a href="/orders">
-          <i class="bi bi-box-seam"></i>
+      <a href="/admin">
+        <i class="bi bi-speedometer2"></i>
+        <span>Admin Panel</span>
+      </a>
 
-          My Orders
-        </a>
+    <% } %>
 
+    <a
+      class="ttt-drawer-auth-button"
+      href="/logout"
+    >
+      <i class="bi bi-box-arrow-right"></i>
+      <span>Logout</span>
+    </a>
 
-        <% if (currentUser.role === 'admin') { %>
+  <% } else { %>
 
-          <a href="/admin">
-            <i class="bi bi-speedometer2"></i>
+    <a
+      class="ttt-drawer-auth-button"
+      href="/login"
+    >
+      <i class="bi bi-person"></i>
+      <span>Login</span>
+    </a>
 
-            Admin Panel
-          </a>
+    <a
+      class="ttt-drawer-auth-button secondary"
+      href="/register"
+    >
+      <i class="bi bi-person-plus"></i>
+      <span>Create Account</span>
+    </a>
 
-        <% } %>
+  <% } %>
 
-
-        <a href="/logout">
-          <i class="bi bi-box-arrow-right"></i>
-
-          Logout
-        </a>
-
-      <% } else { %>
-
-        <a href="/login">
-          <i class="bi bi-person"></i>
-
-          Login
-        </a>
-
-
-        <a href="/register">
-          <i class="bi bi-person-plus"></i>
-
-          Create Account
-        </a>
-
-      <% } %>
-
-    </nav>
+</nav>
 <div class="ttt-drawer-follow">
 
     <div class="ttt-follow-row">
