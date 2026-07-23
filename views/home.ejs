@@ -169,28 +169,128 @@
     });
   %>
 
-  <% groupedSections.forEach(function(section) { if (section.products.length) { %>
-    <article class="ttt-product-section ttt-reveal" data-product-rail-section>
-      <div class="ttt-product-section-head">
-        <div><span>TTT OUTFIT COLLECTION</span><h2><%= section.name %></h2></div>
-        <div class="ttt-product-section-actions">
-          <a href="/shop">View All</a>
-          <button type="button" data-rail-prev aria-label="Previous products"><i class="bi bi-arrow-left"></i></button>
-          <button type="button" data-rail-next aria-label="Next products"><i class="bi bi-arrow-right"></i></button>
-        </div>
-      </div>
-      <div class="ttt-product-rail" data-product-rail>
-        <% section.products.forEach(function(p) { %><div class="ttt-product-rail-item"><%- include('partials/product-card', { p, hideOfferButton: true }) %></div><% }); %>
-      </div>
-    </article>
-  <% } }); %>
+<% groupedSections.forEach(function(section) { if (section.products.length) { %>
 
-  <% if (!groupedSections.some(section => section.products.length) && (featured || []).length) { %>
-    <article class="ttt-product-section ttt-reveal" data-product-rail-section>
-      <div class="ttt-product-section-head"><div><span>CURATED FOR YOU</span><h2>Men's Collection</h2></div></div>
-      <div class="ttt-product-rail" data-product-rail><% featured.forEach(function(p) { %><div class="ttt-product-rail-item"><%- include('partials/product-card', { p, hideOfferButton: true }) %></div><% }); %></div>
-    </article>
-  <% } %>
+  <article
+    class="ttt-product-section ttt-reveal"
+    data-product-rail-section
+  >
+
+    <div class="ttt-product-section-head">
+
+      <div>
+        <span>TTT OUTFIT COLLECTION</span>
+        <h2><%= section.name %></h2>
+      </div>
+
+      <div class="ttt-product-section-actions">
+
+        <a href="/shop">
+          View All
+        </a>
+
+        <button
+          type="button"
+          data-rail-prev
+          aria-label="Previous products"
+        >
+          <i class="bi bi-arrow-left"></i>
+        </button>
+
+        <button
+          type="button"
+          data-rail-next
+          aria-label="Next products"
+        >
+          <i class="bi bi-arrow-right"></i>
+        </button>
+
+      </div>
+    </div>
+
+    <div
+      class="swiper ttt-product-swiper"
+      data-product-swiper
+    >
+
+      <div class="swiper-wrapper">
+
+        <% section.products.forEach(function(p) { %>
+
+          <div class="swiper-slide ttt-product-rail-item">
+
+            <%- include('partials/product-card', {
+              p,
+              hideOfferButton: true
+            }) %>
+
+          </div>
+
+        <% }); %>
+
+      </div>
+    </div>
+
+  </article>
+
+<% } }); %>
+
+
+<%
+  const hasGroupedProducts =
+    groupedSections.some(
+      section => section.products.length
+    );
+%>
+
+<%
+  if (
+    !hasGroupedProducts &&
+    (featured || []).length
+  ) {
+%>
+
+  <article
+    class="ttt-product-section ttt-reveal"
+    data-product-rail-section
+  >
+
+    <div class="ttt-product-section-head">
+
+      <div>
+        <span>CURATED FOR YOU</span>
+        <h2>Men's Collection</h2>
+      </div>
+
+    </div>
+
+    <div
+      class="swiper ttt-product-swiper"
+      data-product-swiper
+    >
+
+      <div class="swiper-wrapper">
+
+        <% featured.forEach(function(p) { %>
+
+          <div class="swiper-slide ttt-product-rail-item">
+
+            <%- include('partials/product-card', {
+              p,
+              hideOfferButton: true
+            }) %>
+
+          </div>
+
+        <% }); %>
+
+      </div>
+    </div>
+
+  </article>
+
+<% } %>
+
 </section>
 
 <div class="ttt-quick-cart-backdrop" data-quick-cart-backdrop hidden></div>
