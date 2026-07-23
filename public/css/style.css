@@ -9429,3 +9429,29 @@ body.ttt-drawer-lock { overflow: hidden; }
 }
 
 }
+.ttt-developer{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    flex-wrap:wrap;
+}
+
+.ttt-developer a{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+
+    color:var(--gold-light);
+    text-decoration:none;
+
+    transition:.25s;
+}
+
+.ttt-developer a:hover{
+    color:#0A66C2;
+    transform:translateY(-1px);
+}
+
+.ttt-developer i{
+    font-size:14px;
+}
