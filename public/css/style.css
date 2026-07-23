@@ -9455,45 +9455,38 @@ body.ttt-drawer-lock { overflow: hidden; }
 .ttt-developer i{
     font-size:14px;
 }
-/* Small premium badge */
+/* Small premium header badge */
 
-.ttt-count-badge,
-.ttt-drawer-count{
-    position: absolute;
+.ttt-count-badge {
+  position: absolute;
 
-    top: -5px;
-    right: -5px;
+  top: -5px;
+  right: -5px;
 
-    min-width: 13px;
-    height: 13px;
+  min-width: 13px;
+  height: 13px;
 
-    padding: 0 3px;
+  padding: 0 3px;
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-    color: #ffffff;
-    font-size: 8px;
-    font-weight: 800;
-    line-height: 1;
+  color: #ffffff;
+  font-size: 8px;
+  font-weight: 800;
+  line-height: 1;
 
-    background: rgba(255, 255, 255, 0.40);
+  background: rgba(255, 255, 255, 0.40);
 
-    border: 1px solid #ffffff;
-    border-radius: 999px;
+  border: 1px solid #ffffff;
+  border-radius: 999px;
 
-    box-sizing: border-box;
+  box-sizing: border-box;
 
-    box-shadow:
-        0 2px 6px rgba(0, 0, 0, 0.25),
-        0 0 5px rgba(255, 255, 255, 0.22);
+  box-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.25),
+    0 0 5px rgba(255, 255, 255, 0.22);
 
-    pointer-events: none;
-}
-
-.ttt-badge-link:hover .ttt-count-badge,
-.ttt-drawer-badge-link:hover .ttt-drawer-count{
-    transform: scale(1.08);
-    background: rgba(255, 255, 255, 0.52);
+  pointer-events: none;
 }
