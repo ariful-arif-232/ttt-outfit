@@ -1,45 +1,351 @@
 <!doctype html>
+
 <html lang="en">
+
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-<link
-  rel="icon"
-  type="image/png"
-  href="/favicon.png"
->
 
-<link
-  rel="apple-touch-icon"
-  href="/favicon.png"
->
-  <title><%= title %> | TTT Outfit</title>
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1"
+  >
+
+  <%
+    const defaultSeoTitle =
+      'TTT Outfit | Premium Fashion Clothing in Bangladesh';
+
+    const defaultSeoDescription =
+      'Shop premium T-shirts, polo shirts, hoodies, shirts, pants, jeans, jackets, shoes and fashion accessories from TTT Outfit Bangladesh.';
+
+    const defaultSeoUrl =
+      'https://tttoutfit.bd/';
+
+    const defaultSeoImage =
+      'https://tttoutfit.bd/favicon.png';
+
+    const seoTitle =
+      typeof pageTitle !== 'undefined' &&
+      String(pageTitle || '').trim()
+        ? String(pageTitle).trim()
+        : defaultSeoTitle;
+
+    const seoDescription =
+      typeof pageDescription !== 'undefined' &&
+      String(pageDescription || '').trim()
+        ? String(pageDescription).trim()
+        : defaultSeoDescription;
+
+    const seoCanonicalUrl =
+      typeof canonicalUrl !== 'undefined' &&
+      String(canonicalUrl || '').trim()
+        ? String(canonicalUrl).trim()
+        : defaultSeoUrl;
+
+    const seoSocialImage =
+      typeof socialImage !== 'undefined' &&
+      String(socialImage || '').trim()
+        ? String(socialImage).trim()
+        : defaultSeoImage;
+
+    const seoOgType =
+      typeof ogType !== 'undefined' &&
+      String(ogType || '').trim()
+        ? String(ogType).trim()
+        : 'website';
+
+    const shouldNoIndex =
+      typeof noIndex !== 'undefined' &&
+      Boolean(noIndex);
+  %>
+
+  <!-- =====================================
+       FAVICON AND APP ICON
+  ====================================== -->
+
+  <link
+    rel="icon"
+    type="image/png"
+    href="/favicon.png"
+  >
+
+  <link
+    rel="shortcut icon"
+    type="image/png"
+    href="/favicon.png"
+  >
+
+  <link
+    rel="apple-touch-icon"
+    href="/favicon.png"
+  >
+
+  <meta
+    name="theme-color"
+    content="#111111"
+  >
+
+  <meta
+    name="application-name"
+    content="TTT Outfit"
+  >
+
+  <meta
+    name="apple-mobile-web-app-title"
+    content="TTT Outfit"
+  >
+
+  <!-- =====================================
+       BASIC SEO
+  ====================================== -->
+
+  <title><%= seoTitle %></title>
 
   <meta
     name="description"
-    content="TTT Outfit — premium fashion and everyday clothing for Bangladesh."
+    content="<%= seoDescription %>"
   >
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <% if (shouldNoIndex) { %>
+
+    <meta
+      name="robots"
+      content="noindex, nofollow, noarchive"
+    >
+
+    <meta
+      name="googlebot"
+      content="noindex, nofollow, noarchive"
+    >
+
+  <% } else { %>
+
+    <meta
+      name="robots"
+      content="index, follow, max-image-preview:large"
+    >
+
+    <meta
+      name="googlebot"
+      content="index, follow, max-image-preview:large"
+    >
+
+  <% } %>
+
+  <link
+    rel="canonical"
+    href="<%= seoCanonicalUrl %>"
+  >
+
+  <!-- =====================================
+       OPEN GRAPH / FACEBOOK / WHATSAPP
+  ====================================== -->
+
+  <meta
+    property="og:locale"
+    content="en_BD"
+  >
+
+  <meta
+    property="og:type"
+    content="<%= seoOgType %>"
+  >
+
+  <meta
+    property="og:site_name"
+    content="TTT Outfit"
+  >
+
+  <meta
+    property="og:title"
+    content="<%= seoTitle %>"
+  >
+
+  <meta
+    property="og:description"
+    content="<%= seoDescription %>"
+  >
+
+  <meta
+    property="og:url"
+    content="<%= seoCanonicalUrl %>"
+  >
+
+  <meta
+    property="og:image"
+    content="<%= seoSocialImage %>"
+  >
+
+  <meta
+    property="og:image:secure_url"
+    content="<%= seoSocialImage %>"
+  >
+
+  <meta
+    property="og:image:type"
+    content="image/png"
+  >
+
+  <meta
+    property="og:image:width"
+    content="500"
+  >
+
+  <meta
+    property="og:image:height"
+    content="500"
+  >
+
+  <meta
+    property="og:image:alt"
+    content="TTT Outfit premium fashion clothing"
+  >
+
+  <!-- =====================================
+       TWITTER / X PREVIEW
+  ====================================== -->
+
+  <meta
+    name="twitter:card"
+    content="summary_large_image"
+  >
+
+  <meta
+    name="twitter:title"
+    content="<%= seoTitle %>"
+  >
+
+  <meta
+    name="twitter:description"
+    content="<%= seoDescription %>"
+  >
+
+  <meta
+    name="twitter:image"
+    content="<%= seoSocialImage %>"
+  >
+
+  <meta
+    name="twitter:image:alt"
+    content="TTT Outfit premium fashion clothing"
+  >
+
+  <!-- =====================================
+       WEBSITE STRUCTURED DATA
+  ====================================== -->
+
+  <script type="application/ld+json">
+    <%- JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'WebSite',
+      '@id': 'https://tttoutfit.bd/#website',
+      name: 'TTT Outfit',
+      alternateName: 'TTT',
+      url: 'https://tttoutfit.bd/',
+      description:
+        'Premium online fashion clothing store in Bangladesh.',
+      publisher: {
+        '@id': 'https://tttoutfit.bd/#organization'
+      },
+      potentialAction: {
+        '@type': 'SearchAction',
+        target: {
+          '@type': 'EntryPoint',
+          urlTemplate:
+            'https://tttoutfit.bd/shop?q={search_term_string}'
+        },
+        'query-input':
+          'required name=search_term_string'
+      }
+    }) %>
+  </script>
+
+  <!-- =====================================
+       ONLINE STORE STRUCTURED DATA
+  ====================================== -->
+
+  <script type="application/ld+json">
+    <%- JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'OnlineStore',
+      '@id': 'https://tttoutfit.bd/#organization',
+      name: 'TTT Outfit',
+      alternateName: 'TTT',
+      url: 'https://tttoutfit.bd/',
+      logo: {
+        '@type': 'ImageObject',
+        url: 'https://tttoutfit.bd/favicon.png',
+        width: 500,
+        height: 500
+      },
+      image: 'https://tttoutfit.bd/favicon.png',
+      email: 'support@tttoutfit.bd',
+      description:
+        'TTT Outfit is a premium online fashion clothing store in Bangladesh.',
+      address: {
+        '@type': 'PostalAddress',
+        addressCountry: 'BD'
+      },
+      areaServed: {
+        '@type': 'Country',
+        name: 'Bangladesh'
+      },
+      currenciesAccepted: 'BDT',
+      paymentAccepted: [
+        'Cash on Delivery',
+        'bKash',
+        'Nagad'
+      ]
+    }) %>
+  </script>
+
+  <!-- =====================================
+       FONTS
+  ====================================== -->
+
+  <link
+    rel="preconnect"
+    href="https://fonts.googleapis.com"
+  >
+
+  <link
+    rel="preconnect"
+    href="https://fonts.gstatic.com"
+    crossorigin
+  >
 
   <link
     href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap"
     rel="stylesheet"
   >
 
+  <!-- =====================================
+       BOOTSTRAP ICONS
+  ====================================== -->
+
   <link
     rel="stylesheet"
     href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
   >
 
-  <link rel="stylesheet" href="/css/style.css?v=phase6-1">
+  <!-- =====================================
+       MAIN STYLESHEET
+  ====================================== -->
+
+  <link
+    rel="stylesheet"
+    href="/css/style.css?v=phase6-1"
+  >
 </head>
 
-<body data-logged-in="<%= currentUser ? 'true' : 'false' %>">
+<body
+  data-logged-in="<%= currentUser ? 'true' : 'false' %>"
+>
 
 
-<header class="ttt-header" id="siteHeader">
+<header
+  class="ttt-header"
+  id="siteHeader"
+>
   <div class="ttt-header-inner">
 
     <button
@@ -50,18 +356,37 @@
       aria-expanded="false"
     >
       <i class="bi bi-list"></i>
-      <span class="ttt-icon-label">Menu</span>
+
+      <span class="ttt-icon-label">
+        Menu
+      </span>
     </button>
 
-    <a class="ttt-brand" href="/" aria-label="TTT Outfit home">
-      <img src="/ttt-logo.jpeg" alt="TTT Outfit logo">
+
+    <a
+      class="ttt-brand"
+      href="/"
+      aria-label="TTT Outfit home"
+    >
+      <img
+        src="/ttt-logo.jpeg"
+        alt="TTT Outfit logo"
+      >
 
       <span>
-        TTT <strong>OUTFIT</strong>
+        TTT
+
+        <strong>
+          OUTFIT
+        </strong>
       </span>
     </a>
 
-    <nav class="ttt-header-actions" aria-label="Quick links">
+
+    <nav
+      class="ttt-header-actions"
+      aria-label="Quick links"
+    >
 
       <button
         class="ttt-icon-button ttt-search-trigger"
@@ -71,8 +396,12 @@
         aria-expanded="false"
       >
         <i class="bi bi-search"></i>
-        <span class="ttt-icon-label">Search</span>
+
+        <span class="ttt-icon-label">
+          Search
+        </span>
       </button>
+
 
       <a
         class="ttt-icon-button"
@@ -80,8 +409,12 @@
         aria-label="Account"
       >
         <i class="bi bi-person"></i>
-        <span class="ttt-icon-label">Account</span>
+
+        <span class="ttt-icon-label">
+          Account
+        </span>
       </a>
+
 
       <a
         class="ttt-icon-button ttt-badge-link"
@@ -89,7 +422,10 @@
         aria-label="Wishlist"
       >
         <i class="bi bi-heart"></i>
-        <span class="ttt-icon-label">Wishlist</span>
+
+        <span class="ttt-icon-label">
+          Wishlist
+        </span>
 
         <span
           class="ttt-count-badge wishlist-badge"
@@ -99,13 +435,17 @@
         </span>
       </a>
 
+
       <a
         class="ttt-icon-button ttt-badge-link"
         href="/cart"
         aria-label="Cart"
       >
         <i class="bi bi-bag"></i>
-        <span class="ttt-icon-label">Cart</span>
+
+        <span class="ttt-icon-label">
+          Cart
+        </span>
 
         <span
           class="ttt-count-badge"
@@ -118,6 +458,7 @@
     </nav>
   </div>
 
+
   <div
     class="ttt-search-panel"
     id="tttSearchPanel"
@@ -128,7 +469,10 @@
       method="get"
       role="search"
     >
-      <i class="bi bi-search" aria-hidden="true"></i>
+      <i
+        class="bi bi-search"
+        aria-hidden="true"
+      ></i>
 
       <input
         type="search"
@@ -153,11 +497,13 @@
   </div>
 </header>
 
+
 <div
   class="ttt-drawer-backdrop"
   data-drawer-close
   hidden
 ></div>
+
 
 <aside
   class="ttt-drawer"
@@ -166,7 +512,10 @@
   aria-label="Main menu"
 >
   <div class="ttt-drawer-head">
-    <span>MENU</span>
+
+    <span>
+      MENU
+    </span>
 
     <button
       type="button"
@@ -175,65 +524,113 @@
     >
       <i class="bi bi-x-lg"></i>
     </button>
+
   </div>
+
 
   <div class="ttt-drawer-body">
 
     <nav class="ttt-drawer-primary">
-      <a href="/">Home</a>
-      <a href="/shop">Shop All</a>
-      <a href="/track-order">Track Order</a>
+
+      <a href="/">
+        Home
+      </a>
+
+      <a href="/shop">
+        Shop All
+      </a>
+
+      <a href="/track-order">
+        Track Order
+      </a>
+
     </nav>
 
+
     <div class="ttt-drawer-categories">
+
       <%
         const groupedMenu = {};
 
-        (menuCategories || []).forEach(function (cat) {
-          if (!cat) return;
+        (menuCategories || []).forEach(
+          function (cat) {
+            if (!cat) return;
 
-          if (cat.active === false) return;
-          if (cat.showInMenu === false) return;
-
-          const groupName =
-            cat.group && String(cat.group).trim()
-              ? String(cat.group).trim()
-              : 'Other';
-
-          if (!groupedMenu[groupName]) {
-            groupedMenu[groupName] = [];
-          }
-
-          groupedMenu[groupName].push(cat);
-        });
-
-        const groupOrder = Object.keys(groupedMenu).sort(function (a, b) {
-          if (a === 'Other' && b !== 'Other') return 1;
-          if (b === 'Other' && a !== 'Other') return -1;
-
-          return a.localeCompare(b);
-        });
-      %>
-
-      <% groupOrder.forEach(function (group) { %>
-        <%
-          const items = groupedMenu[group] || [];
-
-          items.sort(function (a, b) {
-            const orderA = Number(a.displayOrder) || 0;
-            const orderB = Number(b.displayOrder) || 0;
-
-            if (orderA !== orderB) {
-              return orderA - orderB;
+            if (cat.active === false) {
+              return;
             }
 
-            return String(a.name || '').localeCompare(
-              String(b.name || '')
-            );
-          });
+            if (cat.showInMenu === false) {
+              return;
+            }
+
+            const groupName =
+              cat.group &&
+              String(cat.group).trim()
+                ? String(cat.group).trim()
+                : 'Other';
+
+            if (!groupedMenu[groupName]) {
+              groupedMenu[groupName] = [];
+            }
+
+            groupedMenu[groupName].push(cat);
+          }
+        );
+
+        const groupOrder =
+          Object.keys(groupedMenu).sort(
+            function (a, b) {
+              if (
+                a === 'Other' &&
+                b !== 'Other'
+              ) {
+                return 1;
+              }
+
+              if (
+                b === 'Other' &&
+                a !== 'Other'
+              ) {
+                return -1;
+              }
+
+              return a.localeCompare(b);
+            }
+          );
+      %>
+
+
+      <% groupOrder.forEach(function (group) { %>
+
+        <%
+          const items =
+            groupedMenu[group] || [];
+
+          items.sort(
+            function (a, b) {
+              const orderA =
+                Number(a.displayOrder) || 0;
+
+              const orderB =
+                Number(b.displayOrder) || 0;
+
+              if (orderA !== orderB) {
+                return orderA - orderB;
+              }
+
+              return String(
+                a.name || ''
+              ).localeCompare(
+                String(b.name || '')
+              );
+            }
+          );
         %>
 
+
         <% if (items.length) { %>
+
           <section class="ttt-drawer-group">
 
             <button
@@ -241,14 +638,19 @@
               type="button"
               aria-expanded="false"
             >
-              <span><%= group %></span>
+              <span>
+                <%= group %>
+              </span>
+
               <i class="bi bi-chevron-down"></i>
             </button>
+
 
             <div
               class="ttt-drawer-submenu"
               hidden
             >
+
               <% items.forEach(function (cat) { %>
 
                 <a
@@ -258,56 +660,79 @@
                 </a>
 
               <% }); %>
+
             </div>
 
           </section>
+
         <% } %>
+
       <% }); %>
 
+
       <% if (!groupOrder.length) { %>
+
         <p class="small">
           No categories are currently available.
         </p>
+
       <% } %>
+
     </div>
+
 
     <nav class="ttt-drawer-account">
 
       <a href="/wishlist">
         <i class="bi bi-heart"></i>
+
         Wishlist
       </a>
 
+
       <a href="/cart">
         <i class="bi bi-bag"></i>
+
         Cart (
+
         <span data-cart-count>
           <%= cartCount %>
         </span>
+
         )
       </a>
+
 
       <% if (currentUser) { %>
 
         <a href="/account">
           <i class="bi bi-person"></i>
+
           My Account
         </a>
 
+
         <a href="/orders">
           <i class="bi bi-box-seam"></i>
+
           My Orders
         </a>
 
+
         <% if (currentUser.role === 'admin') { %>
+
           <a href="/admin">
             <i class="bi bi-speedometer2"></i>
+
             Admin Panel
           </a>
+
         <% } %>
+
 
         <a href="/logout">
           <i class="bi bi-box-arrow-right"></i>
+
           Logout
         </a>
 
@@ -315,23 +740,30 @@
 
         <a href="/login">
           <i class="bi bi-person"></i>
+
           Login
         </a>
 
+
         <a href="/register">
           <i class="bi bi-person-plus"></i>
+
           Create Account
         </a>
 
       <% } %>
+
     </nav>
 
   </div>
 </aside>
 
+
 <main>
 
+
 <% if (flash) { %>
+
   <div
     class="flash-toast <%= flash.type %>"
     id="flashToast"
@@ -340,6 +772,7 @@
   >
 
     <div class="flash-icon">
+
       <i
         class="bi <%= flash.type === 'success'
           ? 'bi-check-circle-fill'
@@ -348,9 +781,12 @@
             : 'bi-info-circle-fill'
         %>"
       ></i>
+
     </div>
 
+
     <div class="flash-content">
+
       <strong>
         <%= flash.type === 'success'
           ? 'Success'
@@ -363,7 +799,9 @@
       <span>
         <%= flash.message %>
       </span>
+
     </div>
+
 
     <button
       class="flash-close"
@@ -374,6 +812,9 @@
       <i class="bi bi-x-lg"></i>
     </button>
 
+
     <div class="flash-progress"></div>
+
   </div>
+
 <% } %>
