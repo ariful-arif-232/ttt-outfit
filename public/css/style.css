@@ -8674,9 +8674,9 @@ body.ttt-drawer-open { overflow: hidden; touch-action: none; }
     margin-bottom: 8px;
     font-family: "Montserrat", sans-serif !important;
     font-weight: 500;
-   font-size: clamp(6px, 3.8vw, 16px) !important;
+   font-size: clamp(4px, 2.8vw, 12px) !important;
     line-height: 1.08;
-    letter-spacing: 0.18em;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
 }
 
