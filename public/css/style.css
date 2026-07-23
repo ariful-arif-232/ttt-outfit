@@ -9490,3 +9490,14 @@ body.ttt-drawer-lock { overflow: hidden; }
 
   pointer-events: none;
 }
+/* =========================================
+   FINAL MOBILE HEADER FIX
+   Add this once at the very end of style.css
+========================================= */
+
+@media (max-width: 768px) {
+  /* Restore the original mobile header: hide Wishlist completely */
+  .ttt-mobile-hide-wishlist {
+    display: none !important;
+  }
+}
