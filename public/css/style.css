@@ -1,10 +1,3 @@
-/*
- * TTT Outfit — Phase 2 cleaned stylesheet
- * Generated from the original stylesheet after scanning all EJS/JS files.
- * Original backup: style-phase1-backup.css
- * Do not append emergency overrides at the end; edit the original component rule.
- */
-
 /* =========================================
    TTT OUTFIT — CLEAN MASTER STYLESHEET
 ========================================= */
@@ -8152,7 +8145,7 @@ body.ttt-drawer-open { overflow: hidden; }
 }
 
 .ttt-eyebrow { display: block; margin-bottom: 12px; color: var(--ttt-gold-light); font-size: 11px; font-weight: 700; letter-spacing: .24em; }
-.ttt-hero-content h1 { margin: 0 0 14px; max-width: 700px; color: #fff; font: 600 clamp(28px, 3.5vw, 42px)/1 var(--ttt-serif); letter-spacing: -.025em; }
+.ttt-hero-content h1 { margin: 0 0 14px; max-width: 700px; color: #fff; font: 600 clamp(24px, 3.5vw, 42px)/1 var(--ttt-serif); letter-spacing: -.025em; }
 .ttt-hero-content p { max-width: 560px; margin: 0 0 27px; color: rgba(255,255,255,.86); font-size: clamp(13px,1.5vw,16px); line-height: 1.75; }
 .ttt-primary-button { display: inline-flex; min-height: 46px; align-items: center; padding: 0 26px; background: var(--ttt-gold); color: var(--ttt-green-deep); text-decoration: none; font-size: 12px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; transition: transform .2s, background .2s; }
 .ttt-primary-button:hover { background: var(--ttt-gold-light); transform: translateY(-2px); }
@@ -8275,7 +8268,7 @@ body.ttt-drawer-open { overflow: hidden; }
   .ttt-position-right-center .ttt-hero-content { left: auto; top: 50%; right: 22px; bottom: auto; transform: translateY(-50%); text-align: right; }
   .ttt-position-right-bottom .ttt-hero-content { left: auto; top: auto; right: 22px; bottom: 48px; transform: none; text-align: right; }
   .ttt-hero-content h1 {
-  font-size: clamp(18px, 5.5vw, 24px);
+  font-size: clamp(14px, 5.5vw, 24px);
 }
   .ttt-hero-content p { font-size: 13px; line-height:1.55; }
   .ttt-hero-arrow { display:none; }
@@ -8375,7 +8368,7 @@ body.ttt-drawer-open { overflow: hidden; touch-action: none; }
   .ttt-drawer { width:min(360px,92vw); }
   .ttt-hero { height:clamp(500px,76svh,650px); min-height:500px; }
   .ttt-hero-content { bottom:48px !important; }
-  .ttt-hero-content h1 { font-size: clamp(18px, 5.5vw, 24px); }
+  .ttt-hero-content h1 { font-size: clamp(14px, 5.5vw, 24px); }
   .ttt-showcase-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
   .ttt-showcase-card { aspect-ratio:3 / 4; }
   .ttt-product-section-head { align-items:flex-end; }
@@ -8531,7 +8524,7 @@ body.ttt-drawer-open { overflow: hidden; touch-action: none; }
     margin-bottom: 12px;
 
     font-family: "Manrope", Arial, sans-serif;
-   font-size: clamp(18px, 5.5vw, 24px);
+   font-size: clamp(14px, 5.5vw, 24px);
     font-weight: 600;
     line-height: 0.98;
     letter-spacing: -0.04em;
