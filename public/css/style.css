@@ -9027,3 +9027,102 @@ body.ttt-drawer-lock { overflow: hidden; }
     -webkit-overflow-scrolling: touch;
     padding-bottom: calc(32px + env(safe-area-inset-bottom));
 }
+/* =========================================
+   DRAWER ACCOUNT LINKS — FINAL FIX
+========================================= */
+
+.ttt-drawer-account {
+  margin-top: 20px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 5px;
+}
+
+.ttt-drawer-account > a {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  padding: 10px 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 13px;
+}
+
+.ttt-drawer-account > a > i {
+  width: 20px;
+  flex: 0 0 20px;
+  text-align: center;
+  font-size: 16px;
+}
+
+/* Wishlist and cart icon wrapper */
+
+.ttt-drawer-link-icon {
+  position: relative;
+
+  width: 20px;
+  height: 22px;
+  flex: 0 0 20px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ttt-drawer-link-icon > i {
+  font-size: 17px;
+}
+
+/* Small count over icon */
+
+.ttt-drawer-count {
+  position: absolute;
+  top: -6px;
+  right: -9px;
+
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  color: var(--ttt-green-deep);
+  background: var(--ttt-gold);
+
+  border-radius: 999px;
+
+  font-size: 9px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+/* Login / Register / Logout button */
+
+.ttt-drawer-account .ttt-drawer-auth-button {
+  margin-top: 7px;
+  padding: 11px 14px;
+
+  justify-content: center;
+
+  color: var(--ttt-green-deep);
+  background: var(--ttt-gold);
+
+  border-radius: 6px;
+  font-weight: 700;
+}
+
+.ttt-drawer-account .ttt-drawer-auth-button.secondary {
+  margin-top: 2px;
+
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.08);
+
+  border: 1px solid rgba(255, 255, 255, 0.16);
+}
