@@ -9126,3 +9126,15 @@ body.ttt-drawer-lock { overflow: hidden; }
 
   border: 1px solid rgba(255, 255, 255, 0.16);
 }
+.ttt-drawer-primary a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ttt-drawer-primary a i {
+  width: 20px;
+  flex: 0 0 20px;
+  text-align: center;
+  font-size: 16px;
+}
