@@ -479,82 +479,58 @@ document.addEventListener('keydown', event => {
       show(index); start();
     }
 
-    document.querySelectorAll('[data-product-rail-section]').forEach((section) => {
-      const rail = section.querySelector('[data-product-rail]');
-      const prev = section.querySelector('[data-rail-prev]');
-      const next = section.querySelector('[data-rail-next]');
-      if (!rail) return;
+ document.querySelectorAll('[data-product-rail-section]').forEach((section) => {
 
-      const amount = () => Math.max(280, rail.clientWidth * 0.82);
-      const updateButtons = () => {
-        const max = Math.max(0, rail.scrollWidth - rail.clientWidth - 2);
-        if (prev) prev.disabled = rail.scrollLeft <= 2;
-        if (next) next.disabled = rail.scrollLeft >= max;
-      };
-      prev?.addEventListener('click', () => rail.scrollBy({ left: -amount(), behavior: reducedMotion.matches ? 'auto' : 'smooth' }));
-      next?.addEventListener('click', () => rail.scrollBy({ left: amount(), behavior: reducedMotion.matches ? 'auto' : 'smooth' }));
-      rail.addEventListener('scroll', updateButtons, { passive: true });
-      window.addEventListener('resize', updateButtons, { passive: true });
+  const slider = section.querySelector('[data-product-swiper]');
+  const prev = section.querySelector('[data-rail-prev]');
+  const next = section.querySelector('[data-rail-next]');
 
-      let dragging = false;
-      let startX = 0;
-      let startScroll = 0;
-      rail.addEventListener('pointerdown', (event) => {
-        if (event.pointerType === 'touch' || event.target.closest('a, button, input, select, label')) return;
-        dragging = true; startX = event.clientX; startScroll = rail.scrollLeft;
-        rail.classList.add('is-dragging'); rail.setPointerCapture(event.pointerId);
-      });
-      rail.addEventListener('pointermove', (event) => { if (dragging) rail.scrollLeft = startScroll - (event.clientX - startX); });
-      const endDrag = () => { dragging = false; rail.classList.remove('is-dragging'); };
-      rail.addEventListener('pointerup', endDrag);
-      rail.addEventListener('pointercancel', endDrag);
-      rail.addEventListener('lostpointercapture', endDrag);
+  if (!slider) return;
 
-      // Automatic product sliding on desktop and mobile.
-      // Pauses while the user hovers, touches, drags, or leaves the tab.
-      let railAutoTimer = null;
-      let railAutoPaused = false;
-      const getStep = () => {
-        const firstItem = rail.querySelector('.ttt-product-rail-item');
-        if (!firstItem) return amount();
-        const styles = window.getComputedStyle(rail);
-        return firstItem.getBoundingClientRect().width + (parseFloat(styles.columnGap || styles.gap) || 0);
-      };
-      const stopRailAuto = () => {
-        if (railAutoTimer) window.clearInterval(railAutoTimer);
-        railAutoTimer = null;
-      };
-      const startRailAuto = () => {
-        stopRailAuto();
-        if (reducedMotion.matches || rail.scrollWidth <= rail.clientWidth + 4 || railAutoPaused || document.hidden) return;
-        railAutoTimer = window.setInterval(() => {
-          const max = Math.max(0, rail.scrollWidth - rail.clientWidth);
-          if (rail.scrollLeft >= max - 8) {
-            rail.scrollTo({ left: 0, behavior: 'smooth' });
-          } else {
-            rail.scrollBy({ left: getStep(), behavior: 'smooth' });
-          }
-        }, 2800);
-      };
-      const pauseRailAuto = () => { railAutoPaused = true; stopRailAuto(); };
-      const resumeRailAuto = () => { railAutoPaused = false; window.setTimeout(startRailAuto, 900); };
+  const slideCount =
+    slider.querySelectorAll('.swiper-slide').length;
 
-      rail.addEventListener('mouseenter', pauseRailAuto);
-      rail.addEventListener('mouseleave', resumeRailAuto);
-      rail.addEventListener('touchstart', pauseRailAuto, { passive: true });
-      rail.addEventListener('touchend', resumeRailAuto, { passive: true });
-      rail.addEventListener('pointerdown', pauseRailAuto);
-      rail.addEventListener('pointerup', resumeRailAuto);
-      rail.addEventListener('pointercancel', resumeRailAuto);
-      prev?.addEventListener('click', resumeRailAuto);
-      next?.addEventListener('click', resumeRailAuto);
-      document.addEventListener('visibilitychange', () => document.hidden ? stopRailAuto() : startRailAuto());
-      reducedMotion.addEventListener?.('change', startRailAuto);
+  new Swiper(slider, {
 
-      updateButtons();
-      startRailAuto();
-    });
+    loop: slideCount > 6,
 
+    speed: 900,
+
+    grabCursor: true,
+
+    autoplay: slideCount > 2 ? {
+      delay: 2800,
+      disableOnInteraction: false,
+      pauseOnMouseEnter: true
+    } : false,
+
+    navigation: {
+      prevEl: prev,
+      nextEl: next
+    },
+
+    breakpoints: {
+
+      0: {
+        slidesPerView: 2,
+        spaceBetween: 10
+      },
+
+      768: {
+        slidesPerView: 4,
+        spaceBetween: 16
+      },
+
+      1200: {
+        slidesPerView: 6,
+        spaceBetween: 16
+      }
+
+    }
+
+  });
+
+});
 
     // Compact product-card quick cart drawer
     const quickCartDrawer = document.querySelector('[data-quick-cart-drawer]');
