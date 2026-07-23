@@ -1,10 +1,31 @@
 <%- include('partials/header') %>
 
-<% const activeSlides = (sliders || []).length ? sliders : [{ desktopImage: '/hero-1.jpg', mobileImage: '/hero-1-mobile.jpg', subtitle: 'NEW COLLECTION', title: 'Wear Your Identity', description: 'Premium everyday fashion designed for confidence, comfort and modern life.', buttonText: 'Shop Now', buttonLink: '/shop', textPosition: 'center-left' }]; %>
+<% const activeSlides = (sliders || []).length ? sliders : [{ desktopImage: '/hero-1.jpg', mobileImage: '/hero-1-mobile.jpg', subtitle: 'NEW COLLECTION', title: 'Wear Your Identity', description: 'Premium everyday fashion designed for confidence, comfort and modern life.', buttonText: 'Shop Now', buttonLink: '/shop', textPosition: 'left-center' }]; %>
 <section class="ttt-hero" data-hero-slider aria-label="Featured collections">
   <div class="ttt-hero-track">
     <% activeSlides.forEach(function(slide, index) { %>
-      <article class="ttt-hero-slide <%= index === 0 ? 'is-active' : '' %> ttt-position-<%= slide.textPosition || 'center-left' %>" aria-hidden="<%= index === 0 ? 'false' : 'true' %>">
+      <%
+        const rawTextPosition = String(slide.textPosition || 'left-center').trim().toLowerCase();
+        const textPositionAliases = {
+          'center-left': 'left-center',
+          'top-left': 'left-top',
+          'bottom-left': 'left-bottom',
+          'top-center': 'center-top',
+          'bottom-center': 'center-bottom',
+          'top-right': 'right-top',
+          'bottom-right': 'right-bottom'
+        };
+        const allowedTextPositions = [
+          'left-top', 'left-center', 'left-bottom',
+          'center-top', 'center-center', 'center-bottom',
+          'right-top', 'right-center', 'right-bottom'
+        ];
+        const normalizedTextPosition = textPositionAliases[rawTextPosition] || rawTextPosition;
+        const heroTextPosition = allowedTextPositions.includes(normalizedTextPosition)
+          ? normalizedTextPosition
+          : 'left-center';
+      %>
+      <article class="ttt-hero-slide <%= index === 0 ? 'is-active' : '' %> ttt-position-<%= heroTextPosition %>" aria-hidden="<%= index === 0 ? 'false' : 'true' %>">
         <%
           const desktopImageUrl =
             (slide.desktopImage && slide.desktopImage.url)
