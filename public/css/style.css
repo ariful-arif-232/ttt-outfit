@@ -8559,6 +8559,7 @@ body.ttt-drawer-open { overflow: hidden; touch-action: none; }
   font-weight: 600;
   line-height: 1.08;
   letter-spacing: -.025em;
+   text-transform: uppercase;
 }
 
 .ttt-hero .ttt-primary-button {
@@ -8671,8 +8672,9 @@ body.ttt-drawer-open { overflow: hidden; touch-action: none; }
 
   .ttt-hero .ttt-hero-content h1 {
     margin-bottom: 8px;
-    font-size: clamp(12px, 4.8vw, 21px) !important;
+    font-size: clamp(8px, 4.8vw, 21px) !important;
     line-height: 1.08;
+     text-transform: uppercase;
   }
 
   .ttt-hero .ttt-primary-button {
@@ -8694,8 +8696,8 @@ body.ttt-drawer-open { overflow: hidden; touch-action: none; }
     text-align: center;
 }
 
-  .ttt-hero .ttt-hero-side-description.ttt-description-left { left: 5px; }
-  .ttt-hero .ttt-hero-side-description.ttt-description-right { right: 5px; }
+  .ttt-hero .ttt-hero-side-description.ttt-description-left { left: 8px; }
+  .ttt-hero .ttt-hero-side-description.ttt-description-right { right: 8px; }
 
   .ttt-hero .ttt-hero-dots {
     bottom: 8px;
