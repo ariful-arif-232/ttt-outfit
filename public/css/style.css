@@ -9027,27 +9027,51 @@ body.ttt-drawer-lock { overflow: hidden; }
     -webkit-overflow-scrolling: touch;
     padding-bottom: calc(32px + env(safe-area-inset-bottom));
 }
-/* Mobile Wishlist & Cart Badge */
+/* Mobile drawer account links fix */
 
-.ttt-mobile-badge-link{
-    position:relative;
+.ttt-drawer-account{
+    display:flex;
+    flex-direction:column;
+    width:100%;
+}
+
+.ttt-drawer-account > a{
     display:flex;
     align-items:center;
+    position:relative;
+    width:100%;
     gap:14px;
 }
 
-.ttt-mobile-badge-link .ttt-count-badge{
-    position:absolute;
-    left:18px;
-    top:-4px;
+.ttt-drawer-account > a > i{
+    position:relative;
+    width:24px;
+    flex:0 0 24px;
+    font-size:18px;
+}
 
-    min-width:18px;
-    height:18px;
+/* Wishlist and Cart badge */
 
-    display:flex;
+.ttt-drawer-account .ttt-mobile-badge-link .ttt-count-badge{
+    position:absolute !important;
+
+    top:2px !important;
+    left:27px !important;
+    right:auto !important;
+
+    width:17px !important;
+    min-width:17px !important;
+    max-width:17px !important;
+    height:17px !important;
+
+    padding:0 !important;
+    margin:0 !important;
+
+    display:flex !important;
     align-items:center;
     justify-content:center;
 
-    font-size:11px;
-    border-radius:999px;
+    border-radius:50% !important;
+    font-size:10px !important;
+    line-height:17px !important;
 }
