@@ -687,10 +687,10 @@
 
 <nav class="ttt-drawer-account">
 
-<a href="/track-order">
-  <i class="bi bi-truck"></i>
-  <span>Track Order</span>
-</a>
+  <a href="/track-order">
+    <i class="bi bi-truck"></i>
+    <span>Track Order</span>
+  </a>
 
   <a
     class="ttt-drawer-badge-link"
@@ -699,12 +699,15 @@
     <span class="ttt-drawer-link-icon">
       <i class="bi bi-heart"></i>
 
-class="ttt-drawer-count wishlist-badge"
+      <span
+        class="ttt-drawer-count wishlist-badge"
+        data-wishlist-count
+        style="display:none"
+      ></span>
     </span>
 
     <span>Wishlist</span>
   </a>
-
 
   <a
     class="ttt-drawer-badge-link"
@@ -713,17 +716,18 @@ class="ttt-drawer-count wishlist-badge"
     <span class="ttt-drawer-link-icon">
       <i class="bi bi-bag"></i>
 
-<span
-  class="ttt-drawer-count"
-  data-cart-count
-  style="<%= cartCount > 0 ? 'display:flex' : 'display:none' %>"
->
-  <%= cartCount %>
-</span>
+      <span
+        class="ttt-drawer-count"
+        data-cart-count
+        style="<%= cartCount > 0 ? 'display:flex' : 'display:none' %>"
+      >
+        <%= cartCount %>
+      </span>
     </span>
 
     <span>Cart</span>
   </a>
+
 
 
   <% if (currentUser) { %>
