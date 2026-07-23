@@ -8978,36 +8978,38 @@ body.ttt-drawer-lock { overflow: hidden; }
 .ttt-product-swiper .ttt-product-rail-item {
   scroll-snap-align: unset;
 }
-.ttt-drawer-follow p{
+.ttt-drawer-follow{
+    margin-top:20px;
+    padding-top:18px;
+    border-top:1px solid rgba(255,255,255,.15);
+}
+
+.ttt-follow-row{
     display:flex;
     align-items:center;
-    gap:10px;
-
-    margin:0;
-    color:#fff;
-    font-size:15px;
-    font-weight:600;
+    width:100%;
 }
 
 .ttt-drawer-social{
+    margin-left:auto;
     display:flex;
-    align-items:center;
     gap:8px;
 }
 
 .ttt-drawer-social a{
-    width:32px;
-    height:32px;
-
+    width:30px;
+    height:30px;
     display:flex;
     align-items:center;
     justify-content:center;
-
     border-radius:50%;
     background:rgba(255,255,255,.08);
-
     color:#fff;
     font-size:15px;
-
     transition:.25s;
+}
+
+.ttt-drawer-social a:hover{
+    background:#d4af37;
+    color:#111;
 }
