@@ -38,11 +38,18 @@ let savedProductIds = new Set();
     );
   }
 
-  function updateWishlistCount(count) {
-    wishlistCountElements.forEach(element => {
+function updateWishlistCount(count) {
+  wishlistCountElements.forEach(element => {
+
+    if (count <= 0) {
+      element.style.display = "none";
+    } else {
+      element.style.display = "flex";
       element.textContent = String(count);
-    });
-  }
+    }
+
+  });
+}
 
   function updateButton(button, isSaved) {
     button.classList.toggle(
