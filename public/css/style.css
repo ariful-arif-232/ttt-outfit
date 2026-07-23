@@ -9455,3 +9455,49 @@ body.ttt-drawer-lock { overflow: hidden; }
 .ttt-developer i{
     font-size:14px;
 }
+/* =========================================
+   HEADER CART / WISHLIST COUNT
+========================================= */
+
+.ttt-badge-link{
+    position:relative;
+}
+
+.ttt-count-badge{
+
+    position:absolute;
+
+    top:2px;
+    right:4px;
+
+    background:transparent !important;
+    border:none !important;
+    box-shadow:none !important;
+
+    min-width:auto;
+    width:auto;
+    height:auto;
+
+    padding:0;
+
+    color:#d4af37;
+
+    font-size:13px;
+    font-weight:900;
+    line-height:1;
+
+    text-shadow:0 0 8px rgba(212,175,55,.65);
+
+    transition:.25s ease;
+
+    pointer-events:none;
+}
+
+.ttt-badge-link:hover .ttt-count-badge{
+
+    color:#ffe08a;
+
+    transform:translateY(-2px) scale(1.1);
+
+    text-shadow:0 0 14px rgba(255,224,138,.9);
+}
