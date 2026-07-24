@@ -8010,7 +8010,7 @@ body.ttt-drawer-open { overflow: hidden; }
     box-shadow 0.35s ease;
 }
 .ttt-header.scrolled{
-    background: rgba(8, 42, 35, 0.30) !important;
+    background: rgba(8, 42, 35, 0.50) !important;
     box-shadow: none;
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
@@ -9341,7 +9341,7 @@ body.ttt-drawer-lock { overflow: hidden; }
 
   .ttt-footer-top {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 28px 52px;
+    gap: 28px 60px;
 
     overflow: visible;
   }
