@@ -9345,7 +9345,9 @@ body.ttt-drawer-lock { overflow: hidden; }
 
     overflow: visible;
   }
-
+.ttt-footer-top > :nth-child(even) {
+    margin-left: 12px;
+}
   .ttt-footer-brand {
     grid-column: 1 / -1;
     min-width: 0;
