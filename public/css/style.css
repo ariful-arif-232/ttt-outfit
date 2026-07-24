@@ -9341,13 +9341,10 @@ body.ttt-drawer-lock { overflow: hidden; }
 
   .ttt-footer-top {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 28px 45px;
+    gap: 28px 52px;
 
     overflow: visible;
   }
-.ttt-footer-top > :nth-child(even) {
-    margin-left: 6px;
-}
   .ttt-footer-brand {
     grid-column: 1 / -1;
     min-width: 0;
