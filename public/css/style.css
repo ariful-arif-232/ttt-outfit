@@ -9612,3 +9612,10 @@ body.ttt-drawer-lock { overflow: hidden; }
     right: 0 !important;
   }
 }
+/* Drawer Wishlist & Cart only */
+
+.ttt-drawer-badge-link{
+    display:flex;
+    align-items:center;
+    gap:14px;
+}
