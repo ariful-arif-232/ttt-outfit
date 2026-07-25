@@ -208,8 +208,36 @@ Messenger
   </div>
 
 </footer>
+
+<div class="ttt-cart-drawer-backdrop" data-cart-drawer-backdrop hidden></div>
+<aside class="ttt-cart-drawer" data-cart-drawer aria-hidden="true" aria-label="Shopping cart">
+  <div class="ttt-cart-drawer-head">
+    <h2>Your Cart <span data-cart-drawer-count>(0)</span></h2>
+    <button class="ttt-cart-drawer-close" type="button" data-cart-drawer-close aria-label="Close cart"><i class="bi bi-x-lg"></i></button>
+  </div>
+
+  <div class="ttt-cart-drawer-items" data-cart-drawer-items></div>
+
+  <div class="ttt-cart-drawer-empty" data-cart-drawer-empty hidden>
+    <p>🛍 Your cart is empty.</p>
+    <button type="button" class="ttt-cart-drawer-empty-shop" data-cart-drawer-close>Start Shopping</button>
+  </div>
+
+  <div class="ttt-cart-drawer-footer" data-cart-drawer-footer hidden>
+    <div class="ttt-cart-drawer-subtotal-row">
+      <span>Subtotal</span>
+      <strong data-cart-drawer-subtotal>৳0</strong>
+    </div>
+    <p class="ttt-cart-drawer-note">Delivery charge will be calculated at checkout.</p>
+    <div class="ttt-cart-drawer-actions">
+      <button type="button" class="ttt-cart-drawer-continue" data-cart-drawer-close>Continue Shopping</button>
+      <a class="ttt-cart-drawer-checkout" href="/checkout">Checkout</a>
+    </div>
+  </div>
+</aside>
+
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-<script src="/js/main.js?v=phase6-1" defer></script>
+<script src="/js/main.js?v=phase7-1" defer></script>
 <script src="/js/wishlist.js?v=4"></script>
 <script>
   document.addEventListener('DOMContentLoaded', () => {
