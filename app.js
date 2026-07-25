@@ -1309,8 +1309,31 @@ app.post('/cart/add', async (req, res) => {
         `${product.name} (${color}, ${size}) added to cart.`
     };
 
+const wantsJson =
+  req.get('accept')?.includes('application/json') ||
+  req.body.ajax === '1';
+
 const requestedRedirect =
   String(req.body.redirectTo || '').trim();
+
+if (wantsJson) {
+  const cart = req.session.cart || [];
+  const cartCount = cart.reduce(
+    (sum, item) => sum + Number(item.quantity || 0),
+    0
+  );
+  const subtotal = cart.reduce(
+    (sum, item) => sum + Number(item.price || 0) * Number(item.quantity || 0),
+    0
+  );
+
+  return res.json({
+    ok: true,
+    cart,
+    cartCount,
+    subtotal
+  });
+}
 
 if (requestedRedirect === '/checkout') {
   return res.redirect('/checkout');
@@ -1325,6 +1348,17 @@ return res.redirect(
   req.get('referer') || '/shop'
 );
   } catch (error) {
+    const wantsJson =
+      req.get('accept')?.includes('application/json') ||
+      req.body.ajax === '1';
+
+    if (wantsJson) {
+      return res.status(400).json({
+        ok: false,
+        message: error.message
+      });
+    }
+
     req.session.flash = {
       type: 'error',
       message: error.message
@@ -1336,16 +1370,61 @@ return res.redirect(
   }
 });
 
+app.get('/cart/data', (req, res) => {
+  const cart = req.session.cart || [];
+  const cartCount = cart.reduce(
+    (sum, item) => sum + Number(item.quantity || 0),
+    0
+  );
+  const subtotal = cart.reduce(
+    (sum, item) => sum + Number(item.price || 0) * Number(item.quantity || 0),
+    0
+  );
+
+  res.json({
+    cart,
+    cartCount,
+    subtotal
+  });
+});
+
 app.get('/cart', (req, res) => {
   const subtotal = (req.session.cart || []).reduce((sum, i) => sum + i.price * i.quantity, 0);
   res.render('cart', { title: 'Your cart', subtotal });
 });
+
 app.post('/cart/update', (req, res) => {
-  const index = Number(req.body.index); const qty = Number(req.body.quantity);
-  if (req.session.cart?.[index]) qty <= 0 ? req.session.cart.splice(index, 1) : req.session.cart[index].quantity = Math.min(20, Math.max(1, qty));
+  const index = Number(req.body.index);
+  const qty = Number(req.body.quantity);
+
+  if (req.session.cart?.[index]) {
+    qty <= 0
+      ? req.session.cart.splice(index, 1)
+      : req.session.cart[index].quantity = Math.min(20, Math.max(1, qty));
+  }
+
   res.redirect('/cart');
 });
-app.post('/cart/remove', (req, res) => { req.session.cart?.splice(Number(req.body.index), 1); res.redirect('/cart'); });
+
+app.post('/cart/remove', (req, res) => {
+  req.session.cart?.splice(Number(req.body.index), 1);
+
+  if (req.get('accept')?.includes('application/json') || req.body.ajax === '1') {
+    const cart = req.session.cart || [];
+    const cartCount = cart.reduce(
+      (sum, item) => sum + Number(item.quantity || 0),
+      0
+    );
+    const subtotal = cart.reduce(
+      (sum, item) => sum + Number(item.price || 0) * Number(item.quantity || 0),
+      0
+    );
+
+    return res.json({ ok: true, cart, cartCount, subtotal });
+  }
+
+  res.redirect('/cart');
+});
 /* =========================================
    WHOLESALE HELPERS
 ========================================= */
