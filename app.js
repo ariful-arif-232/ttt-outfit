@@ -1209,6 +1209,33 @@ app.post('/logout', logoutUser);
 */
 app.get('/logout', logoutUser);
 
+function wantsJsonResponse(req) {
+  return (
+    req.xhr ||
+    req.get('X-Requested-With') === 'XMLHttpRequest' ||
+    String(req.headers.accept || '').includes('application/json')
+  );
+}
+
+function buildCartPayload(req) {
+  const cart = req.session.cart || [];
+  const items = cart.map((item, index) => ({
+    index,
+    productId: item.productId,
+    name: item.name,
+    slug: item.slug,
+    image: item.image,
+    price: item.price,
+    size: item.size,
+    color: item.color,
+    quantity: item.quantity,
+    lineTotal: Number(item.price || 0) * Number(item.quantity || 0)
+  }));
+  const subtotal = items.reduce((sum, i) => sum + i.lineTotal, 0);
+  const count = items.reduce((sum, i) => sum + i.quantity, 0);
+  return { items, subtotal, count };
+}
+
 app.post('/cart/add', async (req, res) => {
   try {
     const product =
@@ -1303,11 +1330,20 @@ app.post('/cart/add', async (req, res) => {
       });
     }
 
+    const successMessage = `${product.name} (${color}, ${size}) added to cart.`;
+
     req.session.flash = {
       type: 'success',
-      message:
-        `${product.name} (${color}, ${size}) added to cart.`
+      message: successMessage
     };
+
+    if (wantsJsonResponse(req)) {
+      return res.json({
+        success: true,
+        message: successMessage,
+        cart: buildCartPayload(req)
+      });
+    }
 
 const requestedRedirect =
   String(req.body.redirectTo || '').trim();
@@ -1330,6 +1366,14 @@ return res.redirect(
       message: error.message
     };
 
+    if (wantsJsonResponse(req)) {
+      return res.status(400).json({
+        success: false,
+        message: error.message,
+        cart: buildCartPayload(req)
+      });
+    }
+
     res.redirect(
       req.get('referer') || '/shop'
     );
@@ -1343,9 +1387,14 @@ app.get('/cart', (req, res) => {
 app.post('/cart/update', (req, res) => {
   const index = Number(req.body.index); const qty = Number(req.body.quantity);
   if (req.session.cart?.[index]) qty <= 0 ? req.session.cart.splice(index, 1) : req.session.cart[index].quantity = Math.min(20, Math.max(1, qty));
+  if (wantsJsonResponse(req)) return res.json({ success: true, cart: buildCartPayload(req) });
   res.redirect('/cart');
 });
-app.post('/cart/remove', (req, res) => { req.session.cart?.splice(Number(req.body.index), 1); res.redirect('/cart'); });
+app.post('/cart/remove', (req, res) => {
+  req.session.cart?.splice(Number(req.body.index), 1);
+  if (wantsJsonResponse(req)) return res.json({ success: true, cart: buildCartPayload(req) });
+  res.redirect('/cart');
+});
 /* =========================================
    WHOLESALE HELPERS
 ========================================= */
