@@ -776,10 +776,15 @@ document.addEventListener('keydown', event => {
         const originalLabel = submitButton?.textContent;
         if (submitButton) { submitButton.disabled = true; submitButton.textContent = 'Adding…'; }
         try {
+          const formData = new URLSearchParams(new FormData(quickCartForm));
           const response = await fetch(quickCartForm.action, {
             method: 'POST',
-            headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
-            body: new FormData(quickCartForm)
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+              'Accept': 'application/json',
+              'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: formData.toString()
           });
           const data = await response.json();
           if (data?.success) {
