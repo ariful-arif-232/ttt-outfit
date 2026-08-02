@@ -165,13 +165,16 @@
       <span>›</span>
 
       <a href="/shop">Shop</a>
-      <span>›</span>
 
-      <a
-        href="/shop?category=<%= encodeURIComponent(product.category) %>"
-      >
-        <%= product.category %>
-      </a>
+      <% if (product.category && product.category.trim().toLowerCase() !== product.name.trim().toLowerCase()) { %>
+        <span>›</span>
+
+        <a
+          href="/shop?category=<%= encodeURIComponent(product.category) %>"
+        >
+          <%= product.category %>
+        </a>
+      <% } %>
 
       <span>›</span>
       <strong><%= product.name %></strong>
@@ -365,21 +368,21 @@
           </div>
 
           <div class="product-wholesale-content">
-            <strong>
-              Wholesale price:
-              ৳<%= money(wholesaleUnitPrice) %>
-              each
-            </strong>
+            <div class="product-wholesale-row">
+              <strong>
+                Wholesale ৳<%= money(wholesaleUnitPrice) %>/pc
+              </strong>
+
+              <span class="product-wholesale-badge">
+                <%= wholesaleMinimumQuantity %>+ PCS
+              </span>
+            </div>
 
             <small id="productWholesaleMessage">
-              Buy <%= wholesaleMinimumQuantity %> or more and save
-              <%= wholesaleSavingPercent %>% per item.
+              Buy <%= wholesaleMinimumQuantity %>+ and save
+              <%= wholesaleSavingPercent %>% per item
             </small>
           </div>
-
-          <span class="product-wholesale-badge">
-            <%= wholesaleMinimumQuantity %>+ PCS
-          </span>
         </div>
 
 
