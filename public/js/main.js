@@ -605,7 +605,7 @@ document.addEventListener('keydown', event => {
           </div>
           <div class="ttt-cart-drawer-item-side">
             <strong>${cartMoneyText(item.lineTotal)}</strong>
-            <button type="button" class="ttt-cart-drawer-remove" data-cart-remove data-index="${item.index}">Remove</button>
+            <button type="button" class="ttt-cart-drawer-remove" data-cart-remove data-index="${item.index}" aria-label="Remove ${escapeHtml(item.name)}"><i class="bi bi-trash3"></i></button>
           </div>
         </article>
       `).join('');
@@ -622,6 +622,25 @@ document.addEventListener('keydown', event => {
         body: new URLSearchParams(body).toString()
       });
       return response.json();
+    };
+
+    const refreshMiniCart = async () => {
+      try {
+        const response = await fetch('/cart/data', {
+          headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
+        });
+        const data = await response.json();
+        if (data?.cart) renderMiniCart(data.cart);
+        return data?.cart;
+      } catch (error) {
+        return null;
+      }
+    };
+
+    const flashCartAdded = () => {
+      if (!cartDrawer) return;
+      cartDrawer.classList.add('is-just-added');
+      window.setTimeout(() => cartDrawer.classList.remove('is-just-added'), 1400);
     };
 
     cartDrawerItems?.addEventListener('click', async (event) => {
@@ -791,6 +810,11 @@ document.addEventListener('keydown', event => {
             closeDrawer();
             renderMiniCart(data.cart);
             openMiniCart();
+            flashCartAdded();
+            if (!data.cart?.items?.length) {
+              // Safety net: re-confirm against the server in case anything raced
+              await refreshMiniCart();
+            }
           } else if (drawerStock) {
             drawerStock.textContent = data?.message || 'Could not add this product to cart.';
           }
