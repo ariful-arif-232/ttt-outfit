@@ -1088,9 +1088,9 @@ th {
 .shop-heading-content h1 {
   margin: 0;
 
-  font-size: clamp(40px, 5vw, 62px);
-  line-height: 0.95;
-  letter-spacing: -1px;
+  font-size: clamp(26px, 3.2vw, 40px);
+  line-height: 1.05;
+  letter-spacing: -0.5px;
 }
 
 .shop-heading-content p {
@@ -2095,7 +2095,8 @@ th {
   }
 
   .shop-heading-content h1 {
-    font-size: 36px;
+    font-size: 22px;
+    letter-spacing: -0.3px;
   }
 
   .shop-heading-content p {
@@ -2462,9 +2463,9 @@ th {
 .product-detail-info h1 {
   margin: 0 0 11px;
 
-  font-size: clamp(38px, 5vw, 58px);
-  line-height: 0.98;
-  letter-spacing: -1px;
+  font-size: clamp(26px, 3vw, 38px);
+  line-height: 1.08;
+  letter-spacing: -0.5px;
 }
 
 .product-page-wishlist {
@@ -2565,28 +2566,33 @@ th {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 9px;
+  gap: 10px;
 }
 
 .product-detail-price > strong {
-  font-size: 26px;
+  font-size: 32px;
+  font-weight: 900;
+  color: var(--deep-black, #111);
+  letter-spacing: -0.5px;
 }
 
 .product-detail-price del {
   color: #999;
-  font-size: 14px;
+  font-size: 15px;
+  font-weight: 500;
 }
 
 .product-price-saving {
-  padding: 5px 8px;
+  padding: 6px 10px;
 
-  color: #6f5510;
-  background: #f4edda;
+  color: #7a5c0e;
+  background: linear-gradient(135deg, #f9e9bd, #f0d68f);
 
   border-radius: 999px;
 
-  font-size: 9px;
-  font-weight: 800;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.3px;
 }
 
 .product-description {
@@ -3310,7 +3316,8 @@ th {
   }
 
   .product-detail-info h1 {
-    font-size: 35px;
+    font-size: 24px;
+    letter-spacing: -0.3px;
   }
 
   .product-social-proof {
@@ -6814,12 +6821,12 @@ body.offer-modal-open {
 
 .product-wholesale-panel {
   margin: 0 0 22px;
-  padding: 15px;
+  padding: 12px 14px;
 
   display: grid;
-  grid-template-columns: 42px minmax(0, 1fr) auto;
+  grid-template-columns: 36px minmax(0, 1fr);
   align-items: center;
-  gap: 12px;
+  gap: 11px;
 
   background: #fffaf0;
   border: 1px solid rgba(199, 166, 70, 0.42);
@@ -6838,8 +6845,8 @@ body.offer-modal-open {
 }
 
 .product-wholesale-icon {
-  width: 42px;
-  height: 42px;
+  width: 36px;
+  height: 36px;
 
   display: inline-flex;
   align-items: center;
@@ -6850,41 +6857,46 @@ body.offer-modal-open {
 
   border-radius: 50%;
 
-  font-size: 18px;
+  font-size: 15px;
 }
 
 .product-wholesale-content {
   min-width: 0;
 }
 
-.product-wholesale-content strong,
+.product-wholesale-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 7px 10px;
+}
+
+.product-wholesale-row strong {
+  font-size: 12.5px;
+  font-weight: 800;
+  color: var(--deep-black);
+}
+
 .product-wholesale-content small {
   display: block;
-}
-
-.product-wholesale-content strong {
-  font-size: 13px;
-}
-
-.product-wholesale-content small {
-  margin-top: 3px;
+  margin-top: 2px;
 
   color: var(--muted);
   font-size: 10px;
-  line-height: 1.45;
+  line-height: 1.4;
 }
 
 .product-wholesale-badge {
-  padding: 6px 9px;
+  padding: 3px 8px;
 
   color: var(--deep-black);
   background: var(--gold);
 
   border-radius: 999px;
 
-  font-size: 9px;
+  font-size: 8.5px;
   font-weight: 900;
-  letter-spacing: 0.6px;
+  letter-spacing: 0.5px;
   white-space: nowrap;
 }
 
@@ -7419,12 +7431,10 @@ body.offer-modal-open {
 }
 
 @media (max-width: 700px) {
-  .product-wholesale-panel,
   .shop-wholesale-banner {
     grid-template-columns: 40px minmax(0, 1fr);
   }
 
-  .product-wholesale-badge,
   .shop-wholesale-banner-link {
     grid-column: 2;
     justify-self: start;
@@ -7454,7 +7464,6 @@ body.offer-modal-open {
     grid-column: auto;
   }
 
-  .product-wholesale-panel,
   .shop-wholesale-banner {
     padding: 13px;
   }
