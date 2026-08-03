@@ -41,6 +41,10 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Lightweight health-check route for uptime monitors (UptimeRobot etc).
+// Placed before the DB middleware so pings never touch MongoDB.
+app.get('/ping', (req, res) => res.status(200).send('ok'));
+
 let dbPromise;
 app.use(async (req, res, next) => {
   try {
