@@ -8551,12 +8551,14 @@ body.ttt-drawer-open { overflow: hidden; touch-action: none; }
 }
 
 .ttt-hero .ttt-eyebrow {
-  margin-bottom: 8px;
-  font-family: "Manrope", Arial, sans-serif;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: .2em;
-  text-transform: uppercase;
+  margin-bottom: 10px;
+  font-family: var(--ttt-serif);
+  font-style: italic;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: none;
+  color: var(--ttt-gold-light);
 }
 
 .ttt-hero .ttt-hero-content h1 {
@@ -8564,10 +8566,10 @@ body.ttt-drawer-open { overflow: hidden; touch-action: none; }
   margin: 0 0 12px;
   color: #fff;
  font-family: "Montserrat", sans-serif !important;
-  font-size: clamp(18px, 3vw, 40px) !important;
-  font-weight: 500;
-  line-height: 1.08;
- letter-spacing: 0.18em;
+  font-size: clamp(26px, 4.2vw, 52px) !important;
+  font-weight: 800;
+  line-height: 1.02;
+ letter-spacing: -0.01em;
    text-transform: uppercase;
 }
 
@@ -8594,11 +8596,11 @@ body.ttt-drawer-open { overflow: hidden; touch-action: none; }
   color: rgba(255,255,255,.9);
 
   font-family: "Manrope", Arial, sans-serif;
-  font-size: 9px;
-  font-weight: 500;
+  font-size: 12px;
+  font-weight: 400;
 
   line-height: 1.6;
-  letter-spacing: .09em;
+  letter-spacing: .02em;
 
   writing-mode: vertical-rl;
   text-orientation: mixed;
@@ -8675,17 +8677,19 @@ body.ttt-drawer-open { overflow: hidden; touch-action: none; }
 
   .ttt-hero .ttt-eyebrow {
     margin-bottom: 5px;
-    font-size: 6.5px;
-    letter-spacing: .16em;
+    font-size: 11px;
+    font-style: italic;
+    letter-spacing: .03em;
+    text-transform: none;
   }
 
 .ttt-hero .ttt-hero-content h1 {
     margin-bottom: 8px;
     font-family: "Montserrat", sans-serif !important;
-    font-weight: 500;
-   font-size: clamp(4px, 2.8vw, 12px) !important;
-    line-height: 1.08;
-    letter-spacing: 0.08em;
+    font-weight: 800;
+   font-size: clamp(14px, 5vw, 22px) !important;
+    line-height: 1.05;
+    letter-spacing: -0.01em;
     text-transform: uppercase;
 }
 
@@ -8697,9 +8701,10 @@ body.ttt-drawer-open { overflow: hidden; touch-action: none; }
 
 .ttt-hero .ttt-hero-side-description {
     height: 82%;
-    font-size: 6px;
+    font-size: 9px;
+    font-weight: 400;
     line-height: 1.6;
-    letter-spacing: .07em;
+    letter-spacing: .02em;
 
     display: flex;
     align-items: center;
