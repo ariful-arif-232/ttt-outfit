@@ -1,0 +1,12 @@
+<%- include('../partials/header') %>
+<div class="container admin-layout"><%- include('../partials/admin-nav') %><section class="panel">
+<div class="admin-form-heading"><div><span class="section-kicker">HOMEPAGE MANAGEMENT</span><h1><%= popup ? 'Edit popup' : 'Add popup' %></h1><p class="small">This image shows as a popup card when a customer opens the site. Only one popup should be marked Active at a time.</p></div></div>
+<form method="post" enctype="multipart/form-data" action="<%= popup ? '/admin/popups/' + popup._id : '/admin/popups' %>">
+<div class="two-col"><div class="field"><label>Title (optional)</label><input name="title" value="<%= popup?.title || '' %>" placeholder="New Collection"></div><div class="field"><label>Button text</label><input name="buttonText" value="<%= popup?.buttonText || 'Shop Now' %>"></div></div>
+<div class="two-col"><div class="field"><label>Description (optional)</label><textarea name="description" rows="3" placeholder="Short offer text..."><%= popup?.description || '' %></textarea></div><div class="field"><label>Button link</label><input name="buttonLink" value="<%= popup?.buttonLink || '/shop' %>"></div></div>
+<h2>Popup image</h2><div class="two-col"><div class="field"><label>Image URL</label><input type="url" name="imageUrl" value="<%= popup?.image?.url || '' %>" placeholder="https://..."></div><div class="field"><label>Upload image</label><input type="file" name="imageFile" accept="image/*" <%= cloudinaryReady ? '' : 'disabled' %>></div></div>
+<p class="small"><%= cloudinaryReady ? 'Uploaded files take priority over URL fields.' : 'Cloudinary is not configured; use image URLs.' %></p>
+<% if (popup?.image?.url) { %><div class="admin-hero-preview"><img src="<%= popup.image.url %>" alt="Popup preview"></div><% } %>
+<label class="admin-inline-check"><input type="checkbox" name="active" <%= popup ? (popup.active ? 'checked' : '') : 'checked' %>> Active (shows on the site)</label>
+<div class="form-actions"><button class="btn gold-btn" type="submit"><%= popup ? 'Save changes' : 'Create popup' %></button><a class="btn ghost-btn" href="/admin/popups">Cancel</a></div>
+</form></section></div><%- include('../partials/footer') %>
