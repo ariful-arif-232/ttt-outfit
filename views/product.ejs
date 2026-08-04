@@ -352,40 +352,6 @@
         </div>
 
 
-        <!-- Wholesale offer -->
-
-        <div
-          class="product-wholesale-panel"
-          id="productWholesalePanel"
-          data-minimum-quantity="<%= wholesaleMinimumQuantity %>"
-          data-wholesale-price="<%= wholesaleUnitPrice.toFixed(2) %>"
-        >
-          <div class="product-wholesale-icon">
-            <i
-              class="bi bi-box-seam"
-              aria-hidden="true"
-            ></i>
-          </div>
-
-          <div class="product-wholesale-content">
-            <div class="product-wholesale-row">
-              <strong>
-                Wholesale ৳<%= money(wholesaleUnitPrice) %>/pc
-              </strong>
-
-              <span class="product-wholesale-badge">
-                <%= wholesaleMinimumQuantity %>+ PCS
-              </span>
-            </div>
-
-            <small id="productWholesaleMessage">
-              Buy <%= wholesaleMinimumQuantity %>+ and save
-              <%= wholesaleSavingPercent %>% per item
-            </small>
-          </div>
-        </div>
-
-
         <!-- Short description -->
 
         <div class="product-description">
@@ -600,12 +566,6 @@
             </button>
 
           </div>
-
-          <div
-            class="product-wholesale-live"
-            id="productWholesaleLive"
-            aria-live="polite"
-          ></div>
 
 
           <!-- Buy now -->
