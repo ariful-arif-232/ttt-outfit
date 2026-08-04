@@ -18,6 +18,7 @@ const Review = require('./models/Review');
 const Coupon = require('./models/Coupon');
 const Wishlist = require('./models/Wishlist');
 const Category = require('./models/Category');
+const Popup = require('./models/Popup');
 const HomeSlider = require('./models/HomeSlider');
 const Subscriber = require('./models/Subscriber');
 const crypto = require('crypto');
@@ -89,6 +90,23 @@ app.use(async (req, res, next) => {
   } catch (error) {
     console.error('Menu category lookup failed:', error.message);
     res.locals.menuCategories = [];
+  }
+  next();
+});
+
+/*
+  Site-wide popup (new collection / offer announcement) set from the admin panel.
+  Non-blocking: if it fails, pages continue to render without a popup.
+*/
+app.use(async (req, res, next) => {
+  try {
+    res.locals.sitePopup =
+      req.path.startsWith('/admin')
+        ? null
+        : await Popup.findOne({ active: true }).sort({ createdAt: -1 }).lean();
+  } catch (error) {
+    console.error('Popup lookup failed:', error.message);
+    res.locals.sitePopup = null;
   }
   next();
 });
@@ -1427,12 +1445,10 @@ function getWholesaleSummary(items = []) {
     0
   );
 
-  const wholesaleEligible =
-    itemCount >= DEFAULT_WHOLESALE_MINIMUM_QUANTITY;
+  // Wholesale/bulk-discount feature disabled — always non-eligible, zero discount.
+  const wholesaleEligible = false;
 
-  const wholesaleDiscount = wholesaleEligible
-    ? Math.round(subtotal * DEFAULT_WHOLESALE_DISCOUNT_RATE)
-    : 0;
+  const wholesaleDiscount = 0;
 
   return {
     itemCount,
@@ -3710,6 +3726,78 @@ app.post('/admin/sliders/:id/delete', requireAdmin, async (req, res) => {
     req.session.flash = { type: 'success', message: 'Hero slide deactivated.' };
   } catch (error) { req.session.flash = { type: 'error', message: error.message }; }
   res.redirect('/admin/sliders');
+});
+
+app.get('/admin/popups', requireAdmin, async (req, res, next) => {
+  try {
+    const popups = await Popup.find().sort({ createdAt: -1 }).lean();
+    res.render('admin/popups', { title: 'Site popup', popups });
+  } catch (error) { next(error); }
+});
+
+app.get('/admin/popups/new', requireAdmin, (req, res) => {
+  res.render('admin/popup-form', { title: 'Add popup', popup: null, cloudinaryReady: cloudinaryReady() });
+});
+
+app.get('/admin/popups/:id/edit', requireAdmin, async (req, res, next) => {
+  try {
+    const popup = await Popup.findById(req.params.id).lean();
+    if (!popup) return res.status(404).render('message', { title: 'Not found', message: 'Popup not found.' });
+    res.render('admin/popup-form', { title: 'Edit popup', popup, cloudinaryReady: cloudinaryReady() });
+  } catch (error) { next(error); }
+});
+
+async function popupPayload(req, existing = null) {
+  let image = existing?.image || { url: '', publicId: '' };
+  const file = req.files?.imageFile?.[0] || null;
+  if (file) {
+    const uploaded = await uploadBuffer(file.buffer, 'ttt-outfit/popups');
+    image = { url: uploaded.secure_url || uploaded.url, publicId: uploaded.public_id || '' };
+  } else if (cleanText(req.body.imageUrl)) image = { url: cleanText(req.body.imageUrl), publicId: '' };
+  if (!image.url) throw new Error('Popup image is required.');
+  return {
+    image,
+    title: cleanText(req.body.title),
+    description: cleanText(req.body.description),
+    buttonText: cleanText(req.body.buttonText) || 'Shop Now',
+    buttonLink: cleanText(req.body.buttonLink) || '/shop',
+    active: formBoolean(req.body.active)
+  };
+}
+
+const popupUpload = upload.fields([{ name: 'imageFile', maxCount: 1 }]);
+
+app.post('/admin/popups', requireAdmin, popupUpload, async (req, res) => {
+  try {
+    await Popup.create(await popupPayload(req));
+    req.session.flash = { type: 'success', message: 'Popup created.' };
+    res.redirect('/admin/popups');
+  } catch (error) {
+    req.session.flash = { type: 'error', message: error.message };
+    res.redirect('/admin/popups/new');
+  }
+});
+
+app.post('/admin/popups/:id', requireAdmin, popupUpload, async (req, res) => {
+  try {
+    const popup = await Popup.findById(req.params.id);
+    if (!popup) throw new Error('Popup not found.');
+    Object.assign(popup, await popupPayload(req, popup));
+    await popup.save();
+    req.session.flash = { type: 'success', message: 'Popup updated.' };
+    res.redirect('/admin/popups');
+  } catch (error) {
+    req.session.flash = { type: 'error', message: error.message };
+    res.redirect(`/admin/popups/${req.params.id}/edit`);
+  }
+});
+
+app.post('/admin/popups/:id/delete', requireAdmin, async (req, res) => {
+  try {
+    await Popup.findByIdAndUpdate(req.params.id, { active: false });
+    req.session.flash = { type: 'success', message: 'Popup deactivated.' };
+  } catch (error) { req.session.flash = { type: 'error', message: error.message }; }
+  res.redirect('/admin/popups');
 });
 
 app.get('/admin/subscribers', requireAdmin, async (req, res, next) => {
