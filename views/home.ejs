@@ -131,14 +131,15 @@
                 : (cat.imageUrl || '/ttt-logo.jpeg'));
       %>
       <a class="ttt-showcase-card ttt-reveal" href="/shop?category=<%= encodeURIComponent(cat.name) %>">
-        <img
-          src="<%= categoryImageUrl %>"
-          alt="<%= cat.name %>"
-          loading="lazy"
-          decoding="async"
-          data-image-fallback="/ttt-logo.jpeg"
-        >
-        <span class="ttt-showcase-shade"></span>
+        <span class="ttt-showcase-image-wrap">
+          <img
+            src="<%= categoryImageUrl %>"
+            alt="<%= cat.name %>"
+            loading="lazy"
+            decoding="async"
+            data-image-fallback="/ttt-logo.jpeg"
+          >
+        </span>
         <span class="ttt-showcase-copy"><strong><%= cat.name %></strong><em><%= cat.buttonText || 'Shop Now' %> <i class="bi bi-arrow-right"></i></em></span>
       </a>
     <% }); %>
