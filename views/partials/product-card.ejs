@@ -22,7 +22,7 @@
   };
 %>
 
-<article class="professional-product-card ttt-compact-product-card">
+<article class="professional-product-card ttt-compact-product-card ttt-fabri-card">
   <div class="product-image-wrap">
     <a class="product-image-link" href="/product/<%= p.slug %>" aria-label="View <%= p.name %>">
       <img class="product-primary-image" src="<%= mainImage %>" alt="<%= p.name %>" loading="lazy">
@@ -33,20 +33,37 @@
       <span class="sale-badge ttt-card-discount">-<%= discountPercent %>%</span>
     <% } %>
 
-    <button
-      class="product-wishlist-button ttt-card-wishlist"
-      type="button"
-      data-product-id="<%= p._id %>"
-      data-product-name="<%= p.name %>"
-      data-product-slug="<%= p.slug %>"
-      data-product-image="<%= mainImage %>"
-      data-product-price="<%= p.price %>"
-      aria-label="Add <%= p.name %> to wishlist"
-      aria-pressed="false"
-      title="Wishlist"
-    ><span>♡</span></button>
+    <div class="ttt-card-image-actions">
+      <a
+        class="ttt-card-zoom-icon"
+        href="/product/<%= p.slug %>"
+        aria-label="Quick view <%= p.name %>"
+        title="Quick view"
+      ><i class="bi bi-zoom-in" aria-hidden="true"></i></a>
 
-    <div class="ttt-card-bottom-icons" aria-label="Product actions">
+      <button
+        class="product-wishlist-button ttt-card-wishlist"
+        type="button"
+        data-product-id="<%= p._id %>"
+        data-product-name="<%= p.name %>"
+        data-product-slug="<%= p.slug %>"
+        data-product-image="<%= mainImage %>"
+        data-product-price="<%= p.price %>"
+        aria-label="Add <%= p.name %> to wishlist"
+        aria-pressed="false"
+        title="Wishlist"
+      ><span>♡</span></button>
+    </div>
+  </div>
+
+  <div class="professional-product-info ttt-compact-product-info">
+    <h3><a href="/product/<%= p.slug %>"><%= p.name %></a></h3>
+    <div class="product-price-row">
+      <div class="ttt-card-price-group">
+        <span class="product-current-price">৳<%= money(p.price) %></span>
+        <% if (hasDiscount) { %><span class="product-compare-price">৳<%= money(p.compareAtPrice) %></span><% } %>
+      </div>
+
       <% if (productStock > 0) { %>
         <button
           class="ttt-card-cart-icon"
@@ -61,14 +78,6 @@
           <i class="bi bi-cart-x" aria-hidden="true"></i>
         </button>
       <% } %>
-    </div>
-  </div>
-
-  <div class="professional-product-info ttt-compact-product-info">
-    <h3><a href="/product/<%= p.slug %>"><%= p.name %></a></h3>
-    <div class="product-price-row">
-      <span class="product-current-price">৳<%= money(p.price) %></span>
-      <% if (hasDiscount) { %><span class="product-compare-price">৳<%= money(p.compareAtPrice) %></span><% } %>
     </div>
   </div>
 </article>

@@ -545,6 +545,21 @@
     <span>Shop All</span>
   </a>
 
+  <a href="/shop?sort=newest">
+    <i class="bi bi-star-fill"></i>
+    <span>New Arrivals</span>
+  </a>
+
+  <a href="/shop">
+    <i class="bi bi-truck"></i>
+    <span>Free Delivery</span>
+  </a>
+
+  <a href="/shop?sort=popular">
+    <i class="bi bi-fire"></i>
+    <span>Top Selling</span>
+  </a>
+
 
     </nav>
 
@@ -580,6 +595,15 @@
           }
         );
 
+        const groupPriority = { 'top wear': 1, 'bottom wear': 2, 'outer wear': 3 };
+        function groupRank(name) {
+          const key = String(name || '').toLowerCase();
+          for (const label in groupPriority) {
+            if (key.includes(label)) return groupPriority[label];
+          }
+          return 99;
+        }
+
         const groupOrder =
           Object.keys(groupedMenu).sort(
             function (a, b) {
@@ -597,11 +621,25 @@
                 return -1;
               }
 
+              const rankA = groupRank(a);
+              const rankB = groupRank(b);
+              if (rankA !== rankB) return rankA - rankB;
+
               return a.localeCompare(b);
             }
           );
+
+        function groupIcon(name) {
+          const key = String(name || '').toLowerCase();
+          if (key.includes('top')) return 'bi-arrow-up-square';
+          if (key.includes('bottom')) return 'bi-arrow-down-square';
+          if (key.includes('outer')) return 'bi-layers';
+          return 'bi-tag';
+        }
       %>
 
+
+      <span class="ttt-drawer-section-label">Categories</span>
 
       <% groupOrder.forEach(function (group) { %>
 
@@ -641,6 +679,7 @@
               aria-expanded="false"
             >
               <span>
+                <i class="bi <%= groupIcon(group) %>"></i>
                 <%= group %>
               </span>
 
@@ -759,21 +798,23 @@
 
   <% } else { %>
 
-    <a
-      class="ttt-drawer-auth-button"
-      href="/login"
-    >
-      <i class="bi bi-person"></i>
-      <span>Login</span>
-    </a>
+    <div class="ttt-drawer-auth-row">
+      <a
+        class="ttt-drawer-auth-button"
+        href="/login"
+      >
+        <i class="bi bi-person"></i>
+        <span>Login</span>
+      </a>
 
-    <a
-      class="ttt-drawer-auth-button secondary"
-      href="/register"
-    >
-      <i class="bi bi-person-plus"></i>
-      <span>Create Account</span>
-    </a>
+      <a
+        class="ttt-drawer-auth-button secondary"
+        href="/register"
+      >
+        <i class="bi bi-person-plus"></i>
+        <span>Register</span>
+      </a>
+    </div>
 
   <% } %>
 
