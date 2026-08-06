@@ -481,5 +481,50 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 <% } %>
+
+<!-- Site-wide product card zoom lightbox -->
+<div class="product-image-modal" id="cardZoomModal" aria-hidden="true">
+  <button class="product-modal-close" id="cardZoomClose" type="button" aria-label="Close image">×</button>
+  <img id="cardZoomImage" src="" alt="Product preview">
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const zoomModal = document.getElementById('cardZoomModal');
+  const zoomImage = document.getElementById('cardZoomImage');
+  if (!zoomModal || !zoomImage) return;
+
+  function openZoom(imgSrc, altText) {
+    zoomImage.src = imgSrc;
+    zoomImage.alt = altText || 'Product preview';
+    zoomModal.classList.add('active');
+    zoomModal.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('ttt-drawer-lock');
+  }
+
+  function closeZoom() {
+    zoomModal.classList.remove('active');
+    zoomModal.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('ttt-drawer-lock');
+  }
+
+  document.addEventListener('click', event => {
+    const trigger = event.target.closest('.ttt-card-zoom-icon');
+    if (trigger) {
+      event.preventDefault();
+      const card = trigger.closest('.product-image-wrap');
+      const img = card?.querySelector('.product-primary-image');
+      if (img && img.src) openZoom(img.src, img.alt);
+      return;
+    }
+    if (event.target === zoomModal || event.target.closest('#cardZoomClose')) {
+      closeZoom();
+    }
+  });
+
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && zoomModal.classList.contains('active')) closeZoom();
+  });
+});
+</script>
 </body>
 </html>
