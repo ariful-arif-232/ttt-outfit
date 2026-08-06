@@ -516,12 +516,23 @@
 >
   <div class="ttt-drawer-head">
 
-    <span>
-      MENU
-    </span>
+    <% if (!currentUser) { %>
+      <div class="ttt-drawer-auth-row ttt-drawer-auth-row-top">
+        <a class="ttt-drawer-auth-button" href="/login">
+          <i class="bi bi-person"></i>
+          <span>Login</span>
+        </a>
+
+        <a class="ttt-drawer-auth-button secondary" href="/register">
+          <i class="bi bi-person-plus"></i>
+          <span>Register</span>
+        </a>
+      </div>
+    <% } %>
 
     <button
       type="button"
+      class="ttt-drawer-close-btn"
       data-drawer-close
       aria-label="Close menu"
     >
@@ -631,8 +642,8 @@
 
         function groupIcon(name) {
           const key = String(name || '').toLowerCase();
-          if (key.includes('top')) return 'bi-arrow-up-square';
-          if (key.includes('bottom')) return 'bi-arrow-down-square';
+          if (key.includes('top')) return 'bi-arrow-up';
+          if (key.includes('bottom')) return 'bi-arrow-down';
           if (key.includes('outer')) return 'bi-layers';
           return 'bi-tag';
         }
@@ -795,26 +806,6 @@
       <i class="bi bi-box-arrow-right"></i>
       <span>Logout</span>
     </a>
-
-  <% } else { %>
-
-    <div class="ttt-drawer-auth-row">
-      <a
-        class="ttt-drawer-auth-button"
-        href="/login"
-      >
-        <i class="bi bi-person"></i>
-        <span>Login</span>
-      </a>
-
-      <a
-        class="ttt-drawer-auth-button secondary"
-        href="/register"
-      >
-        <i class="bi bi-person-plus"></i>
-        <span>Register</span>
-      </a>
-    </div>
 
   <% } %>
 
