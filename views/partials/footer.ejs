@@ -428,26 +428,17 @@ if (addButton) {
       href="<%= sitePopup.buttonLink || '/shop' %>"
       class="site-offer-image-link"
     >
-      <img src="<%= sitePopup.image.url %>" alt="<%= sitePopup.title || 'Offer' %>">
-    </a>
+      <img src="<%= sitePopup.image.url %>" alt="<%= sitePopup.title || 'Offer' %>" id="siteOfferTitle">
 
-    <% if (sitePopup.title || sitePopup.description) { %>
-      <div class="site-offer-text">
-        <% if (sitePopup.title) { %><h2 id="siteOfferTitle"><%= sitePopup.title %></h2><% } %>
-        <% if (sitePopup.description) { %><p><%= sitePopup.description %></p><% } %>
-      </div>
-    <% } %>
-
-    <a
-      class="offer-shop-button"
-      href="<%= sitePopup.buttonLink || '/shop' %>"
-    >
-      <%= sitePopup.buttonText || 'Shop Now' %>
-      <i class="bi bi-arrow-right"></i>
+      <span class="offer-shop-button">
+        <%= sitePopup.buttonText || 'Shop Now' %>
+        <i class="bi bi-arrow-right"></i>
+      </span>
     </a>
   </div>
 </div>
 <script>
+
 document.addEventListener('DOMContentLoaded', () => {
   const offerModal = document.getElementById('siteOfferModal');
   if (!offerModal) return;
