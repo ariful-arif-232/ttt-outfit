@@ -15,6 +15,7 @@ MongoStore.create = function createSharedMongoStore(options = {}) {
     const { mongoUrl, ...rest } = options;
     return originalMongoStoreCreate({
       ...rest,
+      touchAfter: rest.touchAfter ?? 60 * 60 * 24,
       clientPromise: connectDB.getClientPromise()
     });
   }
