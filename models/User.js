@@ -1,10 +1,5 @@
 const mongoose = require('mongoose');
 
-
-/* =========================================
-   ADDRESS SCHEMA
-========================================= */
-
 const addressSchema =
   new mongoose.Schema(
     {
@@ -42,11 +37,6 @@ const addressSchema =
     }
   );
 
-
-/* =========================================
-   USER SCHEMA
-========================================= */
-
 const userSchema =
   new mongoose.Schema(
     {
@@ -66,21 +56,11 @@ const userSchema =
         index: true
       },
 
-      /*
-        Phone is required for normal registration,
-        but optional for Google accounts.
-      */
-
       phone: {
         type: String,
         trim: true,
         default: undefined
       },
-
-      /*
-        Password is required for local login,
-        but optional for Google accounts.
-      */
 
       passwordHash: {
         type: String,
@@ -117,15 +97,11 @@ const userSchema =
         index: true
       },
 
-      addresses: [
-        addressSchema
-      ],
+      addresses: [addressSchema],
 
       wishlist: [
         {
-          type:
-            mongoose.Schema.Types.ObjectId,
-
+          type: mongoose.Schema.Types.ObjectId,
           ref: 'Product'
         }
       ],
@@ -155,15 +131,8 @@ const userSchema =
     }
   );
 
-
-/* =========================================
-   OPTIONAL UNIQUE INDEXES
-========================================= */
-
 userSchema.index(
-  {
-    phone: 1
-  },
+  { phone: 1 },
   {
     unique: true,
     sparse: true
@@ -171,19 +140,15 @@ userSchema.index(
 );
 
 userSchema.index(
-  {
-    googleId: 1
-  },
+  { googleId: 1 },
   {
     unique: true,
     sparse: true
   }
 );
 
-
-/* =========================================
-   EXPORT MODEL
-========================================= */
+userSchema.index({ role: 1, createdAt: -1 });
+userSchema.index({ resetPasswordToken: 1, resetPasswordExpires: 1 });
 
 module.exports =
   mongoose.models.User ||

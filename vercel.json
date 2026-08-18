@@ -1,10 +1,18 @@
 {
   "version": 2,
   "builds": [
-    { "src": "app.js", "use": "@vercel/node" }
+    { "src": "server.js", "use": "@vercel/node" },
+    { "src": "public/**", "use": "@vercel/static" }
   ],
   "routes": [
+    {
+      "src": "/(.*\\.(?:css|js|png|jpg|jpeg|gif|svg|webp|avif|ico|woff|woff2|ttf|otf|xml|txt|json|webmanifest|map))$",
+      "dest": "/public/$1",
+      "headers": {
+        "Cache-Control": "public, max-age=86400, stale-while-revalidate=604800"
+      }
+    },
     { "src": "/public/(.*)", "dest": "/public/$1" },
-    { "src": "/(.*)", "dest": "/app.js" }
+    { "src": "/(.*)", "dest": "/server.js" }
   ]
 }

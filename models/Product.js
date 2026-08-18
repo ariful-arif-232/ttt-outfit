@@ -1,5 +1,18 @@
 const mongoose = require('mongoose');
 
+const CATEGORY_ALIASES = new Map([
+  ['t-shirts', 'T-Shirt'],
+  ['tshirt', 'T-Shirt'],
+  ['tshirts', 'T-Shirt'],
+  ['polo shirts', 'Polo Shirt'],
+  ['joggers', 'Joggers'],
+  ['jackets', 'Jacket'],
+  ['drop shoulder t-shirt', 'Drop Shoulder'],
+  ['drop shoulder t-shirts', 'Drop Shoulder'],
+  ['old money polo shirt', 'Old Money Polo'],
+  ['old money polo shirts', 'Old Money Polo']
+]);
+
 const imageSchema = new mongoose.Schema(
   {
     url: {
@@ -52,23 +65,8 @@ const variantSchema = new mongoose.Schema(
       }
     ],
 
-    /*
-      Existing field kept unchanged for backward compatibility.
-
-      Current shop/product/cart code can continue using:
-      variant.images[0] = main image
-      variant.images[1] = hover image
-      variant.images[2+] = gallery images
-    */
     images: [imageSchema],
 
-    /*
-      New optional fields.
-
-      These allow the admin form to manage Main, Hover and
-      Gallery images separately without deleting or breaking
-      the old variant.images array.
-    */
     mainImage: {
       type: imageSchema,
       default: undefined
@@ -152,10 +150,6 @@ const productSchema = new mongoose.Schema(
       default: 0
     },
 
-    /*
-      Optional pricing fields added for the easier premium
-      admin product form. Existing products do not need them.
-    */
     costPrice: {
       type: Number,
       min: 0,
@@ -174,10 +168,6 @@ const productSchema = new mongoose.Schema(
       default: 10
     },
 
-    /*
-      These legacy fields remain unchanged for compatibility
-      with the existing shop, cart and older products.
-    */
     stock: {
       type: Number,
       min: 0,
@@ -199,10 +189,6 @@ const productSchema = new mongoose.Schema(
     ],
 
     images: [imageSchema],
-
-    /*
-      Existing professional color variants.
-    */
     variants: [variantSchema],
 
     featured: {
@@ -217,10 +203,6 @@ const productSchema = new mongoose.Schema(
       index: true
     },
 
-    /*
-      Optional product labels. All default to false, so they
-      do not change how existing products currently behave.
-    */
     isNewArrival: {
       type: Boolean,
       default: false,
@@ -260,6 +242,25 @@ productSchema.index({
   name: 'text',
   description: 'text',
   category: 'text'
+});
+
+productSchema.index({ active: 1, createdAt: -1 });
+productSchema.index({ active: 1, featured: -1, createdAt: -1 });
+productSchema.index({ active: 1, category: 1, featured: -1, soldCount: -1, createdAt: -1 });
+productSchema.index({ active: 1, price: 1 });
+productSchema.index({ active: 1, soldCount: -1 });
+
+productSchema.pre(/^find/, function normalizeLegacyCategoryLinks() {
+  const filter = this.getFilter();
+
+  if (typeof filter.category !== 'string') return;
+
+  const key = filter.category.trim().toLowerCase();
+  const canonicalCategory = CATEGORY_ALIASES.get(key);
+
+  if (canonicalCategory) {
+    filter.category = canonicalCategory;
+  }
 });
 
 module.exports =

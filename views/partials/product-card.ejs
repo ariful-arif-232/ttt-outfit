@@ -25,8 +25,8 @@
 <article class="professional-product-card ttt-compact-product-card ttt-fabri-card">
   <div class="product-image-wrap">
     <a class="product-image-link" href="/product/<%= p.slug %>" aria-label="View <%= p.name %>">
-      <img class="product-primary-image" src="<%= mainImage %>" alt="<%= p.name %>" loading="lazy">
-      <img class="product-secondary-image" src="<%= secondImage %>" alt="<%= p.name %> alternate view" loading="lazy">
+      <img class="product-primary-image" src="<%= mainImage %>" alt="<%= p.name %>" loading="lazy" decoding="async">
+      <img class="product-secondary-image" src="<%= secondImage %>" alt="<%= p.name %> alternate view" loading="lazy" decoding="async">
     </a>
 
     <% if (hasDiscount) { %>

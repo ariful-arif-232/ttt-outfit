@@ -42,12 +42,12 @@ const orderSchema = new mongoose.Schema({
     index: true
   },
 
-customer: {
+  customer: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     default: null,
     index: true
-},
+  },
 
   customerSnapshot: {
     name: String,
@@ -57,11 +57,6 @@ customer: {
 
   items: [itemSchema],
 
-  /*
-    Existing address fields remain supported.
-    The new optional fields are added for the premium
-    Bangladesh district/thana checkout.
-  */
   shippingAddress: {
     address: String,
     city: String,
@@ -97,20 +92,12 @@ customer: {
     min: 0
   },
 
-  /*
-    Existing discount field is kept unchanged.
-    It may contain the final combined discount so old
-    admin/order pages continue working.
-  */
   discount: {
     type: Number,
     default: 0,
     min: 0
   },
 
-  /*
-    New optional coupon details.
-  */
   couponCode: {
     type: String,
     trim: true,
@@ -124,10 +111,6 @@ customer: {
     min: 0
   },
 
-  /*
-    New optional wholesale details.
-    Existing orders automatically receive safe defaults.
-  */
   wholesaleEligible: {
     type: Boolean,
     default: false
@@ -216,6 +199,11 @@ customer: {
 }, {
   timestamps: true
 });
+
+orderSchema.index({ customer: 1, createdAt: -1 });
+orderSchema.index({ status: 1, createdAt: -1 });
+orderSchema.index({ paymentStatus: 1, createdAt: -1 });
+orderSchema.index({ createdAt: -1 });
 
 module.exports =
   mongoose.models.Order ||
