@@ -12,4 +12,6 @@ const popupSchema = new mongoose.Schema({
   active: { type: Boolean, default: true, index: true }
 }, { timestamps: true });
 
+popupSchema.index({ active: 1, createdAt: -1 });
+
 module.exports = mongoose.model('Popup', popupSchema);
