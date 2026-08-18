@@ -262,6 +262,13 @@ productSchema.index({
   category: 'text'
 });
 
+// Compound indexes match the storefront's most common filters and sorts.
+productSchema.index({ active: 1, createdAt: -1 });
+productSchema.index({ active: 1, featured: -1, createdAt: -1 });
+productSchema.index({ active: 1, category: 1, featured: -1, soldCount: -1, createdAt: -1 });
+productSchema.index({ active: 1, price: 1 });
+productSchema.index({ active: 1, soldCount: -1 });
+
 module.exports =
   mongoose.models.Product ||
   mongoose.model('Product', productSchema);
