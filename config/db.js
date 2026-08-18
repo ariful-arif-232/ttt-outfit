@@ -28,4 +28,8 @@ async function connectDB() {
   return mongoose.connection;
 }
 
+connectDB.getClientPromise = function getClientPromise() {
+  return connectDB().then(connection => connection.getClient());
+};
+
 module.exports = connectDB;
