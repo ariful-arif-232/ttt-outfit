@@ -89,6 +89,23 @@ express.response.render = function renderWithSeo(view, options, callback) {
   return originalRender.call(this, view, enriched, callback);
 };
 
+/*
+  Cloudinary stores clean upload URLs in MongoDB. Add delivery-time automatic
+  format and quality selection without changing stored data, layout or image
+  dimensions. This reduces image transfer size on modern browsers.
+*/
+const originalSend = express.response.send;
+express.response.send = function sendWithOptimizedCloudinary(body) {
+  if (typeof body === 'string' && body.includes('res.cloudinary.com/')) {
+    body = body.replace(
+      /(https:\/\/res\.cloudinary\.com\/[^/]+\/image\/upload\/)(?!f_auto,q_auto\/)/g,
+      '$1f_auto,q_auto/'
+    );
+  }
+
+  return originalSend.call(this, body);
+};
+
 const app = require('./app');
 
 function handler(req, res) {
