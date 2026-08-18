@@ -50,6 +50,12 @@ reviewSchema.index(
   { unique: true }
 );
 
+reviewSchema.index({
+  product: 1,
+  approved: 1,
+  createdAt: -1
+});
+
 module.exports =
   mongoose.models.Review ||
   mongoose.model('Review', reviewSchema);
