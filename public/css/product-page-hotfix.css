@@ -6,13 +6,13 @@
 
 /* Yellow-inspired compact sans product title. Manrope is already loaded site-wide. */
 .professional-product-page .product-detail-info > h1 {
-  margin: 5px 0 10px !important;
+  margin: 9px 0 11px !important;
   color: #082f29 !important;
   font-family: "Manrope", Inter, Arial, sans-serif !important;
-  font-size: clamp(26px, 2.7vw, 34px) !important;
+  font-size: clamp(23px, 2.45vw, 30px) !important;
   font-weight: 700 !important;
-  line-height: 1.14 !important;
-  letter-spacing: -0.035em !important;
+  line-height: 1.16 !important;
+  letter-spacing: -0.028em !important;
 }
 
 /* Rating + discount: keep rating readable, make discount tighter, add breathing room. */
@@ -67,24 +67,46 @@
 }
 
 /*
-  Stock status: remove the long progress bar and turn the area into one compact
-  status card. Existing JS still owns the stock number and out-of-stock text.
+  Stock status: compact premium two-sided card.
+  Left side shows live stock count; the right side uses the previously empty
+  space for a quiet fulfillment status chip. Existing JS still owns stock data.
 */
 .professional-product-page .product-stock-panel {
-  min-height: 48px !important;
-  margin: 10px 0 14px !important;
-  padding: 10px 12px !important;
-  display: flex !important;
-  flex-wrap: wrap !important;
+  min-height: 46px !important;
+  margin: 9px 0 14px !important;
+  padding: 9px 11px !important;
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto !important;
   align-items: center !important;
-  border: 1px solid rgba(8, 85, 65, 0.14) !important;
+  gap: 10px !important;
+  border: 1px solid rgba(181, 139, 42, 0.20) !important;
   border-radius: 14px !important;
-  background: #f6fbf8 !important;
-  box-shadow: 0 7px 20px rgba(8, 47, 41, 0.045) !important;
+  background: linear-gradient(135deg, #fffefb 0%, #f8f5ec 100%) !important;
+  box-shadow: 0 8px 22px rgba(67, 50, 17, 0.055) !important;
+}
+
+.professional-product-page .product-stock-panel::after {
+  content: "✓ Ready to ship";
+  min-height: 27px;
+  padding: 5px 9px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(181, 139, 42, 0.22);
+  border-radius: 999px;
+  background: rgba(239, 224, 181, 0.66);
+  color: #76591a;
+  font-family: "Manrope", Inter, Arial, sans-serif;
+  font-size: 9px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
 }
 
 .professional-product-page .product-stock-message {
-  width: 100% !important;
+  width: auto !important;
+  min-width: 0 !important;
   display: flex !important;
   align-items: center !important;
   gap: 9px !important;
@@ -122,8 +144,9 @@
 }
 
 .professional-product-page #productStockNotice[role="status"]:not(:empty) {
+  grid-column: 1 / -1 !important;
   width: 100% !important;
-  margin: 7px 0 0 18px !important;
+  margin: 2px 0 0 18px !important;
   display: block !important;
   color: #a33b3b !important;
   font-size: 10px !important;
@@ -133,13 +156,26 @@
 
 .professional-product-page .product-stock-panel:has(#variantStockDot.out-of-stock) {
   border-color: rgba(180, 55, 55, 0.16) !important;
-  background: #fff8f7 !important;
+  background: linear-gradient(135deg, #fffdfc 0%, #fff5f4 100%) !important;
+}
+
+.professional-product-page .product-stock-panel:has(#variantStockDot.out-of-stock)::after {
+  content: "Unavailable";
+  border-color: rgba(180, 55, 55, 0.16);
+  background: rgba(202, 79, 79, 0.08);
+  color: #9d3f3f;
 }
 
 .professional-product-page .product-stock-panel:has(#variantStockDot[style*="opacity: 0.42"]) {
   border-color: rgba(159, 127, 57, 0.14) !important;
   background: #fbfaf6 !important;
   box-shadow: none !important;
+}
+
+.professional-product-page .product-stock-panel:has(#variantStockDot[style*="opacity: 0.42"])::after {
+  content: "Select option";
+  background: rgba(181, 139, 42, 0.08);
+  color: #8a6b2b;
 }
 
 /* Compact trust boxes with contextual line icons. */
@@ -257,10 +293,10 @@
 
 @media (max-width: 700px) {
   .professional-product-page .product-detail-info > h1 {
-    margin: 4px 0 9px !important;
-    font-size: 25px !important;
-    line-height: 1.14 !important;
-    letter-spacing: -0.032em !important;
+    margin: 8px 0 10px !important;
+    font-size: 21px !important;
+    line-height: 1.15 !important;
+    letter-spacing: -0.024em !important;
   }
 
   .professional-product-page .product-social-proof {
@@ -300,14 +336,28 @@
   }
 
   .professional-product-page .product-stock-panel {
-    min-height: 45px !important;
+    min-height: 43px !important;
     margin: 8px 0 13px !important;
-    padding: 9px 11px !important;
+    padding: 8px 10px !important;
+    gap: 8px !important;
     border-radius: 13px !important;
   }
 
+  .professional-product-page .product-stock-panel::after {
+    min-height: 25px !important;
+    padding: 4px 8px !important;
+    font-size: 8.3px !important;
+  }
+
   .professional-product-page #variantStockText {
-    font-size: 12.5px !important;
+    font-size: 12px !important;
+  }
+
+  .professional-product-page #variantStockDot {
+    width: 8px !important;
+    height: 8px !important;
+    min-width: 8px !important;
+    box-shadow: 0 0 0 3px rgba(70, 173, 118, 0.11) !important;
   }
 
   .professional-product-page .product-trust-grid {
