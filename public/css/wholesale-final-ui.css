@@ -1,6 +1,6 @@
-/* Final wholesale/product detail visual pass. */
+/* TTT Outfit — final wholesale/product-detail UI overrides. */
 
-/* Saved-money pill: use a tag icon instead of the old down arrow. */
+/* Saved-money pill: keep the compact tag icon. */
 .professional-product-page .ttt-product-save-chip::before {
   content: "" !important;
   width: 11px !important;
@@ -11,10 +11,24 @@
   background: center / 11px 11px no-repeat url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23c69a32' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20.59 13.41 11 3.83V3H4v7h.83l9.58 9.59a2 2 0 0 0 2.82 0l3.36-3.36a2 2 0 0 0 0-2.82Z'/%3E%3Ccircle cx='7.5' cy='6.5' r='1.25'/%3E%3C/svg%3E") !important;
 }
 
-/* Size guide and availability are a matched pair. */
+/*
+  Size + availability: sizes stay in the left column and can wrap freely.
+  Size guide and availability use the same visual language and dimensions.
+*/
 .professional-product-page .product-size-heading,
 .professional-product-page .product-size-availability-layout {
   grid-template-columns: minmax(0, 1fr) 132px !important;
+  gap: 10px !important;
+}
+
+.professional-product-page .product-size-availability-layout .product-size-options {
+  min-width: 0 !important;
+  width: 100% !important;
+  display: flex !important;
+  flex-wrap: wrap !important;
+  align-items: flex-start !important;
+  align-content: flex-start !important;
+  gap: 9px !important;
 }
 
 .professional-product-page .size-guide-open,
@@ -23,36 +37,89 @@
   min-width: 132px !important;
   height: 38px !important;
   min-height: 38px !important;
-  border-radius: 12px !important;
+  margin: 0 !important;
+  padding: 0 10px !important;
   box-sizing: border-box !important;
-}
-
-.professional-product-page .product-availability-box {
-  padding: 0 8px !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
+  gap: 6px !important;
+  border: 1px solid rgba(201, 165, 92, 0.25) !important;
+  border-radius: 999px !important;
+  background: rgba(201, 165, 92, 0.09) !important;
+  color: #8a6b2f !important;
+  box-shadow: none !important;
+  font-family: "Manrope", Inter, Arial, sans-serif !important;
+  font-size: 10px !important;
+  font-weight: 800 !important;
+  line-height: 1 !important;
   text-align: center !important;
+}
+
+.professional-product-page .product-availability-box {
+  align-self: start !important;
 }
 
 .professional-product-page .product-availability-box .product-stock-message {
   width: 100% !important;
+  min-width: 0 !important;
+  display: flex !important;
+  align-items: center !important;
   justify-content: center !important;
   gap: 6px !important;
+  color: inherit !important;
   text-align: center !important;
 }
 
 .professional-product-page .product-availability-box #variantStockText {
+  min-width: 0 !important;
+  color: inherit !important;
+  font-size: 10px !important;
+  font-weight: 800 !important;
+  line-height: 1.1 !important;
   text-align: center !important;
+  white-space: nowrap !important;
 }
 
-/* Wholesale card: icon on the left, exactly three copy lines, all left aligned. */
+.professional-product-page .product-availability-box #variantStockDot {
+  width: 8px !important;
+  height: 8px !important;
+  min-width: 8px !important;
+  box-shadow: 0 0 0 3px rgba(70, 173, 118, 0.11) !important;
+}
+
+.professional-product-page .product-availability-box .product-stock-track,
+.professional-product-page .product-availability-box #productStockNotice {
+  display: none !important;
+}
+
+.professional-product-page .product-availability-box:has(#variantStockDot.out-of-stock) {
+  border-color: rgba(180, 55, 55, 0.18) !important;
+  background: rgba(202, 79, 79, 0.07) !important;
+  color: #9d3f3f !important;
+}
+
+/*
+  Wholesale offer: icon + left-aligned copy + minimum-quantity badge.
+  Copy intentionally keeps normal casing: “Add 12 more pcs for wholesale”.
+*/
 .professional-product-page .ttt-product-wholesale-card {
-  grid-template-columns: 34px minmax(0, 1fr) !important;
-  column-gap: 10px !important;
+  min-height: 62px !important;
+  margin: 0 0 12px !important;
+  padding: 8px 10px !important;
+  grid-template-columns: 30px minmax(0, 1fr) auto !important;
+  align-items: center !important;
+  gap: 9px !important;
+  border-radius: 13px !important;
 }
 
-/* Higher specificity keeps this correction ahead of any previously cached UI layer. */
+.professional-product-page .ttt-product-wholesale-icon {
+  width: 30px !important;
+  height: 30px !important;
+  border-radius: 9px !important;
+  font-size: 13px !important;
+}
+
 html body .professional-product-page .ttt-product-wholesale-copy {
   width: 100% !important;
   min-width: 0 !important;
@@ -66,44 +133,79 @@ html body .professional-product-page .ttt-product-wholesale-copy > small,
 html body .professional-product-page .ttt-product-wholesale-copy > strong,
 html body .professional-product-page .ttt-product-wholesale-detail {
   width: 100% !important;
-  color: #a47c22 !important;
   text-align: left !important;
 }
 
+.professional-product-page .ttt-product-wholesale-copy > small {
+  color: #a47c22 !important;
+  font-size: 7.5px !important;
+  font-weight: 850 !important;
+  line-height: 1.1 !important;
+  letter-spacing: .11em !important;
+}
+
 .professional-product-page .ttt-product-wholesale-copy > strong {
-  text-transform: uppercase !important;
+  color: #a47c22 !important;
+  font-size: 10.5px !important;
+  font-weight: 800 !important;
+  line-height: 1.22 !important;
+  text-transform: none !important;
 }
 
 html body .professional-product-page .ttt-product-wholesale-detail {
+  margin-top: 1px !important;
   display: flex !important;
   align-items: center !important;
   justify-content: flex-start !important;
-  gap: 8px !important;
-  flex-wrap: nowrap !important;
-  white-space: nowrap !important;
+  gap: 4px 14px !important;
+  flex-wrap: wrap !important;
+  color: #a47c22 !important;
+  font-size: 9px !important;
+  font-weight: 700 !important;
+  line-height: 1.2 !important;
 }
 
 html body .professional-product-page .ttt-product-wholesale-detail > span {
   color: #a47c22 !important;
   text-align: left !important;
+  white-space: nowrap !important;
 }
 
-/* Keep only the requested three text lines. */
 .professional-product-page .ttt-product-wholesale-badge {
-  display: none !important;
+  min-height: 24px !important;
+  padding: 4px 8px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  align-self: center !important;
+  border: 1px solid rgba(181, 139, 42, 0.24) !important;
+  border-radius: 999px !important;
+  background: rgba(255, 255, 255, 0.72) !important;
+  color: #80621f !important;
+  font-size: 7.8px !important;
+  font-weight: 850 !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
 }
 
 html body .professional-product-page .ttt-product-wholesale-card.is-active .ttt-product-wholesale-copy > small,
 html body .professional-product-page .ttt-product-wholesale-card.is-active .ttt-product-wholesale-copy > strong,
 html body .professional-product-page .ttt-product-wholesale-card.is-active .ttt-product-wholesale-detail,
 html body .professional-product-page .ttt-product-wholesale-card.is-active .ttt-product-wholesale-detail > span {
-  color: #a47c22 !important;
+  color: #17684f !important;
 }
 
-@media (max-width: 650px) {
+.professional-product-page .ttt-product-wholesale-card.is-active .ttt-product-wholesale-badge {
+  border-color: rgba(29, 112, 84, 0.18) !important;
+  background: rgba(33, 126, 94, 0.09) !important;
+  color: #17684f !important;
+}
+
+@media (max-width: 700px) {
   .professional-product-page .product-size-heading,
   .professional-product-page .product-size-availability-layout {
     grid-template-columns: minmax(0, 1fr) 124px !important;
+    gap: 8px !important;
   }
 
   .professional-product-page .size-guide-open,
@@ -112,12 +214,57 @@ html body .professional-product-page .ttt-product-wholesale-card.is-active .ttt-
     min-width: 124px !important;
   }
 
+  .professional-product-page .product-size-availability-layout .product-size-options {
+    gap: 8px !important;
+  }
+
   .professional-product-page .ttt-product-wholesale-card {
-    grid-template-columns: 30px minmax(0, 1fr) !important;
-    column-gap: 8px !important;
+    min-height: 58px !important;
+    padding: 7px 9px !important;
+    grid-template-columns: 28px minmax(0, 1fr) auto !important;
+    gap: 7px !important;
+  }
+
+  .professional-product-page .ttt-product-wholesale-icon {
+    width: 28px !important;
+    height: 28px !important;
+    font-size: 12px !important;
+  }
+
+  .professional-product-page .ttt-product-wholesale-copy > strong {
+    font-size: 9.7px !important;
   }
 
   html body .professional-product-page .ttt-product-wholesale-detail {
-    gap: 7px !important;
+    gap: 3px 10px !important;
+    font-size: 8.2px !important;
+  }
+
+  .professional-product-page .ttt-product-wholesale-badge {
+    min-height: 22px !important;
+    padding: 3px 6px !important;
+    font-size: 7.2px !important;
+  }
+}
+
+@media (max-width: 390px) {
+  .professional-product-page .product-size-heading,
+  .professional-product-page .product-size-availability-layout {
+    grid-template-columns: minmax(0, 1fr) 112px !important;
+  }
+
+  .professional-product-page .size-guide-open,
+  .professional-product-page .product-availability-box {
+    width: 112px !important;
+    min-width: 112px !important;
+  }
+
+  .professional-product-page .ttt-product-wholesale-card {
+    grid-template-columns: 27px minmax(0, 1fr) auto !important;
+    gap: 6px !important;
+  }
+
+  .professional-product-page .ttt-product-wholesale-badge {
+    padding-inline: 5px !important;
   }
 }
