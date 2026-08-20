@@ -6,6 +6,61 @@ const MongoStore = require('connect-mongo');
 const connectDB = require('./config/db');
 
 /*
+  Product-detail purchases include the product id in the request URL as a
+  second source of truth. Preserve the existing /cart/add route for Home/Shop,
+  but make the URL/header id authoritative when the product page supplies it.
+  This avoids a browser/form serialization edge case from turning a valid,
+  already-rendered product into "This product is unavailable."
+*/
+const originalApplicationPost = express.application.post;
+express.application.post = function postWithProductCartFallback(routePath, ...handlers) {
+  if (routePath !== '/cart/add') {
+    return originalApplicationPost.call(this, routePath, ...handlers);
+  }
+
+  const wrappedHandlers = handlers.map(handler => {
+    if (typeof handler !== 'function') return handler;
+
+    return function productCartIdFallback(req, res, next) {
+      const fallbackProductId = String(
+        req.query?.productId ||
+        req.get('X-TTT-Product-Id') ||
+        ''
+      ).trim();
+
+      if (fallbackProductId) {
+        req.body ||= {};
+        req.body.productId = fallbackProductId;
+      }
+
+      return handler(req, res, next);
+    };
+  });
+
+  return originalApplicationPost.call(this, routePath, ...wrappedHandlers);
+};
+
+/*
+  The public JS assets are cached aggressively. The footer currently contains
+  a literal v2 URL, so rewrite only this asset reference at response time to
+  guarantee phones receive the repaired purchase flow immediately.
+*/
+const originalSend = express.response.send;
+express.response.send = function sendWithFreshPurchaseFlow(body) {
+  if (
+    typeof body === 'string' &&
+    body.includes('/js/product-page-submit-fix.js?v=20260820-2')
+  ) {
+    body = body.replaceAll(
+      '/js/product-page-submit-fix.js?v=20260820-2',
+      '/js/product-page-submit-fix.js?v=20260820-3'
+    );
+  }
+
+  return originalSend.call(this, body);
+};
+
+/*
   Reuse Mongoose's MongoClient for the session store on Vercel.
   This avoids opening a second MongoDB connection pool per warm function.
 */
