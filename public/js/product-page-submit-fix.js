@@ -1,6 +1,9 @@
 (() => {
   'use strict';
 
+  if (window.__tttProductPageSubmitFixLoaded) return;
+  window.__tttProductPageSubmitFixLoaded = true;
+
   const FORM_ID = 'productCartForm';
   let purchaseIntent = 'cart';
   let submitting = false;
@@ -16,6 +19,14 @@
     } catch {
       return {};
     }
+  };
+
+  const showPurchaseError = (message) => {
+    const notice = document.getElementById('productStockNotice');
+    if (!notice) return;
+    notice.textContent = String(message || 'Could not complete this action. Please try again.');
+    notice.setAttribute('role', 'status');
+    notice.setAttribute('aria-live', 'polite');
   };
 
   const focusMissingSelection = () => {
@@ -153,7 +164,7 @@
     if (!(form instanceof HTMLFormElement) || form.id !== FORM_ID) return;
 
     event.preventDefault();
-    event.stopPropagation();
+    event.stopImmediatePropagation();
 
     if (submitting) return;
 
@@ -181,7 +192,7 @@
     ).trim();
 
     if (!productId) {
-      window.alert('Could not identify this product. Please refresh and try again.');
+      showPurchaseError('Could not identify this product. Please refresh and try again.');
       return;
     }
 
@@ -233,7 +244,7 @@
       purchaseIntent = 'cart';
     } catch (error) {
       setBusy(false);
-      window.alert(
+      showPurchaseError(
         error?.message ||
         'Could not add this product to cart. Please try again.'
       );
