@@ -1,0 +1,106 @@
+(() => {
+  'use strict';
+
+  const initQuickCartPolish = () => {
+    const drawer = document.querySelector('[data-quick-cart-drawer]');
+    const form = document.querySelector('[data-quick-cart-form]');
+    if (!drawer || !form) return;
+
+    const colorInput = form.querySelector('[data-drawer-color]');
+    const sizeInput = form.querySelector('[data-drawer-size]');
+    const colorWrap = drawer.querySelector('[data-drawer-color-wrap]');
+    const sizeWrap = drawer.querySelector('[data-drawer-size-wrap]');
+    const colorChoices = () => [...drawer.querySelectorAll('[data-drawer-colors] .ttt-drawer-choice')];
+    const sizeChoices = () => [...drawer.querySelectorAll('[data-drawer-sizes] .ttt-drawer-choice')];
+    const submitButton = form.querySelector('.ttt-drawer-submit, button[type="submit"]');
+    const productImage = drawer.querySelector('[data-drawer-image]');
+
+    if (productImage) {
+      productImage.draggable = false;
+      productImage.addEventListener('dragstart', (event) => event.preventDefault());
+    }
+
+    const needsColor = () => Boolean(colorWrap && !colorWrap.hidden && colorChoices().length);
+    const needsSize = () => Boolean(sizeWrap && !sizeWrap.hidden && sizeChoices().length);
+
+    const updateSubmitState = () => {
+      if (!submitButton) return;
+      const colorReady = !needsColor() || Boolean(String(colorInput?.value || '').trim());
+      const sizeReady = !needsSize() || Boolean(String(sizeInput?.value || '').trim());
+      submitButton.disabled = !(colorReady && sizeReady);
+      submitButton.setAttribute('aria-disabled', String(submitButton.disabled));
+    };
+
+    const clearSizeSelection = () => {
+      sizeChoices().forEach((choice) => choice.classList.remove('is-active'));
+      if (sizeInput) sizeInput.value = '';
+      updateSubmitState();
+    };
+
+    const clearAllSelection = () => {
+      colorChoices().forEach((choice) => choice.classList.remove('is-active'));
+      sizeChoices().forEach((choice) => choice.classList.remove('is-active'));
+      if (colorInput) colorInput.value = '';
+      if (sizeInput) sizeInput.value = '';
+      updateSubmitState();
+    };
+
+    document.addEventListener('click', (event) => {
+      const trigger = event.target.closest('[data-quick-cart-trigger]');
+      if (trigger) {
+        // Let the existing quick-cart script render product options first, then remove defaults.
+        window.setTimeout(clearAllSelection, 0);
+        return;
+      }
+
+      const colorChoice = event.target.closest('[data-drawer-colors] .ttt-drawer-choice');
+      if (colorChoice && drawer.contains(colorChoice)) {
+        // Existing code selects a color and auto-selects the first size. Keep the chosen
+        // color, but require the shopper to explicitly choose a size afterwards.
+        window.setTimeout(() => {
+          clearSizeSelection();
+          updateSubmitState();
+        }, 0);
+        return;
+      }
+
+      const sizeChoice = event.target.closest('[data-drawer-sizes] .ttt-drawer-choice');
+      if (sizeChoice && drawer.contains(sizeChoice)) {
+        window.setTimeout(updateSubmitState, 0);
+      }
+    });
+
+    form.addEventListener('submit', (event) => {
+      updateSubmitState();
+      if (submitButton?.disabled) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+
+        const firstMissing = needsColor() && !String(colorInput?.value || '').trim()
+          ? colorWrap
+          : needsSize() && !String(sizeInput?.value || '').trim()
+            ? sizeWrap
+            : null;
+
+        firstMissing?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    }, true);
+
+    drawer.addEventListener('dblclick', (event) => {
+      // Prevent browser/UI double-click zoom behavior inside the quick-cart sheet.
+      event.preventDefault();
+    }, { passive: false });
+
+    drawer.addEventListener('touchend', (event) => {
+      if (event.touches?.length > 1) event.preventDefault();
+    }, { passive: false });
+
+    updateSubmitState();
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initQuickCartPolish, { once: true });
+  } else {
+    initQuickCartPolish();
+  }
+})();
