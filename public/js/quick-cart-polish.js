@@ -123,11 +123,20 @@
 
 /*
   Product detail final UI layer.
-  This replaces the old dynamically-loaded polish file so the size/availability
-  DOM is restructured exactly once and wholesale UI has a single owner.
+  The final wholesale/availability stylesheet is loaded here with its own
+  cache key so product pages always receive the latest polished layout.
 */
 (() => {
   'use strict';
+
+  const finalStyleId = 'tttWholesaleFinalUiStyle';
+  if (!document.getElementById(finalStyleId)) {
+    const link = document.createElement('link');
+    link.id = finalStyleId;
+    link.rel = 'stylesheet';
+    link.href = '/css/wholesale-final-ui.css?v=20260821-2';
+    document.head.appendChild(link);
+  }
 
   const page = document.querySelector('.professional-product-page');
   if (!page || window.__tttProductDetailFinalLoaded) return;
@@ -275,13 +284,12 @@
         </span>
         <span class="ttt-product-wholesale-copy">
           <small>WHOLESALE OFFER</small>
-          <strong data-wholesale-message>Buy ${minimumQuantity}+ pcs for wholesale</strong>
+          <strong data-wholesale-message>ADD ${minimumQuantity} MORE PCS</strong>
           <span class="ttt-product-wholesale-detail">
             <span>Rate ৳${wholesalePrice.toLocaleString('en-BD')}</span>
             <span>Save ৳${saveEach.toLocaleString('en-BD')}</span>
           </span>
         </span>
-        <span class="ttt-product-wholesale-badge" data-wholesale-badge>${minimumQuantity}+ pcs</span>
       `;
 
       if (sizeGroup) {
@@ -291,7 +299,6 @@
       }
 
       const wholesaleMessage = wholesalePanel.querySelector('[data-wholesale-message]');
-      const wholesaleBadge = wholesalePanel.querySelector('[data-wholesale-badge]');
 
       const updateWholesaleCard = () => {
         const quantity = Math.max(1, Number(quantityInput?.value || 1));
@@ -302,12 +309,8 @@
 
         if (wholesaleMessage) {
           wholesaleMessage.textContent = reached
-            ? 'Wholesale offer active'
-            : `Add ${remaining} more ${remaining === 1 ? 'pc' : 'pcs'} for wholesale`;
-        }
-
-        if (wholesaleBadge) {
-          wholesaleBadge.textContent = reached ? 'Active' : `${minimumQuantity}+ pcs`;
+            ? 'WHOLESALE ACTIVE'
+            : `ADD ${remaining} MORE ${remaining === 1 ? 'PC' : 'PCS'}`;
         }
       };
 
