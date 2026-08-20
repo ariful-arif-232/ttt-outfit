@@ -1,9 +1,11 @@
 require('dotenv').config();
 
+const fs = require('fs');
 const http = require('http');
 const express = require('express');
 const MongoStore = require('connect-mongo');
 const connectDB = require('./config/db');
+const patchWholesaleAppSource = require('./utils/wholesale-app-source-patch');
 
 /*
   Product-detail purchases include the product id in the request URL as a
@@ -145,7 +147,31 @@ express.response.render = function renderWithSeo(view, options, callback) {
   return originalRender.call(this, view, enriched, callback);
 };
 
-const app = require('./app');
+/*
+  app.js is still a large legacy monolith. Apply the wholesale/cart patch only
+  while Node compiles that one module, with guarded source markers. The source
+  file on disk is untouched; a marker mismatch fails loudly instead of serving
+  partially patched checkout math.
+*/
+const appModulePath = require.resolve('./app');
+const originalJsLoader = require.extensions['.js'];
+
+require.extensions['.js'] = function compileWholesalePatchedApp(module, filename) {
+  if (filename !== appModulePath) {
+    return originalJsLoader(module, filename);
+  }
+
+  const originalSource = fs.readFileSync(filename, 'utf8');
+  const patchedSource = patchWholesaleAppSource(originalSource);
+  return module._compile(patchedSource, filename);
+};
+
+let app;
+try {
+  app = require('./app');
+} finally {
+  require.extensions['.js'] = originalJsLoader;
+}
 
 function handler(req, res) {
   const startedAt = Date.now();
