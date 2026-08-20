@@ -120,22 +120,3 @@
     initQuickCartPolish();
   }
 })();
-
-/*
-  Product-detail behavior has one owner: product-detail-polish.js.
-  Keep quick-cart concerns in this file and load the product controller only
-  when a product-detail page is present.
-*/
-(() => {
-  'use strict';
-
-  if (!document.querySelector('.professional-product-page')) return;
-  if (window.__tttProductDetailPolishRequested) return;
-  window.__tttProductDetailPolishRequested = true;
-
-  const script = document.createElement('script');
-  script.src = '/js/product-detail-polish.js?v=20260821-4';
-  script.async = false;
-  script.dataset.tttProductDetailPolish = 'true';
-  document.head.appendChild(script);
-})();
