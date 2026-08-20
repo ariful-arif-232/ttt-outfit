@@ -25,6 +25,7 @@
     const stockDot = document.getElementById('variantStockDot');
     const mainImage = document.getElementById('productMainImage');
     const sizeGuideOpen = document.getElementById('sizeGuideOpen');
+    const quantityInput = document.getElementById('productQuantity');
     const colorButtons = [...page.querySelectorAll('.product-color-option')];
 
     let variants = [];
@@ -134,6 +135,104 @@
       discountChip.className = 'ttt-product-discount-chip ttt-product-save-chip';
       discountChip.textContent = savingText;
       socialProof.appendChild(discountChip);
+    }
+
+    /* Product-specific wholesale offer from the admin product settings. */
+    let wholesaleData = null;
+    try {
+      wholesaleData = JSON.parse(
+        document.getElementById('productWholesaleData')?.textContent || 'null'
+      );
+    } catch {
+      wholesaleData = null;
+    }
+
+    const retailPrice = Number(wholesaleData?.retailPrice || 0);
+    const wholesalePrice = Number(wholesaleData?.wholesalePrice || 0);
+    const wholesaleMinimumQuantity = Math.max(
+      1,
+      Number(wholesaleData?.minimumQuantity || 1)
+    );
+
+    let wholesalePanel = null;
+    let wholesaleMessage = null;
+    let wholesaleDetail = null;
+    let wholesaleBadge = null;
+
+    if (
+      retailPrice > 0 &&
+      wholesalePrice > 0 &&
+      wholesalePrice < retailPrice &&
+      wholesaleMinimumQuantity > 1
+    ) {
+      const saveEach = Math.max(0, retailPrice - wholesalePrice);
+      const savePercent = Math.max(
+        0,
+        Math.round((saveEach / retailPrice) * 100)
+      );
+
+      wholesalePanel = document.createElement('aside');
+      wholesalePanel.className = 'ttt-product-wholesale-card';
+      wholesalePanel.id = 'tttProductWholesaleCard';
+      wholesalePanel.setAttribute('aria-label', 'Wholesale offer');
+      wholesalePanel.innerHTML = `
+        <span class="ttt-product-wholesale-icon" aria-hidden="true">
+          <i class="bi bi-box-seam"></i>
+        </span>
+        <span class="ttt-product-wholesale-copy">
+          <small>WHOLESALE OFFER</small>
+          <strong data-wholesale-message>Buy ${wholesaleMinimumQuantity}+ pcs for bulk pricing</strong>
+          <span data-wholesale-detail>৳${wholesalePrice.toLocaleString('en-BD')}/pc · Save ৳${saveEach.toLocaleString('en-BD')} each${savePercent ? ` (${savePercent}%)` : ''}</span>
+        </span>
+        <span class="ttt-product-wholesale-badge" data-wholesale-badge>${wholesaleMinimumQuantity}+ pcs</span>
+      `;
+
+      page.querySelector('.product-stock-panel')?.insertAdjacentElement(
+        'afterend',
+        wholesalePanel
+      );
+
+      wholesaleMessage = wholesalePanel.querySelector('[data-wholesale-message]');
+      wholesaleDetail = wholesalePanel.querySelector('[data-wholesale-detail]');
+      wholesaleBadge = wholesalePanel.querySelector('[data-wholesale-badge]');
+
+      const updateWholesaleCard = () => {
+        const quantity = Math.max(1, Number(quantityInput?.value || 1));
+        const remaining = Math.max(0, wholesaleMinimumQuantity - quantity);
+        const reached = quantity >= wholesaleMinimumQuantity;
+
+        wholesalePanel.classList.toggle('is-active', reached);
+
+        if (wholesaleMessage) {
+          wholesaleMessage.textContent = reached
+            ? `Wholesale quantity reached · ${quantity} pcs`
+            : `Add ${remaining} more ${remaining === 1 ? 'pc' : 'pcs'} to reach wholesale`;
+        }
+
+        if (wholesaleDetail) {
+          wholesaleDetail.textContent =
+            `Bulk rate ৳${wholesalePrice.toLocaleString('en-BD')}/pc · Save ৳${saveEach.toLocaleString('en-BD')} each${savePercent ? ` (${savePercent}%)` : ''}`;
+        }
+
+        if (wholesaleBadge) {
+          wholesaleBadge.textContent = reached ? 'Bulk rate' : `${wholesaleMinimumQuantity}+ pcs`;
+        }
+      };
+
+      quantityInput?.addEventListener('input', updateWholesaleCard);
+      quantityInput?.addEventListener('change', updateWholesaleCard);
+
+      document.getElementById('decreaseQuantity')?.addEventListener(
+        'click',
+        () => window.setTimeout(updateWholesaleCard, 0)
+      );
+
+      document.getElementById('increaseQuantity')?.addEventListener(
+        'click',
+        () => window.setTimeout(updateWholesaleCard, 0)
+      );
+
+      updateWholesaleCard();
     }
 
     /* Remove the four oversized delivery rows; compact trust badges remain below. */
