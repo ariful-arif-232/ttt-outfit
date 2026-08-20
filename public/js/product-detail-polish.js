@@ -112,7 +112,7 @@
       updatePurchaseState();
     };
 
-    /* Keep only the useful rating number and show the real discount beside it. */
+    /* Keep only the useful rating number and show the actual money saved beside it. */
     const socialProof = page.querySelector('.product-social-proof');
     const ratingLabel = socialProof?.querySelector('.product-detail-rating small');
     ratingLabel?.remove();
@@ -120,17 +120,19 @@
     socialProof?.querySelector('.product-viewing-proof')?.remove();
 
     const savingPill = page.querySelector('.product-price-saving');
-    savingPill?.remove();
-
-    const saleBadge = page.querySelector('.product-detail-sale');
-    const discountText = String(saleBadge?.textContent || '')
+    const savingText = String(savingPill?.textContent || '')
       .replace(/\s+/g, ' ')
       .trim();
+    savingPill?.remove();
 
-    if (socialProof && discountText && !socialProof.querySelector('.ttt-product-discount-chip')) {
+    if (
+      socialProof &&
+      savingText &&
+      !socialProof.querySelector('.ttt-product-discount-chip')
+    ) {
       const discountChip = document.createElement('span');
-      discountChip.className = 'ttt-product-discount-chip';
-      discountChip.textContent = `${discountText} OFF`;
+      discountChip.className = 'ttt-product-discount-chip ttt-product-save-chip';
+      discountChip.textContent = savingText;
       socialProof.appendChild(discountChip);
     }
 
