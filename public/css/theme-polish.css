@@ -1,0 +1,154 @@
+/* TTT OUTFIT — theme polish for navigation, hero and homepage spacing */
+
+:root {
+  --ttt-polish-gold-dark: #8a6b2f;
+  --ttt-polish-shadow: rgba(8, 42, 35, 0.10);
+}
+
+/* =========================================================
+   NAVIGATION — match the cream homepage palette
+========================================================= */
+.ttt-header {
+  background: var(--ttt-cream, #f5efe3) !important;
+  border-bottom: 1px solid rgba(18, 60, 50, 0.14) !important;
+  box-shadow: 0 8px 24px var(--ttt-polish-shadow) !important;
+}
+
+.ttt-brand {
+  gap: 9px !important;
+  color: var(--ttt-green-deep, #082a23) !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.075em !important;
+}
+
+.ttt-brand img {
+  width: 34px !important;
+  height: 34px !important;
+  border: 1px solid rgba(201, 165, 92, 0.88) !important;
+  box-shadow:
+    0 0 0 3px rgba(201, 165, 92, 0.12),
+    0 5px 14px rgba(8, 42, 35, 0.10) !important;
+}
+
+.ttt-brand strong {
+  color: var(--ttt-polish-gold-dark) !important;
+  font-weight: 700 !important;
+}
+
+.ttt-icon-button {
+  color: var(--ttt-green-deep, #082a23) !important;
+}
+
+.ttt-icon-button:hover {
+  color: var(--ttt-polish-gold-dark) !important;
+  background: rgba(18, 60, 50, 0.065) !important;
+}
+
+.ttt-menu-trigger[aria-expanded="true"] {
+  color: var(--ttt-polish-gold-dark) !important;
+  background: rgba(18, 60, 50, 0.055) !important;
+}
+
+.ttt-count-badge {
+  background: var(--ttt-green, #123c32) !important;
+  color: var(--ttt-cream, #f5efe3) !important;
+  box-shadow: 0 0 0 2px var(--ttt-cream, #f5efe3) !important;
+}
+
+/* =========================================================
+   HOMEPAGE CATEGORY CARDS — replace black strip with cream
+========================================================= */
+.ttt-showcase-card {
+  color: var(--ttt-green-deep, #082a23) !important;
+  background: var(--ttt-cream, #f5efe3) !important;
+  border: 1px solid rgba(18, 60, 50, 0.14) !important;
+  box-shadow: 0 9px 24px rgba(8, 42, 35, 0.07) !important;
+}
+
+.ttt-showcase-copy {
+  background: var(--ttt-cream, #f5efe3) !important;
+  border-top: 1px solid rgba(18, 60, 50, 0.10) !important;
+}
+
+.ttt-showcase-copy strong {
+  color: var(--ttt-green-deep, #082a23) !important;
+}
+
+.ttt-showcase-copy em,
+.ttt-showcase-copy em i {
+  color: var(--ttt-polish-gold-dark) !important;
+}
+
+/* =========================================================
+   MOBILE HOME REFINEMENT
+========================================================= */
+@media (max-width: 700px) {
+  .ttt-header-inner {
+    height: 60px !important;
+    padding-inline: 11px !important;
+  }
+
+  .ttt-brand {
+    gap: 7px !important;
+    font-size: 15.5px !important;
+    letter-spacing: 0.07em !important;
+  }
+
+  .ttt-brand img {
+    width: 30px !important;
+    height: 30px !important;
+  }
+
+  /* Slightly shorter hero while preserving every slide position. */
+  .ttt-hero,
+  .ttt-hero .ttt-hero-track,
+  .ttt-hero .ttt-hero-slide,
+  .ttt-hero .ttt-hero-slide picture,
+  .ttt-hero .ttt-hero-slide img {
+    height: 240px !important;
+    min-height: 240px !important;
+    max-height: 240px !important;
+  }
+
+  /* Smaller vertical side-description from the screenshot. */
+  .ttt-hero .ttt-hero-side-description {
+    font-size: 6.5px !important;
+    line-height: 1.2 !important;
+    letter-spacing: 0.015em !important;
+  }
+
+  /* Tighten hero -> READY TO WEAR spacing. */
+  .ttt-showcase {
+    padding: 34px 10px 18px !important;
+  }
+
+  .ttt-section-heading {
+    margin-bottom: 22px !important;
+  }
+
+  /* Tighten the oversized gap after the last category card. */
+  .ttt-category-rails {
+    padding-top: 18px !important;
+  }
+
+  .ttt-showcase-copy {
+    padding: 12px 10px !important;
+  }
+
+  .ttt-showcase-copy strong {
+    font-size: clamp(12px, 3.5vw, 15px) !important;
+    letter-spacing: 0.09em !important;
+  }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .ttt-icon-button:hover {
+    color: var(--ttt-green-deep, #082a23) !important;
+    background: transparent !important;
+  }
+
+  .ttt-menu-trigger[aria-expanded="true"] {
+    color: var(--ttt-polish-gold-dark) !important;
+    background: rgba(18, 60, 50, 0.055) !important;
+  }
+}
