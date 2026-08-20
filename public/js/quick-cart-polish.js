@@ -14,6 +14,7 @@
     const sizeChoices = () => [...drawer.querySelectorAll('[data-drawer-sizes] .ttt-drawer-choice')];
     const submitButton = form.querySelector('.ttt-drawer-submit, button[type="submit"]');
     const productImage = drawer.querySelector('[data-drawer-image]');
+    const ratingDetail = drawer.querySelector('.ttt-drawer-rating small');
 
     if (productImage) {
       productImage.draggable = false;
@@ -45,9 +46,28 @@
       updateSubmitState();
     };
 
+    const updateReviewDetail = (trigger) => {
+      if (!ratingDetail) return;
+
+      let reviewCount = 0;
+      try {
+        const product = JSON.parse(trigger?.dataset.product || '{}');
+        reviewCount = Number(product.reviewCount || 0);
+      } catch {
+        reviewCount = 0;
+      }
+
+      if (reviewCount > 0) {
+        ratingDetail.style.setProperty('display', 'inline', 'important');
+      } else {
+        ratingDetail.style.setProperty('display', 'none', 'important');
+      }
+    };
+
     document.addEventListener('click', (event) => {
       const trigger = event.target.closest('[data-quick-cart-trigger]');
       if (trigger) {
+        updateReviewDetail(trigger);
         // Let the existing quick-cart script render product options first, then remove defaults.
         window.setTimeout(clearAllSelection, 0);
         return;
