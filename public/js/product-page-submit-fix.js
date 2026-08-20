@@ -251,3 +251,209 @@
     }
   }, true);
 })();
+
+/*
+  Final product-selection/wholesale presentation guard.
+  The legacy product template still initializes its first variant, so this
+  controller runs after the existing handlers and keeps the final state explicit:
+  no default color/size choice, no accidental purchase-ready state, and the
+  compact wholesale copy requested by the storefront UI.
+*/
+(() => {
+  'use strict';
+
+  if (window.__tttFinalProductUiGuardLoaded) return;
+  window.__tttFinalProductUiGuardLoaded = true;
+
+  const page = document.querySelector('.professional-product-page');
+  if (!page) return;
+
+  const colorInput = document.getElementById('selectedColor');
+  const colorLabel = document.getElementById('selectedColorLabel');
+  const sizeInput = document.getElementById('selectedSize');
+  const sizeOptions = document.getElementById('productSizeOptions');
+  const stockText = document.getElementById('variantStockText');
+  const stockDot = document.getElementById('variantStockDot');
+  const stockProgress = document.getElementById('productStockProgress');
+  const addButton = document.getElementById('productAddButton');
+  const buyButton = document.getElementById('productBuyNowButton');
+  const quantityInput = document.getElementById('productQuantity');
+
+  let variants = [];
+  try {
+    variants = JSON.parse(
+      document.getElementById('productVariantData')?.textContent || '[]'
+    );
+  } catch {
+    variants = [];
+  }
+
+  const colorButtons = () =>
+    [...page.querySelectorAll('.product-color-option')];
+
+  const sizeButtons = () =>
+    [...(sizeOptions?.querySelectorAll('.product-size-option') || [])];
+
+  const selectedStock = () => {
+    const selectedButton = colorButtons().find((button) =>
+      button.classList.contains('active') ||
+      button.getAttribute('aria-pressed') === 'true'
+    );
+
+    const variantIndex = Number(selectedButton?.dataset.variantIndex);
+    return Number(variants[variantIndex]?.stock || 0);
+  };
+
+  const setPurchaseEnabled = (enabled) => {
+    if (addButton) {
+      addButton.disabled = !enabled;
+      addButton.setAttribute('aria-disabled', String(!enabled));
+    }
+
+    if (buyButton) {
+      buyButton.disabled = !enabled;
+      buyButton.setAttribute('aria-disabled', String(!enabled));
+    }
+  };
+
+  const resetInitialSelection = () => {
+    if (colorInput) colorInput.value = '';
+    if (sizeInput) sizeInput.value = '';
+    if (colorLabel) colorLabel.textContent = 'Select a color';
+
+    colorButtons().forEach((button) => {
+      button.classList.remove('active');
+      button.setAttribute('aria-pressed', 'false');
+    });
+
+    sizeButtons().forEach((button) => {
+      button.classList.remove('active');
+      button.disabled = true;
+      button.setAttribute('aria-pressed', 'false');
+    });
+
+    if (stockText) stockText.textContent = 'Select color';
+    if (stockProgress) stockProgress.style.width = '0%';
+
+    if (stockDot) {
+      stockDot.classList.remove('out-of-stock');
+      stockDot.style.opacity = '0.42';
+    }
+
+    setPurchaseEnabled(false);
+  };
+
+  const clearAutoSelectedSize = () => {
+    if (sizeInput) sizeInput.value = '';
+
+    const outOfStock = selectedStock() < 1;
+
+    sizeButtons().forEach((button) => {
+      button.classList.remove('active');
+      button.disabled = outOfStock;
+      button.setAttribute('aria-pressed', 'false');
+    });
+
+    setPurchaseEnabled(false);
+  };
+
+  const readWholesaleData = () => {
+    try {
+      return JSON.parse(
+        document.getElementById('productWholesaleData')?.textContent || 'null'
+      );
+    } catch {
+      return null;
+    }
+  };
+
+  const updateWholesaleCopy = () => {
+    const panel = document.getElementById('tttProductWholesaleCard');
+    const message = panel?.querySelector('[data-wholesale-message]');
+    const badge = panel?.querySelector('[data-wholesale-badge]');
+    const data = readWholesaleData();
+
+    if (!panel || !message || !data) return;
+
+    const retailPrice = Number(data.retailPrice || 0);
+    const wholesalePrice = Number(data.wholesalePrice || 0);
+    const minimumQuantity = Math.max(1, Number(data.minimumQuantity || 1));
+
+    if (
+      retailPrice <= 0 ||
+      wholesalePrice <= 0 ||
+      wholesalePrice >= retailPrice ||
+      minimumQuantity <= 1
+    ) {
+      return;
+    }
+
+    const quantity = Math.max(1, Number(quantityInput?.value || 1));
+    const remaining = Math.max(0, minimumQuantity - quantity);
+    const reached = quantity >= minimumQuantity;
+
+    panel.classList.toggle('is-active', reached);
+    message.textContent = reached
+      ? 'Wholesale active'
+      : `Add ${remaining} more ${remaining === 1 ? 'pc' : 'pcs'}`;
+
+    if (badge) {
+      badge.textContent = reached ? 'Active' : `${minimumQuantity}+ pcs`;
+    }
+  };
+
+  /* Clear server/legacy defaults immediately, then once more after all
+     DOMContentLoaded product handlers have completed. */
+  resetInitialSelection();
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+      resetInitialSelection();
+      updateWholesaleCopy();
+    }, { once: true });
+  } else {
+    resetInitialSelection();
+    updateWholesaleCopy();
+  }
+
+  document.addEventListener('click', (event) => {
+    const colorButton = event.target.closest(
+      '.professional-product-page .product-color-option'
+    );
+
+    if (colorButton) {
+      window.setTimeout(() => {
+        clearAutoSelectedSize();
+        updateWholesaleCopy();
+      }, 0);
+      return;
+    }
+
+    const sizeButton = event.target.closest(
+      '.professional-product-page .product-size-option'
+    );
+
+    if (sizeButton) {
+      window.setTimeout(() => {
+        const ready = Boolean(
+          String(colorInput?.value || '').trim() &&
+          String(sizeInput?.value || '').trim() &&
+          selectedStock() > 0 &&
+          !sizeButton.disabled
+        );
+        setPurchaseEnabled(ready);
+      }, 0);
+      return;
+    }
+
+    if (
+      event.target.closest('#decreaseQuantity') ||
+      event.target.closest('#increaseQuantity')
+    ) {
+      window.setTimeout(updateWholesaleCopy, 0);
+    }
+  });
+
+  quantityInput?.addEventListener('input', updateWholesaleCopy);
+  quantityInput?.addEventListener('change', updateWholesaleCopy);
+})();

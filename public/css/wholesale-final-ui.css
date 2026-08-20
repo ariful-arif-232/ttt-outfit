@@ -1,5 +1,11 @@
 /* TTT Outfit — final wholesale/product-detail UI overrides. */
 
+.professional-product-page {
+  --ttt-option-surface: #fbf6e8;
+  --ttt-option-border: rgba(201, 165, 92, 0.28);
+  --ttt-option-text: #8a6b2f;
+}
+
 /* Saved-money pill: keep the compact tag icon. */
 .professional-product-page .ttt-product-save-chip::before {
   content: "" !important;
@@ -13,7 +19,7 @@
 
 /*
   Size + availability: sizes stay in the left column and can wrap freely.
-  Size guide and availability use the same visual language and dimensions.
+  Size guide and availability are intentionally identical controls.
 */
 .professional-product-page .product-size-heading,
 .professional-product-page .product-size-availability-layout {
@@ -44,10 +50,10 @@
   align-items: center !important;
   justify-content: center !important;
   gap: 6px !important;
-  border: 1px solid rgba(201, 165, 92, 0.25) !important;
+  border: 1px solid var(--ttt-option-border) !important;
   border-radius: 999px !important;
-  background: rgba(201, 165, 92, 0.09) !important;
-  color: #8a6b2f !important;
+  background: var(--ttt-option-surface) !important;
+  color: var(--ttt-option-text) !important;
   box-shadow: none !important;
   font-family: "Manrope", Inter, Arial, sans-serif !important;
   font-size: 10px !important;
@@ -95,13 +101,13 @@
 
 .professional-product-page .product-availability-box:has(#variantStockDot.out-of-stock) {
   border-color: rgba(180, 55, 55, 0.18) !important;
-  background: rgba(202, 79, 79, 0.07) !important;
+  background: #fff3f1 !important;
   color: #9d3f3f !important;
 }
 
 /*
-  Wholesale offer: icon + left-aligned copy + minimum-quantity badge.
-  Copy intentionally keeps normal casing: “Add 12 more pcs for wholesale”.
+  Wholesale offer: compact icon + copy + minimum badge.
+  The dynamic message is kept short: “Add N more pcs”.
 */
 .professional-product-page .ttt-product-wholesale-card {
   min-height: 62px !important;
@@ -110,13 +116,19 @@
   grid-template-columns: 30px minmax(0, 1fr) auto !important;
   align-items: center !important;
   gap: 9px !important;
+  border: 1px solid var(--ttt-option-border) !important;
   border-radius: 13px !important;
+  background: var(--ttt-option-surface) !important;
+  box-shadow: none !important;
 }
 
 .professional-product-page .ttt-product-wholesale-icon {
   width: 30px !important;
   height: 30px !important;
+  border: 1px solid rgba(201, 165, 92, 0.22) !important;
   border-radius: 9px !important;
+  background: rgba(201, 165, 92, 0.08) !important;
+  color: #a47c22 !important;
   font-size: 13px !important;
 }
 
@@ -125,7 +137,7 @@ html body .professional-product-page .ttt-product-wholesale-copy {
   min-width: 0 !important;
   display: grid !important;
   justify-items: start !important;
-  gap: 2px !important;
+  gap: 1px !important;
   text-align: left !important;
 }
 
@@ -157,7 +169,7 @@ html body .professional-product-page .ttt-product-wholesale-detail {
   display: flex !important;
   align-items: center !important;
   justify-content: flex-start !important;
-  gap: 4px 14px !important;
+  gap: 6px !important;
   flex-wrap: wrap !important;
   color: #a47c22 !important;
   font-size: 9px !important;
@@ -178,14 +190,19 @@ html body .professional-product-page .ttt-product-wholesale-detail > span {
   align-items: center !important;
   justify-content: center !important;
   align-self: center !important;
-  border: 1px solid rgba(181, 139, 42, 0.24) !important;
+  border: 1px solid rgba(201, 165, 92, 0.22) !important;
   border-radius: 999px !important;
-  background: rgba(255, 255, 255, 0.72) !important;
+  background: rgba(201, 165, 92, 0.08) !important;
   color: #80621f !important;
   font-size: 7.8px !important;
   font-weight: 850 !important;
   line-height: 1 !important;
   white-space: nowrap !important;
+}
+
+.professional-product-page .ttt-product-wholesale-card.is-active {
+  border-color: rgba(29, 112, 84, 0.24) !important;
+  background: #edf7f1 !important;
 }
 
 html body .professional-product-page .ttt-product-wholesale-card.is-active .ttt-product-wholesale-copy > small,
@@ -195,6 +212,7 @@ html body .professional-product-page .ttt-product-wholesale-card.is-active .ttt-
   color: #17684f !important;
 }
 
+.professional-product-page .ttt-product-wholesale-card.is-active .ttt-product-wholesale-icon,
 .professional-product-page .ttt-product-wholesale-card.is-active .ttt-product-wholesale-badge {
   border-color: rgba(29, 112, 84, 0.18) !important;
   background: rgba(33, 126, 94, 0.09) !important;
@@ -236,7 +254,7 @@ html body .professional-product-page .ttt-product-wholesale-card.is-active .ttt-
   }
 
   html body .professional-product-page .ttt-product-wholesale-detail {
-    gap: 3px 10px !important;
+    gap: 5px !important;
     font-size: 8.2px !important;
   }
 
