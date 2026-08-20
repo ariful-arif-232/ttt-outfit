@@ -51,8 +51,10 @@ const originalSend = express.response.send;
 express.response.send = function sendWithFreshPurchaseFlow(body) {
   if (typeof body === 'string') {
     const replacements = [
-      ['/js/product-page-submit-fix.js?v=20260820-2', '/js/product-page-submit-fix.js?v=20260820-4'],
+      ['/js/product-page-submit-fix.js?v=20260820-2', '/js/product-page-submit-fix.js?v=20260821-5'],
+      ['/js/product-page-submit-fix.js?v=20260820-4', '/js/product-page-submit-fix.js?v=20260821-5'],
       ['/css/product-page-hotfix.css?v=20260820-7', '/css/product-page-hotfix.css?v=20260821-1'],
+      ['/css/wholesale-final-ui.css?v=20260821-4', '/css/wholesale-final-ui.css?v=20260821-5'],
       ['/js/quick-cart-polish.js?v=20260820-5', '/js/quick-cart-polish.js?v=20260821-1'],
       ['/js/cart-page-fix.js?v=20260820-1', '/js/cart-page-fix.js?v=20260821-1']
     ];
