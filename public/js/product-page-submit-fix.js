@@ -21,6 +21,14 @@
     }
   };
 
+  const showPurchaseError = (message) => {
+    const notice = document.getElementById('productStockNotice');
+    if (!notice) return;
+    notice.textContent = String(message || 'Could not complete this action. Please try again.');
+    notice.setAttribute('role', 'status');
+    notice.setAttribute('aria-live', 'polite');
+  };
+
   const focusMissingSelection = () => {
     const color = selectedValue('selectedColor');
     const size = selectedValue('selectedSize');
@@ -184,7 +192,7 @@
     ).trim();
 
     if (!productId) {
-      window.alert('Could not identify this product. Please refresh and try again.');
+      showPurchaseError('Could not identify this product. Please refresh and try again.');
       return;
     }
 
@@ -236,7 +244,7 @@
       purchaseIntent = 'cart';
     } catch (error) {
       setBusy(false);
-      window.alert(
+      showPurchaseError(
         error?.message ||
         'Could not add this product to cart. Please try again.'
       );
