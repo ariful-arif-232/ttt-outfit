@@ -126,12 +126,19 @@
 })();
 
 (() => {
-  if (!document.querySelector('.professional-product-page')) return;
-  if (document.querySelector('script[data-product-detail-polish-loader]')) return;
+  const loadProductDetailPolish = () => {
+    if (!document.querySelector('.professional-product-page')) return;
+    if (document.querySelector('script[data-product-detail-polish-loader]')) return;
 
-  const script = document.createElement('script');
-  script.src = '/js/product-detail-polish.js?v=20260820-1';
-  script.defer = true;
-  script.dataset.productDetailPolishLoader = 'true';
-  document.head.appendChild(script);
+    const script = document.createElement('script');
+    script.src = '/js/product-detail-polish.js?v=20260820-1';
+    script.dataset.productDetailPolishLoader = 'true';
+    document.head.appendChild(script);
+  };
+
+  if (document.readyState === 'complete') {
+    loadProductDetailPolish();
+  } else {
+    window.addEventListener('load', loadProductDetailPolish, { once: true });
+  }
 })();
