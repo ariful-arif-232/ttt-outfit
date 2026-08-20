@@ -1,0 +1,65 @@
+/* Product detail hotfix: compact title and social proof without changing layout. */
+.professional-product-page .product-detail-info > h1 {
+  font-size: clamp(31px, 3.5vw, 42px) !important;
+  line-height: 1 !important;
+  margin: 6px 0 8px !important;
+  letter-spacing: -0.02em !important;
+}
+
+.professional-product-page .product-social-proof {
+  gap: 6px !important;
+  margin-bottom: 11px !important;
+}
+
+.professional-product-page .product-detail-rating,
+.professional-product-page .ttt-product-discount-chip {
+  min-height: 28px !important;
+  padding: 4px 8px !important;
+  gap: 4px !important;
+  border-radius: 999px !important;
+  box-shadow: 0 4px 10px rgba(8, 42, 35, 0.05) !important;
+}
+
+.professional-product-page .product-detail-rating .rating-star {
+  font-size: 12px !important;
+}
+
+.professional-product-page .product-detail-rating strong {
+  font-size: 11px !important;
+}
+
+.professional-product-page .ttt-product-discount-chip {
+  font-size: 9px !important;
+  letter-spacing: 0.045em !important;
+}
+
+@media (max-width: 700px) {
+  .professional-product-page .product-detail-info > h1 {
+    font-size: 28px !important;
+    line-height: 1.02 !important;
+    margin: 5px 0 7px !important;
+  }
+
+  .professional-product-page .product-social-proof {
+    gap: 5px !important;
+    margin-bottom: 9px !important;
+  }
+
+  .professional-product-page .product-detail-rating,
+  .professional-product-page .ttt-product-discount-chip {
+    min-height: 25px !important;
+    padding: 3px 7px !important;
+  }
+
+  .professional-product-page .product-detail-rating .rating-star {
+    font-size: 11px !important;
+  }
+
+  .professional-product-page .product-detail-rating strong {
+    font-size: 10.5px !important;
+  }
+
+  .professional-product-page .ttt-product-discount-chip {
+    font-size: 8.5px !important;
+  }
+}
