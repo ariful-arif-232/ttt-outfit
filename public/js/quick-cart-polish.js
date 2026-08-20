@@ -127,7 +127,7 @@
     if (document.querySelector('script[data-product-detail-polish-loader]')) return;
 
     const script = document.createElement('script');
-    script.src = '/js/product-detail-polish.js?v=20260820-2';
+    script.src = '/js/product-detail-polish.js?v=20260821-1';
     script.dataset.productDetailPolishLoader = 'true';
     document.head.appendChild(script);
   };
