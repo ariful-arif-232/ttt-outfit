@@ -210,6 +210,9 @@ const couponRemoveNormalizedPricing = `      const subtotal =
       const wholesale =
         getWholesaleSummary(cart);`;
 
+const duplicatedPatchBoundary =
+  'function parseBangladeshDateTime(value) {function parseBangladeshDateTime(value) {';
+
 require.extensions['.js'] = function compileWholesalePatchedApp(module, filename) {
   if (filename !== appModulePath) {
     return originalJsLoader(module, filename);
@@ -223,7 +226,15 @@ require.extensions['.js'] = function compileWholesalePatchedApp(module, filename
       )
     : originalSource;
 
-  const patchedSource = patchWholesaleAppSource(normalizedSource);
+  let patchedSource = patchWholesaleAppSource(normalizedSource);
+
+  if (patchedSource.includes(duplicatedPatchBoundary)) {
+    patchedSource = patchedSource.replace(
+      duplicatedPatchBoundary,
+      'function parseBangladeshDateTime(value) {'
+    );
+  }
+
   return module._compile(patchedSource, filename);
 };
 
