@@ -1,20 +1,30 @@
-/* Product detail hotfix: compact title and social proof without changing layout. */
+/*
+  TTT Outfit product detail polish.
+  Keeps the existing product flow and DOM intact while making the mobile
+  product hierarchy more compact and easier to scan.
+*/
+
+/* Yellow-inspired compact sans product title. Manrope is already loaded site-wide. */
 .professional-product-page .product-detail-info > h1 {
-  font-size: clamp(31px, 3.5vw, 42px) !important;
-  line-height: 1 !important;
-  margin: 6px 0 8px !important;
-  letter-spacing: -0.02em !important;
+  margin: 5px 0 10px !important;
+  color: #082f29 !important;
+  font-family: "Manrope", Inter, Arial, sans-serif !important;
+  font-size: clamp(26px, 2.7vw, 34px) !important;
+  font-weight: 700 !important;
+  line-height: 1.14 !important;
+  letter-spacing: -0.035em !important;
 }
 
+/* Rating + discount: keep rating readable, make discount tighter, add breathing room. */
 .professional-product-page .product-social-proof {
-  gap: 6px !important;
-  margin-bottom: 11px !important;
+  gap: 11px !important;
+  margin-bottom: 12px !important;
+  align-items: center !important;
 }
 
-.professional-product-page .product-detail-rating,
-.professional-product-page .ttt-product-discount-chip {
-  min-height: 28px !important;
-  padding: 4px 8px !important;
+.professional-product-page .product-detail-rating {
+  min-height: 27px !important;
+  padding: 4px 9px !important;
   gap: 4px !important;
   border-radius: 999px !important;
   box-shadow: 0 4px 10px rgba(8, 42, 35, 0.05) !important;
@@ -29,26 +39,238 @@
 }
 
 .professional-product-page .ttt-product-discount-chip {
-  font-size: 9px !important;
-  letter-spacing: 0.045em !important;
+  min-height: 22px !important;
+  padding: 2px 6px !important;
+  border-radius: 999px !important;
+  font-size: 8.4px !important;
+  font-weight: 800 !important;
+  line-height: 1 !important;
+  letter-spacing: 0.035em !important;
+  box-shadow: 0 3px 8px rgba(8, 42, 35, 0.04) !important;
+}
+
+/* Wishlist: smaller and quieter so it does not compete with product information. */
+.professional-product-page .product-title-top .product-page-wishlist {
+  width: 34px !important;
+  height: 34px !important;
+  min-width: 34px !important;
+  min-height: 34px !important;
+  flex: 0 0 34px !important;
+  padding: 0 !important;
+  border-radius: 50% !important;
+  box-shadow: 0 7px 18px rgba(8, 47, 41, 0.08) !important;
+}
+
+.professional-product-page .product-title-top .product-page-wishlist > span {
+  font-size: 22px !important;
+  line-height: 1 !important;
+}
+
+/*
+  Stock status: remove the long progress bar and turn the area into one compact
+  status card. Existing JS still owns the stock number and out-of-stock text.
+*/
+.professional-product-page .product-stock-panel {
+  min-height: 48px !important;
+  margin: 10px 0 14px !important;
+  padding: 10px 12px !important;
+  display: flex !important;
+  flex-wrap: wrap !important;
+  align-items: center !important;
+  border: 1px solid rgba(8, 85, 65, 0.14) !important;
+  border-radius: 14px !important;
+  background: #f6fbf8 !important;
+  box-shadow: 0 7px 20px rgba(8, 47, 41, 0.045) !important;
+}
+
+.professional-product-page .product-stock-message {
+  width: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 9px !important;
+  color: #0a4035 !important;
+  font-family: "Manrope", Inter, Arial, sans-serif !important;
+}
+
+.professional-product-page #variantStockDot {
+  width: 9px !important;
+  height: 9px !important;
+  min-width: 9px !important;
+  border-radius: 50% !important;
+  background: #46ad76 !important;
+  box-shadow: 0 0 0 4px rgba(70, 173, 118, 0.11) !important;
+}
+
+.professional-product-page #variantStockDot.out-of-stock {
+  background: #c84e4e !important;
+  box-shadow: 0 0 0 4px rgba(200, 78, 78, 0.10) !important;
+}
+
+.professional-product-page #variantStockText {
+  font-size: 13px !important;
+  font-weight: 750 !important;
+  line-height: 1.35 !important;
+}
+
+.professional-product-page .product-stock-track {
+  display: none !important;
+}
+
+/* Normal helper copy is intentionally hidden; purchase errors can still surface. */
+.professional-product-page #productStockNotice {
+  display: none !important;
+}
+
+.professional-product-page #productStockNotice[role="status"]:not(:empty) {
+  width: 100% !important;
+  margin: 7px 0 0 18px !important;
+  display: block !important;
+  color: #a33b3b !important;
+  font-size: 10px !important;
+  font-weight: 650 !important;
+  line-height: 1.35 !important;
+}
+
+.professional-product-page .product-stock-panel:has(#variantStockDot.out-of-stock) {
+  border-color: rgba(180, 55, 55, 0.16) !important;
+  background: #fff8f7 !important;
+}
+
+.professional-product-page .product-stock-panel:has(#variantStockDot[style*="opacity: 0.42"]) {
+  border-color: rgba(159, 127, 57, 0.14) !important;
+  background: #fbfaf6 !important;
+  box-shadow: none !important;
+}
+
+/* Compact trust boxes with contextual line icons. */
+.professional-product-page .product-trust-grid {
+  margin-top: 12px !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 8px !important;
+}
+
+.professional-product-page .product-trust-grid span {
+  min-height: 44px !important;
+  padding: 8px 10px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 9px !important;
+  border: 1px solid rgba(181, 139, 42, 0.19) !important;
+  border-radius: 12px !important;
+  background: rgba(255, 253, 248, 0.82) !important;
+  color: #6e5420 !important;
+  font-family: "Manrope", Inter, Arial, sans-serif !important;
+  font-size: 9.7px !important;
+  font-weight: 750 !important;
+  line-height: 1.25 !important;
+  text-align: left !important;
+}
+
+.professional-product-page .product-trust-grid span::before {
+  content: "";
+  width: 18px;
+  height: 18px;
+  min-width: 18px;
+  display: block;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  opacity: 0.96;
+}
+
+.professional-product-page .product-trust-grid span:nth-child(1)::before {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23b58b2a' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3l3 4 5 1-3.5 3.5.8 5L12 14l-5.3 2.5.8-5L4 8l5-1 3-4z'/%3E%3C/svg%3E");
+}
+
+.professional-product-page .product-trust-grid span:nth-child(2)::before {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23b58b2a' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3l7 3v5c0 4.7-2.8 8-7 10-4.2-2-7-5.3-7-10V6l7-3z'/%3E%3Cpath d='M9 12l2 2 4-4'/%3E%3C/svg%3E");
+}
+
+.professional-product-page .product-trust-grid span:nth-child(3)::before {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23b58b2a' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 6h11v10H3zM14 9h4l3 3v4h-7z'/%3E%3Ccircle cx='7' cy='18' r='2'/%3E%3Ccircle cx='18' cy='18' r='2'/%3E%3C/svg%3E");
+}
+
+.professional-product-page .product-trust-grid span:nth-child(4)::before {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23b58b2a' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 13v-2a8 8 0 0116 0v2'/%3E%3Cpath d='M4 12H3a2 2 0 00-2 2v2a2 2 0 002 2h2v-6zM20 12h1a2 2 0 012 2v2a2 2 0 01-2 2h-2v-6zM19 18c0 2-2 3-5 3'/%3E%3C/svg%3E");
+}
+
+/* Login-to-review: compact editorial card rather than a large CTA block. */
+.professional-product-page .review-login-box {
+  padding: 16px 18px !important;
+  display: grid !important;
+  grid-template-columns: 44px minmax(0, 1fr) auto !important;
+  align-items: center !important;
+  gap: 13px !important;
+  text-align: left !important;
+  border: 1px solid rgba(181, 139, 42, 0.18) !important;
+  border-radius: 16px !important;
+  background: linear-gradient(135deg, #fffdf8 0%, #f7f2e6 100%) !important;
+  box-shadow: 0 8px 24px rgba(65, 48, 13, 0.04) !important;
+}
+
+.professional-product-page .review-login-box::before {
+  content: "";
+  width: 42px;
+  height: 42px;
+  display: block;
+  border-radius: 50%;
+  background-color: #f2e7c8;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23906f21' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 15a4 4 0 01-4 4H8l-5 3v-7a4 4 0 01-1-2.6V7a4 4 0 014-4h11a4 4 0 014 4v8z'/%3E%3Cpath d='M8 10h8M8 14h5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 22px;
+}
+
+.professional-product-page .review-login-box p {
+  margin: 0 !important;
+  color: #6b655a !important;
+  font-family: "Manrope", Inter, Arial, sans-serif !important;
+  font-size: 11.5px !important;
+  line-height: 1.45 !important;
+}
+
+.professional-product-page .review-login-box p::before {
+  content: "Share your experience";
+  display: block;
+  margin-bottom: 2px;
+  color: #151515;
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+.professional-product-page .review-login-box .btn.gold-btn {
+  min-height: 39px !important;
+  padding: 8px 13px !important;
+  border-radius: 999px !important;
+  box-shadow: none !important;
+  font-family: "Manrope", Inter, Arial, sans-serif !important;
+  font-size: 10.5px !important;
+  font-weight: 800 !important;
+  white-space: nowrap !important;
+}
+
+.professional-product-page .review-login-box .btn.gold-btn:hover {
+  transform: translateY(-1px) !important;
 }
 
 @media (max-width: 700px) {
   .professional-product-page .product-detail-info > h1 {
-    font-size: 28px !important;
-    line-height: 1.02 !important;
-    margin: 5px 0 7px !important;
+    margin: 4px 0 9px !important;
+    font-size: 25px !important;
+    line-height: 1.14 !important;
+    letter-spacing: -0.032em !important;
   }
 
   .professional-product-page .product-social-proof {
-    gap: 5px !important;
-    margin-bottom: 9px !important;
+    gap: 10px !important;
+    margin-bottom: 10px !important;
   }
 
-  .professional-product-page .product-detail-rating,
-  .professional-product-page .ttt-product-discount-chip {
+  .professional-product-page .product-detail-rating {
     min-height: 25px !important;
-    padding: 3px 7px !important;
+    padding: 3px 8px !important;
   }
 
   .professional-product-page .product-detail-rating .rating-star {
@@ -60,6 +282,78 @@
   }
 
   .professional-product-page .ttt-product-discount-chip {
-    font-size: 8.5px !important;
+    min-height: 21px !important;
+    padding: 2px 6px !important;
+    font-size: 8.1px !important;
+  }
+
+  .professional-product-page .product-title-top .product-page-wishlist {
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
+    min-height: 32px !important;
+    flex-basis: 32px !important;
+  }
+
+  .professional-product-page .product-title-top .product-page-wishlist > span {
+    font-size: 20px !important;
+  }
+
+  .professional-product-page .product-stock-panel {
+    min-height: 45px !important;
+    margin: 8px 0 13px !important;
+    padding: 9px 11px !important;
+    border-radius: 13px !important;
+  }
+
+  .professional-product-page #variantStockText {
+    font-size: 12.5px !important;
+  }
+
+  .professional-product-page .product-trust-grid {
+    gap: 7px !important;
+  }
+
+  .professional-product-page .product-trust-grid span {
+    min-height: 42px !important;
+    padding: 7px 8px !important;
+    gap: 7px !important;
+    border-radius: 11px !important;
+    font-size: 9px !important;
+  }
+
+  .professional-product-page .product-trust-grid span::before {
+    width: 16px !important;
+    height: 16px !important;
+    min-width: 16px !important;
+  }
+
+  .professional-product-page .review-login-box {
+    padding: 14px !important;
+    grid-template-columns: 38px minmax(0, 1fr) !important;
+    gap: 10px 11px !important;
+    border-radius: 14px !important;
+  }
+
+  .professional-product-page .review-login-box::before {
+    width: 38px !important;
+    height: 38px !important;
+    background-size: 20px !important;
+  }
+
+  .professional-product-page .review-login-box p {
+    font-size: 10.5px !important;
+  }
+
+  .professional-product-page .review-login-box p::before {
+    font-size: 13px !important;
+  }
+
+  .professional-product-page .review-login-box .btn.gold-btn {
+    grid-column: 1 / -1 !important;
+    width: 100% !important;
+    min-height: 38px !important;
+    padding: 7px 12px !important;
+    font-size: 10.5px !important;
   }
 }
