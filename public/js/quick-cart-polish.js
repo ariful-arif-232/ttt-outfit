@@ -68,15 +68,12 @@
       const trigger = event.target.closest('[data-quick-cart-trigger]');
       if (trigger) {
         updateReviewDetail(trigger);
-        // Let the existing quick-cart script render product options first, then remove defaults.
         window.setTimeout(clearAllSelection, 0);
         return;
       }
 
       const colorChoice = event.target.closest('[data-drawer-colors] .ttt-drawer-choice');
       if (colorChoice && drawer.contains(colorChoice)) {
-        // Existing code selects a color and auto-selects the first size. Keep the chosen
-        // color, but require the shopper to explicitly choose a size afterwards.
         window.setTimeout(() => {
           clearSizeSelection();
           updateSubmitState();
@@ -107,7 +104,6 @@
     }, true);
 
     drawer.addEventListener('dblclick', (event) => {
-      // Prevent browser/UI double-click zoom behavior inside the quick-cart sheet.
       event.preventDefault();
     }, { passive: false });
 
@@ -136,9 +132,17 @@
     document.head.appendChild(script);
   };
 
+  const scheduleProductDetailPolish = () => {
+    window.setTimeout(loadProductDetailPolish, 0);
+  };
+
   if (document.readyState === 'complete') {
-    loadProductDetailPolish();
+    scheduleProductDetailPolish();
   } else {
-    window.addEventListener('load', loadProductDetailPolish, { once: true });
+    document.addEventListener(
+      'DOMContentLoaded',
+      scheduleProductDetailPolish,
+      { once: true }
+    );
   }
 })();
