@@ -43,20 +43,25 @@ express.application.post = function postWithProductCartFallback(routePath, ...ha
 };
 
 /*
-  The public JS assets are cached aggressively. The footer currently contains
-  a literal v2 URL, so rewrite only this asset reference at response time to
-  guarantee phones receive the repaired purchase flow immediately.
+  Public assets have long browser cache lifetimes. Rewrite only known versioned
+  URLs in rendered HTML so phones receive the current product/cart polish files
+  immediately without changing the template structure.
 */
 const originalSend = express.response.send;
 express.response.send = function sendWithFreshPurchaseFlow(body) {
-  if (
-    typeof body === 'string' &&
-    body.includes('/js/product-page-submit-fix.js?v=20260820-2')
-  ) {
-    body = body.replaceAll(
-      '/js/product-page-submit-fix.js?v=20260820-2',
-      '/js/product-page-submit-fix.js?v=20260820-3'
-    );
+  if (typeof body === 'string') {
+    const replacements = [
+      ['/js/product-page-submit-fix.js?v=20260820-2', '/js/product-page-submit-fix.js?v=20260820-4'],
+      ['/css/product-page-hotfix.css?v=20260820-7', '/css/product-page-hotfix.css?v=20260821-1'],
+      ['/js/quick-cart-polish.js?v=20260820-5', '/js/quick-cart-polish.js?v=20260821-1'],
+      ['/js/cart-page-fix.js?v=20260820-1', '/js/cart-page-fix.js?v=20260821-1']
+    ];
+
+    replacements.forEach(([from, to]) => {
+      if (body.includes(from)) {
+        body = body.replaceAll(from, to);
+      }
+    });
   }
 
   return originalSend.call(this, body);
@@ -124,6 +129,21 @@ express.response.render = function renderWithSeo(view, options, callback) {
     enriched.noIndex = privateRoutePrefixes.some(prefix =>
       this.req.path === prefix || this.req.path.startsWith(`${prefix}/`)
     );
+  }
+
+  /*
+    Cart keeps its existing markup. When wholesale pricing is active, expose
+    the effective unit prices and product subtotal to that same template.
+  */
+  if (view === 'cart' && Array.isArray(enriched.cart)) {
+    enriched.cart = enriched.cart.map(item => ({
+      ...item,
+      price: Number(item.effectiveUnitPrice ?? item.price ?? 0)
+    }));
+
+    if (Number.isFinite(Number(enriched.subtotalAfterWholesale))) {
+      enriched.subtotal = Number(enriched.subtotalAfterWholesale);
+    }
   }
 
   if (view === 'product' && enriched.product) {
