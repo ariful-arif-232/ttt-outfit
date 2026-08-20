@@ -7,7 +7,31 @@
 
     if (!drawer || !menuTrigger) return;
 
-    // Add semantic styling hooks without changing the existing menu data/markup.
+    const drawerHead = drawer.querySelector('.ttt-drawer-head');
+    const drawerAccount = drawer.querySelector('.ttt-drawer-account');
+    const closeButton = drawerHead?.querySelector('[data-drawer-close]');
+
+    // Keep the top bar compact: a simple MENU label on the left and close button on the right.
+    if (drawerHead && !drawerHead.querySelector('.ttt-drawer-title')) {
+      const title = document.createElement('div');
+      title.className = 'ttt-drawer-title';
+      title.textContent = 'Menu';
+      drawerHead.insertBefore(title, closeButton || drawerHead.firstChild);
+    }
+
+    // Logged-out Login/Register used to consume the whole top row.
+    // Move them to the account area at the bottom, where Logout appears for logged-in users.
+    const authRow = drawer.querySelector('.ttt-drawer-auth-row-top');
+    if (authRow && drawerAccount) {
+      authRow.classList.remove('ttt-drawer-auth-row-top');
+      authRow.classList.add('ttt-drawer-auth-bottom');
+      drawerAccount.appendChild(authRow);
+    }
+
+    const logoutLink = drawerAccount?.querySelector('a[href="/logout"]');
+    logoutLink?.classList.add('ttt-drawer-logout-button');
+
+    // Add semantic styling hooks without changing category data or links.
     drawer.querySelectorAll('.ttt-drawer-group').forEach((group) => {
       const label = String(
         group.querySelector('.ttt-drawer-group-toggle > span:first-child')?.textContent || ''
@@ -33,9 +57,8 @@
       }
     });
 
-    // Existing accessible drawer logic focuses the first link on open. On touch devices
-    // Safari can render that programmatic focus as a persistent selected-looking ring.
-    // Blur only pointer-opened drawers; keyboard-opened drawers keep full focus behavior.
+    // Existing drawer logic focuses the first control on open. On touch Safari this can
+    // look like a persistent selected pill, so blur only pointer-opened drawers.
     menuTrigger.addEventListener('click', () => {
       window.setTimeout(() => {
         if (!drawer.classList.contains('is-pointer-open')) return;
