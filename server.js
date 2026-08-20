@@ -176,13 +176,54 @@ express.response.render = function renderWithSeo(view, options, callback) {
 const appModulePath = require.resolve('./app');
 const originalJsLoader = require.extensions['.js'];
 
+const couponRemoveLegacyPricing = `    const subtotal =
+      cart.reduce(
+        (sum, item) =>
+          sum +
+          Number(item.price || 0) *
+          Number(item.quantity || 0),
+        0
+      );
+
+    const deliveryFee =
+      subtotal >= 3000
+        ? 0
+        : 80;
+
+    const wholesale =
+      getWholesaleSummary(cart);`;
+
+const couponRemoveNormalizedPricing = `      const subtotal =
+        cart.reduce(
+          (sum, item) =>
+            sum +
+            Number(item.price || 0) *
+            Number(item.quantity || 0),
+          0
+        );
+
+      const deliveryFee =
+        subtotal >= 3000
+          ? 0
+          : 80;
+
+      const wholesale =
+        getWholesaleSummary(cart);`;
+
 require.extensions['.js'] = function compileWholesalePatchedApp(module, filename) {
   if (filename !== appModulePath) {
     return originalJsLoader(module, filename);
   }
 
   const originalSource = fs.readFileSync(filename, 'utf8');
-  const patchedSource = patchWholesaleAppSource(originalSource);
+  const normalizedSource = originalSource.includes(couponRemoveLegacyPricing)
+    ? originalSource.replace(
+        couponRemoveLegacyPricing,
+        couponRemoveNormalizedPricing
+      )
+    : originalSource;
+
+  const patchedSource = patchWholesaleAppSource(normalizedSource);
   return module._compile(patchedSource, filename);
 };
 
