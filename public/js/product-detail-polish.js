@@ -23,6 +23,7 @@
     const stockText = document.getElementById('variantStockText');
     const stockProgress = document.getElementById('productStockProgress');
     const stockDot = document.getElementById('variantStockDot');
+    const stockPanel = page.querySelector('.product-stock-panel');
     const mainImage = document.getElementById('productMainImage');
     const sizeGuideOpen = document.getElementById('sizeGuideOpen');
     const quantityInput = document.getElementById('productQuantity');
@@ -98,7 +99,7 @@
       clearSizeSelection({ disable: true });
 
       if (stockText) {
-        stockText.textContent = 'Select a color to view availability';
+        stockText.textContent = 'Select color';
       }
 
       if (stockProgress) {
@@ -137,6 +138,25 @@
       socialProof.appendChild(discountChip);
     }
 
+    /* Keep sizes in the left column and availability directly below Size guide. */
+    const sizeGroup = sizeOptions?.closest('.product-option-group') || null;
+    const sizeHeading = sizeGroup?.querySelector('.product-option-heading') || null;
+
+    if (sizeGroup && sizeOptions && stockPanel) {
+      sizeGroup.classList.add('product-size-group');
+      sizeHeading?.classList.add('product-size-heading');
+
+      const layout = document.createElement('div');
+      layout.className = 'product-size-availability-layout';
+
+      stockPanel.classList.remove('product-stock-panel');
+      stockPanel.classList.add('product-availability-box');
+      stockPanel.setAttribute('aria-label', 'Selected color availability');
+
+      sizeOptions.parentNode.insertBefore(layout, sizeOptions);
+      layout.append(sizeOptions, stockPanel);
+    }
+
     /* Product-specific wholesale offer from the admin product settings. */
     let wholesaleData = null;
     try {
@@ -156,7 +176,6 @@
 
     let wholesalePanel = null;
     let wholesaleMessage = null;
-    let wholesaleDetail = null;
     let wholesaleBadge = null;
 
     if (
@@ -166,10 +185,6 @@
       wholesaleMinimumQuantity > 1
     ) {
       const saveEach = Math.max(0, retailPrice - wholesalePrice);
-      const savePercent = Math.max(
-        0,
-        Math.round((saveEach / retailPrice) * 100)
-      );
 
       wholesalePanel = document.createElement('aside');
       wholesalePanel.className = 'ttt-product-wholesale-card';
@@ -181,19 +196,25 @@
         </span>
         <span class="ttt-product-wholesale-copy">
           <small>WHOLESALE OFFER</small>
-          <strong data-wholesale-message>Buy ${wholesaleMinimumQuantity}+ pcs for bulk pricing</strong>
-          <span data-wholesale-detail>৳${wholesalePrice.toLocaleString('en-BD')}/pc · Save ৳${saveEach.toLocaleString('en-BD')} each${savePercent ? ` (${savePercent}%)` : ''}</span>
+          <strong data-wholesale-message>Buy ${wholesaleMinimumQuantity}+ pcs for wholesale</strong>
+          <span class="ttt-product-wholesale-detail">
+            <span>Rate ৳${wholesalePrice.toLocaleString('en-BD')}</span>
+            <span>Save ৳${saveEach.toLocaleString('en-BD')}</span>
+          </span>
         </span>
         <span class="ttt-product-wholesale-badge" data-wholesale-badge>${wholesaleMinimumQuantity}+ pcs</span>
       `;
 
-      page.querySelector('.product-stock-panel')?.insertAdjacentElement(
-        'afterend',
-        wholesalePanel
-      );
+      if (sizeGroup) {
+        sizeGroup.insertAdjacentElement('afterend', wholesalePanel);
+      } else {
+        form?.querySelector('.product-buy-row')?.insertAdjacentElement(
+          'beforebegin',
+          wholesalePanel
+        );
+      }
 
       wholesaleMessage = wholesalePanel.querySelector('[data-wholesale-message]');
-      wholesaleDetail = wholesalePanel.querySelector('[data-wholesale-detail]');
       wholesaleBadge = wholesalePanel.querySelector('[data-wholesale-badge]');
 
       const updateWholesaleCard = () => {
@@ -205,17 +226,12 @@
 
         if (wholesaleMessage) {
           wholesaleMessage.textContent = reached
-            ? `Wholesale quantity reached · ${quantity} pcs`
-            : `Add ${remaining} more ${remaining === 1 ? 'pc' : 'pcs'} to reach wholesale`;
-        }
-
-        if (wholesaleDetail) {
-          wholesaleDetail.textContent =
-            `Bulk rate ৳${wholesalePrice.toLocaleString('en-BD')}/pc · Save ৳${saveEach.toLocaleString('en-BD')} each${savePercent ? ` (${savePercent}%)` : ''}`;
+            ? 'Wholesale offer active'
+            : `Add ${remaining} more ${remaining === 1 ? 'pc' : 'pcs'} for wholesale`;
         }
 
         if (wholesaleBadge) {
-          wholesaleBadge.textContent = reached ? 'Bulk rate' : `${wholesaleMinimumQuantity}+ pcs`;
+          wholesaleBadge.textContent = reached ? 'Active' : `${wholesaleMinimumQuantity}+ pcs`;
         }
       };
 

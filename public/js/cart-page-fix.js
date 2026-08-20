@@ -112,7 +112,7 @@
 
     const clampQuantity = (input, value) => {
       const minimum = Math.max(1, Number(input.min) || 1);
-      const maximum = Math.max(minimum, Number(input.max) || 20);
+      const maximum = Math.max(minimum, Number(input.max) || 999);
       const nextValue = Math.min(maximum, Math.max(minimum, Number(value) || minimum));
       input.value = String(nextValue);
       return nextValue;
@@ -123,7 +123,7 @@
       if (!input || input.closest('.cart-quantity-stepper')) return;
 
       input.min = '1';
-      input.max = '20';
+      if (!Number(input.max) || Number(input.max) < 1) input.max = '999';
       input.inputMode = 'numeric';
 
       const stepper = document.createElement('div');
