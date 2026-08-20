@@ -1,6 +1,9 @@
 (() => {
   'use strict';
 
+  if (window.__tttProductPageSubmitFixLoaded) return;
+  window.__tttProductPageSubmitFixLoaded = true;
+
   const FORM_ID = 'productCartForm';
   let purchaseIntent = 'cart';
   let submitting = false;
@@ -153,7 +156,7 @@
     if (!(form instanceof HTMLFormElement) || form.id !== FORM_ID) return;
 
     event.preventDefault();
-    event.stopPropagation();
+    event.stopImmediatePropagation();
 
     if (submitting) return;
 
