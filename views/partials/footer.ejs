@@ -1,7 +1,7 @@
 </main>
 <link rel="stylesheet" href="/css/nav-premium.css?v=20260820-2">
 <link rel="stylesheet" href="/css/theme-polish.css?v=20260820-3">
-<link rel="stylesheet" href="/css/product-page-hotfix.css?v=20260820-6">
+<link rel="stylesheet" href="/css/product-page-hotfix.css?v=20260820-7">
 <footer class="ttt-footer">
 
   <div class="ttt-footer-main">
@@ -240,10 +240,18 @@ Messenger
   </div>
 </aside>
 
+<% if (typeof product !== 'undefined' && product) { %>
+<script type="application/json" id="productWholesaleData"><%- JSON.stringify({
+  retailPrice: Number(product.price || 0),
+  wholesalePrice: Number(product.wholesalePrice || 0),
+  minimumQuantity: Math.max(1, Number(product.wholesaleMinimumQuantity || 10))
+}).replace(/</g, '\\u003c') %></script>
+<% } %>
+
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 <script src="/js/nav-premium.js?v=20260820-2" defer></script>
 <script src="/js/main.js?v=phase7-1" defer></script>
-<script src="/js/quick-cart-polish.js?v=20260820-4" defer></script>
+<script src="/js/quick-cart-polish.js?v=20260820-5" defer></script>
 <script src="/js/product-page-submit-fix.js?v=20260820-4" defer></script>
 <script src="/js/wishlist.js?v=4"></script>
 <script>
