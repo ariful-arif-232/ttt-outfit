@@ -46,44 +46,46 @@
   text-align: center !important;
 }
 
-/* Wholesale card: icon on the left, exactly three copy lines on the right. */
+/* Wholesale card: icon on the left, exactly three copy lines, all left aligned. */
 .professional-product-page .ttt-product-wholesale-card {
   grid-template-columns: 34px minmax(0, 1fr) !important;
   column-gap: 10px !important;
 }
 
-.professional-product-page .ttt-product-wholesale-copy {
+/* Higher specificity keeps this correction ahead of any previously cached UI layer. */
+html body .professional-product-page .ttt-product-wholesale-copy {
   width: 100% !important;
   min-width: 0 !important;
   display: grid !important;
-  justify-items: end !important;
+  justify-items: start !important;
   gap: 2px !important;
-  text-align: right !important;
+  text-align: left !important;
 }
 
-.professional-product-page .ttt-product-wholesale-copy > small,
-.professional-product-page .ttt-product-wholesale-copy > strong,
-.professional-product-page .ttt-product-wholesale-detail {
+html body .professional-product-page .ttt-product-wholesale-copy > small,
+html body .professional-product-page .ttt-product-wholesale-copy > strong,
+html body .professional-product-page .ttt-product-wholesale-detail {
   width: 100% !important;
   color: #a47c22 !important;
-  text-align: right !important;
+  text-align: left !important;
 }
 
 .professional-product-page .ttt-product-wholesale-copy > strong {
   text-transform: uppercase !important;
 }
 
-.professional-product-page .ttt-product-wholesale-detail {
+html body .professional-product-page .ttt-product-wholesale-detail {
   display: flex !important;
   align-items: center !important;
-  justify-content: flex-end !important;
+  justify-content: flex-start !important;
   gap: 8px !important;
   flex-wrap: nowrap !important;
   white-space: nowrap !important;
 }
 
-.professional-product-page .ttt-product-wholesale-detail > span {
+html body .professional-product-page .ttt-product-wholesale-detail > span {
   color: #a47c22 !important;
+  text-align: left !important;
 }
 
 /* Keep only the requested three text lines. */
@@ -91,10 +93,10 @@
   display: none !important;
 }
 
-.professional-product-page .ttt-product-wholesale-card.is-active .ttt-product-wholesale-copy > small,
-.professional-product-page .ttt-product-wholesale-card.is-active .ttt-product-wholesale-copy > strong,
-.professional-product-page .ttt-product-wholesale-card.is-active .ttt-product-wholesale-detail,
-.professional-product-page .ttt-product-wholesale-card.is-active .ttt-product-wholesale-detail > span {
+html body .professional-product-page .ttt-product-wholesale-card.is-active .ttt-product-wholesale-copy > small,
+html body .professional-product-page .ttt-product-wholesale-card.is-active .ttt-product-wholesale-copy > strong,
+html body .professional-product-page .ttt-product-wholesale-card.is-active .ttt-product-wholesale-detail,
+html body .professional-product-page .ttt-product-wholesale-card.is-active .ttt-product-wholesale-detail > span {
   color: #a47c22 !important;
 }
 
@@ -115,7 +117,7 @@
     column-gap: 8px !important;
   }
 
-  .professional-product-page .ttt-product-wholesale-detail {
+  html body .professional-product-page .ttt-product-wholesale-detail {
     gap: 7px !important;
   }
 }
