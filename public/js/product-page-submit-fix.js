@@ -279,11 +279,30 @@
   const buyButton = document.getElementById('productBuyNowButton');
   const quantityInput = document.getElementById('productQuantity');
 
+  let variants = [];
+  try {
+    variants = JSON.parse(
+      document.getElementById('productVariantData')?.textContent || '[]'
+    );
+  } catch {
+    variants = [];
+  }
+
   const colorButtons = () =>
     [...page.querySelectorAll('.product-color-option')];
 
   const sizeButtons = () =>
     [...(sizeOptions?.querySelectorAll('.product-size-option') || [])];
+
+  const selectedStock = () => {
+    const selectedButton = colorButtons().find((button) =>
+      button.classList.contains('active') ||
+      button.getAttribute('aria-pressed') === 'true'
+    );
+
+    const variantIndex = Number(selectedButton?.dataset.variantIndex);
+    return Number(variants[variantIndex]?.stock || 0);
+  };
 
   const setPurchaseEnabled = (enabled) => {
     if (addButton) {
@@ -327,9 +346,11 @@
   const clearAutoSelectedSize = () => {
     if (sizeInput) sizeInput.value = '';
 
+    const outOfStock = selectedStock() < 1;
+
     sizeButtons().forEach((button) => {
       button.classList.remove('active');
-      button.disabled = false;
+      button.disabled = outOfStock;
       button.setAttribute('aria-pressed', 'false');
     });
 
@@ -408,12 +429,17 @@
       return;
     }
 
-    if (event.target.closest('.professional-product-page .product-size-option')) {
+    const sizeButton = event.target.closest(
+      '.professional-product-page .product-size-option'
+    );
+
+    if (sizeButton) {
       window.setTimeout(() => {
         const ready = Boolean(
           String(colorInput?.value || '').trim() &&
           String(sizeInput?.value || '').trim() &&
-          !event.target.closest('.product-size-option')?.disabled
+          selectedStock() > 0 &&
+          !sizeButton.disabled
         );
         setPurchaseEnabled(ready);
       }, 0);
