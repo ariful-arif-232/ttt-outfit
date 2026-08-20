@@ -146,3 +146,21 @@
     );
   }
 })();
+
+(() => {
+  const loadProductPageSubmitFix = () => {
+    if (!document.querySelector('.professional-product-page')) return;
+    if (document.querySelector('script[data-product-page-submit-fix]')) return;
+
+    const script = document.createElement('script');
+    script.src = '/js/product-page-submit-fix.js?v=20260820-1';
+    script.dataset.productPageSubmitFix = 'true';
+    document.head.appendChild(script);
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadProductPageSubmitFix, { once: true });
+  } else {
+    loadProductPageSubmitFix();
+  }
+})();
