@@ -43,30 +43,57 @@ express.application.post = function postWithProductCartFallback(routePath, ...ha
 };
 
 /*
-  Public assets have long browser cache lifetimes. Rewrite only known versioned
-  URLs in rendered HTML so phones receive the current product/cart polish files
-  immediately without changing the template structure.
+  Public assets have long browser cache lifetimes. Keep the current asset keys
+  deterministic at render time so phones cannot stay on a stale product UI.
+  Product pages also start with an explicit "nothing selected" state before
+  any client script runs, eliminating the legacy first-variant paint/flash.
 */
+const purchaseAssetReplacements = [
+  ['/js/product-page-submit-fix.js?v=20260820-2', '/js/product-page-submit-fix.js?v=20260821-5'],
+  ['/js/product-page-submit-fix.js?v=20260820-4', '/js/product-page-submit-fix.js?v=20260821-5'],
+  ['/css/product-page-hotfix.css?v=20260820-7', '/css/product-page-hotfix.css?v=20260821-1'],
+  ['/css/wholesale-final-ui.css?v=20260821-4', '/css/wholesale-final-ui.css?v=20260821-5'],
+  ['/js/quick-cart-polish.js?v=20260820-5', '/js/quick-cart-polish.js?v=20260821-1'],
+  ['/js/cart-page-fix.js?v=20260820-1', '/js/cart-page-fix.js?v=20260821-1']
+];
+
+function rewritePurchaseMarkup(body, { productView = false } = {}) {
+  if (typeof body !== 'string') return body;
+
+  purchaseAssetReplacements.forEach(([from, to]) => {
+    if (body.includes(from)) {
+      body = body.replaceAll(from, to);
+    }
+  });
+
+  if (!productView) return body;
+
+  return body
+    .replace(
+      /(id="selectedColor"\s+value=")[^"]*(")/,
+      '$1$2'
+    )
+    .replace(
+      /(id="selectedSize"\s+value=")[^"]*(")/,
+      '$1$2'
+    )
+    .replace(
+      /(<span\s+id="selectedColorLabel">\s*)[^<]*(\s*<\/span>)/,
+      '$1Select a color$2'
+    )
+    .replace(
+      /(class="product-color-option\s+)active(\s*")/g,
+      '$1$2'
+    )
+    .replace(
+      /(<span\s+id="variantStockText">\s*)[^<]*(\s*<\/span>)/,
+      '$1Select color$2'
+    );
+}
+
 const originalSend = express.response.send;
 express.response.send = function sendWithFreshPurchaseFlow(body) {
-  if (typeof body === 'string') {
-    const replacements = [
-      ['/js/product-page-submit-fix.js?v=20260820-2', '/js/product-page-submit-fix.js?v=20260821-5'],
-      ['/js/product-page-submit-fix.js?v=20260820-4', '/js/product-page-submit-fix.js?v=20260821-5'],
-      ['/css/product-page-hotfix.css?v=20260820-7', '/css/product-page-hotfix.css?v=20260821-1'],
-      ['/css/wholesale-final-ui.css?v=20260821-4', '/css/wholesale-final-ui.css?v=20260821-5'],
-      ['/js/quick-cart-polish.js?v=20260820-5', '/js/quick-cart-polish.js?v=20260821-1'],
-      ['/js/cart-page-fix.js?v=20260820-1', '/js/cart-page-fix.js?v=20260821-1']
-    ];
-
-    replacements.forEach(([from, to]) => {
-      if (body.includes(from)) {
-        body = body.replaceAll(from, to);
-      }
-    });
-  }
-
-  return originalSend.call(this, body);
+  return originalSend.call(this, rewritePurchaseMarkup(body));
 };
 
 /*
@@ -164,6 +191,37 @@ express.response.render = function renderWithSeo(view, options, callback) {
     }
 
     enriched.ogType = enriched.ogType || 'product';
+
+    /*
+      Use an explicit render callback for product pages. Express' default send
+      path is not guaranteed to pass through our prototype send wrapper on all
+      Vercel/Express combinations, so rewrite the final HTML before sending it.
+    */
+    const suppliedCallback = typeof callback === 'function'
+      ? callback
+      : null;
+
+    return originalRender.call(this, view, enriched, (error, html) => {
+      if (error) {
+        if (suppliedCallback) return suppliedCallback(error);
+
+        if (this.req && typeof this.req.next === 'function') {
+          return this.req.next(error);
+        }
+
+        throw error;
+      }
+
+      const finalHtml = rewritePurchaseMarkup(html, {
+        productView: true
+      });
+
+      if (suppliedCallback) {
+        return suppliedCallback(null, finalHtml);
+      }
+
+      return originalSend.call(this, finalHtml);
+    });
   }
 
   return originalRender.call(this, view, enriched, callback);
