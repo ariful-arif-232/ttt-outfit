@@ -39,6 +39,7 @@
     }
 
     let selectedVariant = null;
+    let selectionTouched = false;
 
     const currentSizeButtons = () =>
       [...(sizeOptions?.querySelectorAll('.product-size-option') || [])];
@@ -185,6 +186,7 @@
       wholesaleMinimumQuantity > 1
     ) {
       const saveEach = Math.max(0, retailPrice - wholesalePrice);
+      const initialRemaining = Math.max(0, wholesaleMinimumQuantity - 1);
 
       wholesalePanel = document.createElement('aside');
       wholesalePanel.className = 'ttt-product-wholesale-card';
@@ -195,8 +197,8 @@
           <i class="bi bi-box-seam"></i>
         </span>
         <span class="ttt-product-wholesale-copy">
-          <small>WHOLESALE OFFER</small>
-          <strong data-wholesale-message>Buy ${wholesaleMinimumQuantity}+ pcs for wholesale</strong>
+          <small>WHOLESALE</small>
+          <strong data-wholesale-message>Add ${initialRemaining} more ${initialRemaining === 1 ? 'pc' : 'pcs'}</strong>
           <span class="ttt-product-wholesale-detail">
             <span>Rate ৳${wholesalePrice.toLocaleString('en-BD')}</span>
             <span>Save ৳${saveEach.toLocaleString('en-BD')}</span>
@@ -226,8 +228,8 @@
 
         if (wholesaleMessage) {
           wholesaleMessage.textContent = reached
-            ? 'Wholesale offer active'
-            : `Add ${remaining} more ${remaining === 1 ? 'pc' : 'pcs'} for wholesale`;
+            ? 'Wholesale active'
+            : `Add ${remaining} more ${remaining === 1 ? 'pc' : 'pcs'}`;
         }
 
         if (wholesaleBadge) {
@@ -340,13 +342,21 @@
         'General fit guide only. The selectable sizes shown on each product are the final available options for that item.';
     }
 
-    /* Existing product logic selects the first variant on load. Remove that default. */
+    /* The storefront starts with no selected color or size. */
     clearInitialSelection();
+
+    /* Run once after all DOMContentLoaded listeners so a legacy initializer
+       cannot restore the first variant after this controller has cleared it. */
+    window.setTimeout(() => {
+      if (!selectionTouched) clearInitialSelection();
+    }, 0);
 
     document.addEventListener('click', (event) => {
       const colorButton = event.target.closest('.professional-product-page .product-color-option');
 
       if (colorButton) {
+        selectionTouched = true;
+
         const variantIndex = Number(colorButton.dataset.variantIndex);
         selectedVariant = variants[variantIndex] || null;
 
@@ -359,14 +369,17 @@
 
         if (stockDot) stockDot.style.opacity = '';
 
-        /* Existing handler redraws sizes and selects the first one; clear it immediately. */
-        clearSizeSelection({ disable: false });
+        /* The legacy color handler redraws the sizes. Keep them visible but
+           require the shopper to choose one explicitly. */
+        clearSizeSelection({ disable: selectedStock() < 1 });
         return;
       }
 
       const sizeButton = event.target.closest('.professional-product-page .product-size-option');
 
       if (sizeButton) {
+        selectionTouched = true;
+
         currentSizeButtons().forEach((button) => {
           button.setAttribute(
             'aria-pressed',
