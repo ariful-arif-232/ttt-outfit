@@ -3,8 +3,9 @@
 .professional-product-page {
   --ttt-option-border: rgba(196, 157, 70, 0.28);
   --ttt-option-text: #8a6b2f;
-  --ttt-option-control-width: 108px;
-  --ttt-option-control-height: 32px;
+  --ttt-option-control-bg: #fff8e8;
+  --ttt-option-control-width: 104px;
+  --ttt-option-control-height: 30px;
   --ttt-wholesale-font-size: 8.1px;
 }
 
@@ -42,17 +43,18 @@
 
 .professional-product-page .product-size-heading {
   margin-bottom: 0 !important;
-  align-items: start !important;
+  align-items: center !important;
+  min-height: var(--ttt-option-control-height) !important;
 }
 
 .professional-product-page .product-size-heading > strong {
-  align-self: start !important;
-  transform: translateY(-2px) !important;
-  line-height: 1.1 !important;
+  align-self: center !important;
+  transform: translateY(3px) !important;
+  line-height: 1.08 !important;
 }
 
 .professional-product-page .product-size-availability-layout {
-  margin-top: 6px !important;
+  margin-top: 2px !important;
   align-items: start !important;
 }
 
@@ -88,47 +90,48 @@
   cursor: not-allowed !important;
 }
 
-/* Same dimensions; Size guide stays cream, availability stays white in every state. */
-.professional-product-page .size-guide-open,
-.professional-product-page .product-availability-box {
+/* Size guide and availability are intentionally identical compact cream controls. */
+html body .professional-product-page .product-size-heading .size-guide-open,
+html body .professional-product-page .product-size-availability-layout .product-availability-box {
   width: var(--ttt-option-control-width) !important;
   min-width: var(--ttt-option-control-width) !important;
+  max-width: var(--ttt-option-control-width) !important;
   height: var(--ttt-option-control-height) !important;
   min-height: var(--ttt-option-control-height) !important;
+  max-height: var(--ttt-option-control-height) !important;
   margin: 0 !important;
-  padding: 0 8px !important;
+  padding: 0 6px !important;
   box-sizing: border-box !important;
+  justify-self: end !important;
+  align-self: start !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  gap: 5px !important;
+  gap: 4px !important;
   border: 1px solid var(--ttt-option-border) !important;
   border-radius: 999px !important;
+  background: var(--ttt-option-control-bg) !important;
   color: var(--ttt-option-text) !important;
   box-shadow: none !important;
   font-family: "Manrope", Inter, Arial, sans-serif !important;
-  font-size: 9px !important;
+  font-size: 8.8px !important;
   font-weight: 800 !important;
   line-height: 1 !important;
   text-align: center !important;
 }
 
-.professional-product-page .size-guide-open {
-  background: #fff8e8 !important;
-}
-
-.professional-product-page .size-guide-open i {
-  font-size: 10px !important;
+html body .professional-product-page .product-size-heading .size-guide-open i {
+  font-size: 9.5px !important;
   line-height: 1 !important;
 }
 
-.professional-product-page .product-availability-box,
-.professional-product-page .product-availability-box.is-ready,
-.professional-product-page .product-availability-box.is-selected,
-.professional-product-page .product-availability-box.is-in-stock,
-.professional-product-page .product-availability-box:has(#variantStockDot.out-of-stock) {
-  align-self: start !important;
-  background: #ffffff !important;
+/* Availability never turns white; only status text/dot may change. */
+html body .professional-product-page .product-size-availability-layout .product-availability-box,
+html body .professional-product-page .product-size-availability-layout .product-availability-box.is-ready,
+html body .professional-product-page .product-size-availability-layout .product-availability-box.is-selected,
+html body .professional-product-page .product-size-availability-layout .product-availability-box.is-in-stock,
+html body .professional-product-page .product-size-availability-layout .product-availability-box:has(#variantStockDot.out-of-stock) {
+  background: var(--ttt-option-control-bg) !important;
   border-color: var(--ttt-option-border) !important;
   color: var(--ttt-option-text) !important;
 }
@@ -140,7 +143,7 @@
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  gap: 5px !important;
+  gap: 4px !important;
   color: inherit !important;
   text-align: center !important;
 }
@@ -148,7 +151,7 @@
 .professional-product-page .product-availability-box #variantStockText {
   min-width: 0 !important;
   color: inherit !important;
-  font-size: 9px !important;
+  font-size: 8.8px !important;
   font-weight: 800 !important;
   line-height: 1 !important;
   text-align: center !important;
@@ -156,15 +159,15 @@
 }
 
 .professional-product-page .product-availability-box #variantStockDot {
-  width: 7px !important;
-  height: 7px !important;
-  min-width: 7px !important;
-  box-shadow: 0 0 0 3px rgba(70, 173, 118, 0.10) !important;
+  width: 6px !important;
+  height: 6px !important;
+  min-width: 6px !important;
+  box-shadow: 0 0 0 2px rgba(70, 173, 118, 0.10) !important;
 }
 
 .professional-product-page .product-availability-box #variantStockDot.out-of-stock {
   background: #b44b4b !important;
-  box-shadow: 0 0 0 3px rgba(180, 75, 75, 0.10) !important;
+  box-shadow: 0 0 0 2px rgba(180, 75, 75, 0.10) !important;
 }
 
 .professional-product-page .product-availability-box:has(#variantStockDot.out-of-stock) #variantStockText {
@@ -300,14 +303,22 @@ html body .professional-product-page .ttt-product-wholesale-card.is-active .ttt-
 
 @media (max-width: 700px) {
   .professional-product-page {
-    --ttt-option-control-width: 108px;
-    --ttt-option-control-height: 32px;
+    --ttt-option-control-width: 102px;
+    --ttt-option-control-height: 30px;
     --ttt-wholesale-font-size: 7.7px;
   }
 
   .professional-product-page .product-size-heading,
   .professional-product-page .product-size-availability-layout {
     column-gap: 7px !important;
+  }
+
+  .professional-product-page .product-size-heading > strong {
+    transform: translateY(3px) !important;
+  }
+
+  .professional-product-page .product-size-availability-layout {
+    margin-top: 2px !important;
   }
 
   .professional-product-page .product-size-availability-layout .product-size-options {
@@ -320,6 +331,17 @@ html body .professional-product-page .ttt-product-wholesale-card.is-active .ttt-
     min-height: 35px !important;
     padding-inline: 10px !important;
     font-size: 10.8px !important;
+  }
+
+  html body .professional-product-page .product-size-heading .size-guide-open,
+  html body .professional-product-page .product-size-availability-layout .product-availability-box {
+    padding-inline: 5px !important;
+    gap: 4px !important;
+    font-size: 8.6px !important;
+  }
+
+  .professional-product-page .product-availability-box #variantStockText {
+    font-size: 8.6px !important;
   }
 
   .professional-product-page .ttt-product-wholesale-card {
@@ -349,13 +371,19 @@ html body .professional-product-page .ttt-product-wholesale-card.is-active .ttt-
 
 @media (max-width: 390px) {
   .professional-product-page {
-    --ttt-option-control-width: 104px;
+    --ttt-option-control-width: 100px;
     --ttt-wholesale-font-size: 7.15px;
   }
 
   .professional-product-page .product-size-heading,
   .professional-product-page .product-size-availability-layout {
     column-gap: 6px !important;
+  }
+
+  html body .professional-product-page .product-size-heading .size-guide-open,
+  html body .professional-product-page .product-size-availability-layout .product-availability-box,
+  .professional-product-page .product-availability-box #variantStockText {
+    font-size: 8.35px !important;
   }
 
   .professional-product-page .ttt-product-wholesale-card {
