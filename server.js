@@ -46,13 +46,17 @@ express.application.post = function postWithProductCartFallback(routePath, ...ha
   Public assets have long browser cache lifetimes. Keep the current asset keys
   deterministic at render time so phones cannot stay on a stale product UI.
   Product pages also start with an explicit "nothing selected" state before
-  any client script runs, eliminating the legacy first-variant paint/flash.
+  client scripts run.
 */
 const purchaseAssetReplacements = [
-  ['/js/product-page-submit-fix.js?v=20260820-2', '/js/product-page-submit-fix.js?v=20260821-5'],
-  ['/js/product-page-submit-fix.js?v=20260820-4', '/js/product-page-submit-fix.js?v=20260821-5'],
+  ['/js/product-page-submit-fix.js?v=20260820-2', '/js/product-page-submit-fix.js?v=20260821-6'],
+  ['/js/product-page-submit-fix.js?v=20260820-4', '/js/product-page-submit-fix.js?v=20260821-6'],
+  ['/js/product-page-submit-fix.js?v=20260821-5', '/js/product-page-submit-fix.js?v=20260821-6'],
+  ['/js/product-detail-polish.js?v=20260821-4', '/js/product-detail-polish.js?v=20260821-6'],
+  ['/js/product-detail-polish.js?v=20260821-5', '/js/product-detail-polish.js?v=20260821-6'],
   ['/css/product-page-hotfix.css?v=20260820-7', '/css/product-page-hotfix.css?v=20260821-1'],
-  ['/css/wholesale-final-ui.css?v=20260821-4', '/css/wholesale-final-ui.css?v=20260821-5'],
+  ['/css/wholesale-final-ui.css?v=20260821-4', '/css/wholesale-final-ui.css?v=20260821-6'],
+  ['/css/wholesale-final-ui.css?v=20260821-5', '/css/wholesale-final-ui.css?v=20260821-6'],
   ['/js/quick-cart-polish.js?v=20260820-5', '/js/quick-cart-polish.js?v=20260821-1'],
   ['/js/cart-page-fix.js?v=20260820-1', '/js/cart-page-fix.js?v=20260821-1']
 ];
@@ -88,6 +92,22 @@ function rewritePurchaseMarkup(body, { productView = false } = {}) {
     .replace(
       /(<span\s+id="variantStockText">\s*)[^<]*(\s*<\/span>)/,
       '$1Select color$2'
+    )
+    .replace(
+      "        button.className =\n          `product-size-option ${\n            index === 0 ? 'active' : ''\n          }`;",
+      "        button.className =\n          'product-size-option';"
+    )
+    .replace(
+      "      sizeInput.value = sizes[0];",
+      "      sizeInput.value = '';"
+    )
+    .replace(
+      "        addButton.disabled = false;\n        buyNowButton.disabled = false;",
+      "        addButton.disabled = true;\n        buyNowButton.disabled = true;"
+    )
+    .replace(
+      "    selectVariant(0);\n    updateWholesaleOffer();",
+      "    updateWholesaleOffer();"
     );
 }
 
