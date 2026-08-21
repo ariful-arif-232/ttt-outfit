@@ -1,18 +1,45 @@
-/* TTT Outfit - v10 vertical spacing only for the product size section. */
+/* TTT Outfit - v11 final Choose size / Size guide alignment. */
 
-/* Move the Choose size label slightly upward without touching M/L/XL spacing. */
-.professional-product-page .product-size-heading > strong {
-  transform: translateY(1px) !important;
+/*
+ * Keep the left label and the right Size guide control on the exact same
+ * visual row. The label receives the same 30px row height as the pill, so
+ * their centers line up cleanly without changing the M/L/XL spacing.
+ */
+.professional-product-page .product-size-heading {
+  align-items: center !important;
 }
 
-/* Add a small vertical breathing gap between the heading row and size buttons. */
+.professional-product-page .product-size-heading > strong {
+  min-height: var(--ttt-option-control-height, 30px) !important;
+  height: var(--ttt-option-control-height, 30px) !important;
+  margin: 0 !important;
+  padding: 0 0 1px !important;
+  box-sizing: border-box !important;
+  display: flex !important;
+  align-items: center !important;
+  align-self: center !important;
+  transform: none !important;
+  line-height: 1.08 !important;
+}
+
+html body .professional-product-page .product-size-heading .size-guide-open {
+  align-self: center !important;
+}
+
+/* Preserve the small vertical breathing room before the size-button row. */
 .professional-product-page .product-size-availability-layout {
   margin-top: 4px !important;
 }
 
 @media (max-width: 700px) {
   .professional-product-page .product-size-heading > strong {
-    transform: translateY(1px) !important;
+    min-height: var(--ttt-option-control-height, 30px) !important;
+    height: var(--ttt-option-control-height, 30px) !important;
+    transform: none !important;
+  }
+
+  html body .professional-product-page .product-size-heading .size-guide-open {
+    align-self: center !important;
   }
 
   .professional-product-page .product-size-availability-layout {
