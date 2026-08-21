@@ -1,0 +1,21 @@
+/* TTT Outfit - v10 vertical spacing only for the product size section. */
+
+/* Move the Choose size label slightly upward without touching M/L/XL spacing. */
+.professional-product-page .product-size-heading > strong {
+  transform: translateY(1px) !important;
+}
+
+/* Add a small vertical breathing gap between the heading row and size buttons. */
+.professional-product-page .product-size-availability-layout {
+  margin-top: 4px !important;
+}
+
+@media (max-width: 700px) {
+  .professional-product-page .product-size-heading > strong {
+    transform: translateY(1px) !important;
+  }
+
+  .professional-product-page .product-size-availability-layout {
+    margin-top: 4px !important;
+  }
+}
