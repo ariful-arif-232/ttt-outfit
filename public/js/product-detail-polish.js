@@ -1,6 +1,9 @@
 (() => {
   'use strict';
 
+  if (window.__tttProductDetailPolishLoaded) return;
+  window.__tttProductDetailPolishLoaded = true;
+
   const ready = (callback) => {
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', callback, { once: true });
@@ -23,10 +26,13 @@
     const stockText = document.getElementById('variantStockText');
     const stockProgress = document.getElementById('productStockProgress');
     const stockDot = document.getElementById('variantStockDot');
+    const stockNotice = document.getElementById('productStockNotice');
     const stockPanel = page.querySelector('.product-stock-panel');
     const mainImage = document.getElementById('productMainImage');
     const sizeGuideOpen = document.getElementById('sizeGuideOpen');
     const quantityInput = document.getElementById('productQuantity');
+    const decreaseQuantity = document.getElementById('decreaseQuantity');
+    const increaseQuantity = document.getElementById('increaseQuantity');
     const colorButtons = [...page.querySelectorAll('.product-color-option')];
 
     let variants = [];
@@ -39,7 +45,23 @@
     }
 
     let selectedVariant = null;
+    let selectedSizeState = '';
     let selectionTouched = false;
+
+    const normalizeSize = (value) => String(value || '').trim();
+
+    const variantSizes = (variant) => {
+      const sizes = Array.isArray(variant?.sizes) && variant.sizes.length
+        ? variant.sizes
+        : ['One Size'];
+
+      return [...new Set(sizes.map(normalizeSize).filter(Boolean))];
+    };
+
+    const allUniqueSizes = () => {
+      const sizes = variants.flatMap((variant) => variantSizes(variant));
+      return [...new Set(sizes.map(normalizeSize).filter(Boolean))];
+    };
 
     const currentSizeButtons = () =>
       [...(sizeOptions?.querySelectorAll('.product-size-option') || [])];
@@ -50,8 +72,7 @@
     const hasSizeSelection = () =>
       Boolean(String(sizeInput?.value || '').trim());
 
-    const selectedStock = () =>
-      Number(selectedVariant?.stock || 0);
+    const selectedStock = () => Number(selectedVariant?.stock || 0);
 
     const updatePurchaseState = () => {
       const readyToBuy =
@@ -62,6 +83,12 @@
       if (addButton) {
         addButton.disabled = !readyToBuy;
         addButton.setAttribute('aria-disabled', String(!readyToBuy));
+
+        if (selectedVariant && selectedStock() < 1) {
+          addButton.textContent = 'Out of stock';
+        } else {
+          addButton.textContent = 'Add to cart';
+        }
       }
 
       if (buyNowButton) {
@@ -70,49 +97,171 @@
       }
     };
 
-    const clearSizeSelection = ({ disable = false } = {}) => {
-      if (sizeInput) sizeInput.value = '';
+    const renderSizeOptions = (
+      sizes,
+      { selected = '', disabled = false } = {}
+    ) => {
+      if (!sizeOptions || !sizeInput) return;
 
-      currentSizeButtons().forEach((button) => {
-        button.classList.remove('active');
-        button.disabled = disable;
-        button.setAttribute('aria-pressed', 'false');
+      const normalizedSizes = [...new Set(
+        (sizes || []).map(normalizeSize).filter(Boolean)
+      )];
+
+      const validSelected = normalizedSizes.includes(normalizeSize(selected))
+        ? normalizeSize(selected)
+        : '';
+
+      selectedSizeState = validSelected;
+      sizeInput.value = validSelected;
+      sizeOptions.innerHTML = '';
+
+      normalizedSizes.forEach((size) => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'product-size-option';
+        button.dataset.size = size;
+        button.textContent = size;
+        button.disabled = Boolean(disabled);
+        button.classList.toggle('active', size === validSelected);
+        button.setAttribute('aria-pressed', String(size === validSelected));
+        button.setAttribute('aria-label', `Select size ${size}`);
+        sizeOptions.appendChild(button);
       });
 
       updatePurchaseState();
     };
 
-    const clearInitialSelection = () => {
+    const updateStockState = (variant) => {
+      const stock = Number(variant?.stock || 0);
+
+      if (!variant) {
+        if (stockText) stockText.textContent = 'Select color';
+        if (stockProgress) stockProgress.style.width = '0%';
+        if (stockDot) {
+          stockDot.classList.remove('out-of-stock');
+          stockDot.style.opacity = '0.42';
+        }
+        if (stockNotice) stockNotice.textContent = 'Choose a color to see availability';
+        if (quantityInput) {
+          quantityInput.max = '';
+          quantityInput.value = String(Math.max(1, Number(quantityInput.value || 1)));
+        }
+        updatePurchaseState();
+        return;
+      }
+
+      if (quantityInput) {
+        quantityInput.max = String(Math.max(stock, 1));
+        quantityInput.value = String(
+          Math.max(1, Math.min(Number(quantityInput.value || 1), Math.max(stock, 1)))
+        );
+      }
+
+      if (stockProgress) {
+        const progress = stock > 0
+          ? Math.min(Math.max(stock * 10, 8), 100)
+          : 0;
+        stockProgress.style.width = `${progress}%`;
+      }
+
+      if (stockText) {
+        stockText.textContent = stock > 0 ? `${stock} available` : 'Out of stock';
+      }
+
+      if (stockDot) {
+        stockDot.style.opacity = '';
+        stockDot.classList.toggle('out-of-stock', stock < 1);
+      }
+
+      if (stockNotice) {
+        stockNotice.textContent = stock < 1
+          ? 'This color is currently unavailable'
+          : stock <= 5
+            ? 'Selling quickly — order soon'
+            : 'Available and ready to order';
+      }
+
+      updatePurchaseState();
+    };
+
+    const setColorState = (variantIndex, { preserveSize = true } = {}) => {
+      const variant = variants[variantIndex] || null;
+      if (!variant) return;
+
+      const previousSize = preserveSize ? selectedSizeState : '';
+      const sizes = variantSizes(variant);
+      const nextSelectedSize = sizes.includes(previousSize) ? previousSize : '';
+
+      selectedVariant = variant;
+
+      if (colorInput) colorInput.value = String(variant.color || '');
+      if (colorLabel) colorLabel.textContent = String(variant.color || 'Selected color');
+
+      colorButtons.forEach((button, index) => {
+        const active = index === variantIndex;
+        button.classList.toggle('active', active);
+        button.setAttribute('aria-pressed', String(active));
+      });
+
+      renderSizeOptions(sizes, {
+        selected: nextSelectedSize,
+        disabled: Number(variant.stock || 0) < 1
+      });
+
+      updateStockState(variant);
+    };
+
+    const setSizeState = (size) => {
+      const normalized = normalizeSize(size);
+      if (!normalized) return;
+
+      const allowedSizes = selectedVariant
+        ? variantSizes(selectedVariant)
+        : allUniqueSizes();
+
+      if (!allowedSizes.includes(normalized)) return;
+
+      selectedSizeState = normalized;
+      if (sizeInput) sizeInput.value = normalized;
+
+      currentSizeButtons().forEach((button) => {
+        const active = normalizeSize(button.dataset.size || button.textContent) === normalized;
+        button.classList.toggle('active', active);
+        button.setAttribute('aria-pressed', String(active));
+      });
+
+      updatePurchaseState();
+    };
+
+    const resetInitialSelection = () => {
       selectedVariant = null;
+      selectedSizeState = '';
 
       if (colorInput) colorInput.value = '';
       if (sizeInput) sizeInput.value = '';
-
-      if (colorLabel) {
-        colorLabel.textContent = 'Select a color';
-      }
+      if (colorLabel) colorLabel.textContent = 'Select color';
 
       colorButtons.forEach((button) => {
         button.classList.remove('active');
         button.setAttribute('aria-pressed', 'false');
       });
 
-      clearSizeSelection({ disable: true });
-
-      if (stockText) {
-        stockText.textContent = 'Select color';
-      }
-
-      if (stockProgress) {
-        stockProgress.style.width = '0%';
-      }
-
-      if (stockDot) {
-        stockDot.classList.remove('out-of-stock');
-        stockDot.style.opacity = '0.42';
-      }
-
+      renderSizeOptions(allUniqueSizes(), { selected: '', disabled: false });
+      updateStockState(null);
+      page.classList.add('ttt-product-ui-ready');
       updatePurchaseState();
+    };
+
+    const clampQuantity = () => {
+      if (!quantityInput) return 1;
+
+      const minimum = Math.max(1, Number(quantityInput.min || 1));
+      const configuredMax = Number(quantityInput.max || 0);
+      const maximum = configuredMax > 0 ? configuredMax : Number.POSITIVE_INFINITY;
+      const current = Math.max(minimum, Number(quantityInput.value || minimum));
+      const next = Math.min(current, maximum);
+      quantityInput.value = String(Number.isFinite(next) ? next : minimum);
+      return Number(quantityInput.value || minimum);
     };
 
     /* Keep only the useful rating number and show the actual money saved beside it. */
@@ -139,7 +288,7 @@
       socialProof.appendChild(discountChip);
     }
 
-    /* Keep sizes in the left column and availability directly below Size guide. */
+    /* Size buttons stay left; availability sits directly below Size guide. */
     const sizeGroup = sizeOptions?.closest('.product-option-group') || null;
     const sizeHeading = sizeGroup?.querySelector('.product-option-heading') || null;
 
@@ -147,18 +296,22 @@
       sizeGroup.classList.add('product-size-group');
       sizeHeading?.classList.add('product-size-heading');
 
-      const layout = document.createElement('div');
+      const existingLayout = sizeGroup.querySelector('.product-size-availability-layout');
+      const layout = existingLayout || document.createElement('div');
       layout.className = 'product-size-availability-layout';
 
       stockPanel.classList.remove('product-stock-panel');
       stockPanel.classList.add('product-availability-box');
       stockPanel.setAttribute('aria-label', 'Selected color availability');
 
-      sizeOptions.parentNode.insertBefore(layout, sizeOptions);
+      if (!existingLayout) {
+        sizeOptions.parentNode.insertBefore(layout, sizeOptions);
+      }
+
       layout.append(sizeOptions, stockPanel);
     }
 
-    /* Product-specific wholesale offer from the admin product settings. */
+    /* Product-specific wholesale offer from Admin product settings. */
     let wholesaleData = null;
     try {
       wholesaleData = JSON.parse(
@@ -179,6 +332,26 @@
     let wholesaleMessage = null;
     let wholesaleBadge = null;
 
+    const updateWholesaleCard = () => {
+      if (!wholesalePanel) return;
+
+      const quantity = Math.max(1, Number(quantityInput?.value || 1));
+      const remaining = Math.max(0, wholesaleMinimumQuantity - quantity);
+      const reached = quantity >= wholesaleMinimumQuantity;
+
+      wholesalePanel.classList.toggle('is-active', reached);
+
+      if (wholesaleMessage) {
+        wholesaleMessage.textContent = reached
+          ? 'Wholesale active'
+          : `Add ${remaining} more ${remaining === 1 ? 'pc' : 'pcs'}`;
+      }
+
+      if (wholesaleBadge) {
+        wholesaleBadge.textContent = reached ? 'Active' : `${wholesaleMinimumQuantity}+ pcs`;
+      }
+    };
+
     if (
       retailPrice > 0 &&
       wholesalePrice > 0 &&
@@ -186,7 +359,9 @@
       wholesaleMinimumQuantity > 1
     ) {
       const saveEach = Math.max(0, retailPrice - wholesalePrice);
-      const initialRemaining = Math.max(0, wholesaleMinimumQuantity - 1);
+      const initialRemaining = Math.max(0, wholesaleMinimumQuantity - Math.max(1, Number(quantityInput?.value || 1)));
+
+      page.querySelector('#tttProductWholesaleCard')?.remove();
 
       wholesalePanel = document.createElement('aside');
       wholesalePanel.className = 'ttt-product-wholesale-card';
@@ -218,38 +393,6 @@
 
       wholesaleMessage = wholesalePanel.querySelector('[data-wholesale-message]');
       wholesaleBadge = wholesalePanel.querySelector('[data-wholesale-badge]');
-
-      const updateWholesaleCard = () => {
-        const quantity = Math.max(1, Number(quantityInput?.value || 1));
-        const remaining = Math.max(0, wholesaleMinimumQuantity - quantity);
-        const reached = quantity >= wholesaleMinimumQuantity;
-
-        wholesalePanel.classList.toggle('is-active', reached);
-
-        if (wholesaleMessage) {
-          wholesaleMessage.textContent = reached
-            ? 'Wholesale active'
-            : `Add ${remaining} more ${remaining === 1 ? 'pc' : 'pcs'}`;
-        }
-
-        if (wholesaleBadge) {
-          wholesaleBadge.textContent = reached ? 'Active' : `${wholesaleMinimumQuantity}+ pcs`;
-        }
-      };
-
-      quantityInput?.addEventListener('input', updateWholesaleCard);
-      quantityInput?.addEventListener('change', updateWholesaleCard);
-
-      document.getElementById('decreaseQuantity')?.addEventListener(
-        'click',
-        () => window.setTimeout(updateWholesaleCard, 0)
-      );
-
-      document.getElementById('increaseQuantity')?.addEventListener(
-        'click',
-        () => window.setTimeout(updateWholesaleCard, 0)
-      );
-
       updateWholesaleCard();
     }
 
@@ -342,13 +485,17 @@
         'General fit guide only. The selectable sizes shown on each product are the final available options for that item.';
     }
 
-    /* The storefront starts with no selected color or size. */
-    clearInitialSelection();
+    /* Initial product state: all unique sizes visible, nothing preselected. */
+    resetInitialSelection();
 
-    /* Run once after all DOMContentLoaded listeners so a legacy initializer
-       cannot restore the first variant after this controller has cleared it. */
+    /* product.ejs still registers its legacy initializer before this deferred file.
+       Reconcile once at DOMContentLoaded so selectVariant(0) can never remain visible. */
+    document.addEventListener('DOMContentLoaded', () => {
+      if (!selectionTouched) resetInitialSelection();
+    }, { once: true });
+
     window.setTimeout(() => {
-      if (!selectionTouched) clearInitialSelection();
+      if (!selectionTouched) resetInitialSelection();
     }, 0);
 
     document.addEventListener('click', (event) => {
@@ -356,22 +503,9 @@
 
       if (colorButton) {
         selectionTouched = true;
-
         const variantIndex = Number(colorButton.dataset.variantIndex);
-        selectedVariant = variants[variantIndex] || null;
-
-        colorButtons.forEach((button) => {
-          button.setAttribute(
-            'aria-pressed',
-            String(button === colorButton)
-          );
-        });
-
-        if (stockDot) stockDot.style.opacity = '';
-
-        /* The legacy color handler redraws the sizes. Keep them visible but
-           require the shopper to choose one explicitly. */
-        clearSizeSelection({ disable: selectedStock() < 1 });
+        setColorState(variantIndex, { preserveSize: true });
+        updateWholesaleCard();
         return;
       }
 
@@ -379,17 +513,32 @@
 
       if (sizeButton) {
         selectionTouched = true;
+        if (!sizeButton.disabled) {
+          setSizeState(sizeButton.dataset.size || sizeButton.textContent);
+        }
+        return;
+      }
 
-        currentSizeButtons().forEach((button) => {
-          button.setAttribute(
-            'aria-pressed',
-            String(button === sizeButton)
-          );
-        });
-
-        updatePurchaseState();
+      if (event.target.closest('#decreaseQuantity, #increaseQuantity')) {
+        window.setTimeout(() => {
+          clampQuantity();
+          updateWholesaleCard();
+        }, 0);
       }
     });
+
+    quantityInput?.addEventListener('input', () => {
+      clampQuantity();
+      updateWholesaleCard();
+    });
+
+    quantityInput?.addEventListener('change', () => {
+      clampQuantity();
+      updateWholesaleCard();
+    });
+
+    decreaseQuantity?.setAttribute('aria-controls', 'productQuantity');
+    increaseQuantity?.setAttribute('aria-controls', 'productQuantity');
 
     form?.addEventListener('submit', (event) => {
       updatePurchaseState();
@@ -405,7 +554,7 @@
         const focusTarget = !hasColorSelection()
           ? colorButtons[0]
           : !hasSizeSelection()
-            ? currentSizeButtons()[0]
+            ? currentSizeButtons().find((button) => !button.disabled)
             : null;
 
         focusTarget?.focus();
