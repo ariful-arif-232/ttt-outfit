@@ -1,4 +1,10 @@
-<%- include('footer-base').replace(
-  '/css/wholesale-final-ui.css?v=20260821-7',
-  '/css/wholesale-final-ui.css?v=20260821-8\">\n<link rel=\"stylesheet\" href=\"/css/product-size-spacing-v10.css?v=20260823-1'
-) %>
+<%- include('footer-base')
+  .replace(
+    '/css/wholesale-final-ui.css?v=20260821-7',
+    '/css/wholesale-final-ui.css?v=20260821-8\">\n<link rel=\"stylesheet\" href=\"/css/product-size-spacing-v10.css?v=20260823-1\">\n<link rel=\"stylesheet\" href=\"/css/popup-square-final.css?v=20260823-1'
+  )
+  .replace(
+    '</body>',
+    '<script src=\"/js/popup-square-final.js?v=20260823-1\"></script>\n</body>'
+  )
+%>
