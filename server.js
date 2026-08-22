@@ -13,33 +13,66 @@ const patchWholesaleAppSource = require('./utils/wholesale-app-source-patch');
   but make the URL/header id authoritative when the product page supplies it.
   This avoids a browser/form serialization edge case from turning a valid,
   already-rendered product into "This product is unavailable."
+
+  Popup uploads also pass through this registration hook. Mobile Safari was
+  replaying a popup POST after a 307 redirect, which turned one replacement
+  into many new popup records. A short session lock stops duplicate submits
+  before Multer/Cloudinary run; popup routes then use explicit 303 redirects.
 */
 const originalApplicationPost = express.application.post;
 express.application.post = function postWithProductCartFallback(routePath, ...handlers) {
-  if (routePath !== '/cart/add') {
-    return originalApplicationPost.call(this, routePath, ...handlers);
+  if (routePath === '/cart/add') {
+    const wrappedHandlers = handlers.map(handler => {
+      if (typeof handler !== 'function') return handler;
+
+      return function productCartIdFallback(req, res, next) {
+        const fallbackProductId = String(
+          req.query?.productId ||
+          req.get('X-TTT-Product-Id') ||
+          ''
+        ).trim();
+
+        if (fallbackProductId) {
+          req.body ||= {};
+          req.body.productId = fallbackProductId;
+        }
+
+        return handler(req, res, next);
+      };
+    });
+
+    return originalApplicationPost.call(this, routePath, ...wrappedHandlers);
   }
 
-  const wrappedHandlers = handlers.map(handler => {
-    if (typeof handler !== 'function') return handler;
+  if (routePath === '/admin/popups' || routePath === '/admin/popups/:id') {
+    const popupSubmissionGuard = function popupSubmissionGuard(req, res, next) {
+      const now = Date.now();
+      const previousSubmit = Number(req.session?.popupSubmissionStartedAt || 0);
 
-    return function productCartIdFallback(req, res, next) {
-      const fallbackProductId = String(
-        req.query?.productId ||
-        req.get('X-TTT-Product-Id') ||
-        ''
-      ).trim();
-
-      if (fallbackProductId) {
-        req.body ||= {};
-        req.body.productId = fallbackProductId;
+      if (previousSubmit && now - previousSubmit < 15 * 1000) {
+        req.session.flash = {
+          type: 'success',
+          message: 'Popup update is already being processed.'
+        };
+        return res.redirect(303, '/admin/popups');
       }
 
-      return handler(req, res, next);
-    };
-  });
+      if (req.session) {
+        req.session.popupSubmissionStartedAt = now;
+      }
 
-  return originalApplicationPost.call(this, routePath, ...wrappedHandlers);
+      return next();
+    };
+
+    return originalApplicationPost.call(
+      this,
+      routePath,
+      popupSubmissionGuard,
+      ...handlers
+    );
+  }
+
+  return originalApplicationPost.call(this, routePath, ...handlers);
 };
 
 /*
@@ -248,10 +281,9 @@ express.response.render = function renderWithSeo(view, options, callback) {
 };
 
 /*
-  app.js is still a large legacy monolith. Apply the wholesale/cart patch only
-  while Node compiles that one module, with guarded source markers. The source
-  file on disk is untouched; a marker mismatch fails loudly instead of serving
-  partially patched checkout math.
+  app.js is still a large legacy monolith. Apply focused guarded patches only
+  while Node compiles that one module. The source file on disk is untouched;
+  marker mismatches fail loudly instead of serving partially patched behavior.
 */
 const appModulePath = require.resolve('./app');
 const originalJsLoader = require.extensions['.js'];
@@ -293,6 +325,189 @@ const couponRemoveNormalizedPricing = `      const subtotal =
 const duplicatedPatchBoundary =
   'function parseBangladeshDateTime(value) {function parseBangladeshDateTime(value) {';
 
+function replaceRequired(source, from, to, label) {
+  if (!source.includes(from)) {
+    throw new Error(`Popup source patch marker missing: ${label}`);
+  }
+  return source.replace(from, to);
+}
+
+function patchPopupAdminSource(source) {
+  source = replaceRequired(
+    source,
+    "const { uploadBuffer, cloudinaryReady } = require('./config/cloudinary');",
+    "const { uploadBuffer, cloudinaryReady, cloudinary } = require('./config/cloudinary');",
+    'cloudinary import'
+  );
+
+  const popupListOld = [
+    "app.get('/admin/popups', requireAdmin, async (req, res, next) => {",
+    '  try {',
+    '    const popups = await Popup.find().sort({ createdAt: -1 }).lean();',
+    "    res.render('admin/popups', { title: 'Site popup', popups });",
+    '  } catch (error) { next(error); }',
+    '});'
+  ].join('\n');
+
+  const popupListNew = [
+    "app.get('/admin/popups', requireAdmin, async (req, res, next) => {",
+    '  try {',
+    '    let popups = await Popup.find().sort({ updatedAt: -1, createdAt: -1 }).lean();',
+    '',
+    '    if (popups.length > 1) {',
+    '      const [keeper, ...duplicates] = popups;',
+    '      const duplicateIds = duplicates.map(popup => popup._id);',
+    '      const keeperPublicId = String(keeper.image?.publicId || "");',
+    '      const stalePublicIds = [...new Set(',
+    '        duplicates',
+    '          .map(popup => String(popup.image?.publicId || ""))',
+    '          .filter(publicId => publicId && publicId !== keeperPublicId)',
+    '      )];',
+    '',
+    '      await Popup.deleteMany({ _id: { $in: duplicateIds } });',
+    '',
+    '      if (cloudinaryReady() && stalePublicIds.length) {',
+    '        await Promise.allSettled(',
+    '          stalePublicIds.map(publicId => cloudinary.uploader.destroy(publicId))',
+    '        );',
+    '      }',
+    '',
+    '      popups = [keeper];',
+    '    }',
+    '',
+    "    res.render('admin/popups', { title: 'Site popup', popups });",
+    '  } catch (error) { next(error); }',
+    '});'
+  ].join('\n');
+
+  source = replaceRequired(source, popupListOld, popupListNew, 'popup list singleton cleanup');
+
+  const popupCreateOld = [
+    "app.post('/admin/popups', requireAdmin, popupUpload, async (req, res) => {",
+    '  try {',
+    '    await Popup.create(await popupPayload(req));',
+    "    req.session.flash = { type: 'success', message: 'Popup created.' };",
+    "    res.redirect('/admin/popups');",
+    '  } catch (error) {',
+    "    req.session.flash = { type: 'error', message: error.message };",
+    "    res.redirect('/admin/popups/new');",
+    '  }',
+    '});'
+  ].join('\n');
+
+  const popupCreateNew = [
+    "app.post('/admin/popups', requireAdmin, popupUpload, async (req, res) => {",
+    '  try {',
+    '    const payload = await popupPayload(req);',
+    '    let popup = await Popup.findOne().sort({ updatedAt: -1, createdAt: -1 });',
+    '    const previousPublicId = String(popup?.image?.publicId || "");',
+    '',
+    '    if (popup) {',
+    '      Object.assign(popup, payload);',
+    '      await popup.save();',
+    '    } else {',
+    '      popup = await Popup.create(payload);',
+    '    }',
+    '',
+    '    const currentPublicId = String(popup.image?.publicId || "");',
+    '    if (',
+    '      cloudinaryReady() &&',
+    '      previousPublicId &&',
+    '      previousPublicId !== currentPublicId',
+    '    ) {',
+    '      await cloudinary.uploader.destroy(previousPublicId).catch(error =>',
+    "        console.error('Old popup image cleanup failed:', error.message)",
+    '      );',
+    '    }',
+    '',
+    "    req.session.flash = { type: 'success', message: 'Popup saved.' };",
+    "    res.redirect(303, '/admin/popups');",
+    '  } catch (error) {',
+    "    req.session.flash = { type: 'error', message: error.message };",
+    "    res.redirect(303, '/admin/popups/new');",
+    '  }',
+    '});'
+  ].join('\n');
+
+  source = replaceRequired(source, popupCreateOld, popupCreateNew, 'popup create singleton');
+
+  const popupEditOld = [
+    "app.post('/admin/popups/:id', requireAdmin, popupUpload, async (req, res) => {",
+    '  try {',
+    '    const popup = await Popup.findById(req.params.id);',
+    "    if (!popup) throw new Error('Popup not found.');",
+    '    Object.assign(popup, await popupPayload(req, popup));',
+    '    await popup.save();',
+    "    req.session.flash = { type: 'success', message: 'Popup updated.' };",
+    "    res.redirect('/admin/popups');",
+    '  } catch (error) {',
+    "    req.session.flash = { type: 'error', message: error.message };",
+    '    res.redirect(`/admin/popups/${req.params.id}/edit`);',
+    '  }',
+    '});'
+  ].join('\n');
+
+  const popupEditNew = [
+    "app.post('/admin/popups/:id', requireAdmin, popupUpload, async (req, res) => {",
+    '  try {',
+    '    const popup = await Popup.findById(req.params.id);',
+    "    if (!popup) throw new Error('Popup not found.');",
+    '    const previousPublicId = String(popup.image?.publicId || "");',
+    '    Object.assign(popup, await popupPayload(req, popup));',
+    '    await popup.save();',
+    '    const currentPublicId = String(popup.image?.publicId || "");',
+    '',
+    '    if (',
+    '      cloudinaryReady() &&',
+    '      previousPublicId &&',
+    '      previousPublicId !== currentPublicId',
+    '    ) {',
+    '      await cloudinary.uploader.destroy(previousPublicId).catch(error =>',
+    "        console.error('Old popup image cleanup failed:', error.message)",
+    '      );',
+    '    }',
+    '',
+    "    req.session.flash = { type: 'success', message: 'Popup updated.' };",
+    "    res.redirect(303, '/admin/popups');",
+    '  } catch (error) {',
+    "    req.session.flash = { type: 'error', message: error.message };",
+    '    res.redirect(303, `/admin/popups/${req.params.id}/edit`);',
+    '  }',
+    '});'
+  ].join('\n');
+
+  source = replaceRequired(source, popupEditOld, popupEditNew, 'popup edit redirect and cleanup');
+
+  const popupDeleteOld = [
+    "app.post('/admin/popups/:id/delete', requireAdmin, async (req, res) => {",
+    '  try {',
+    '    await Popup.findByIdAndUpdate(req.params.id, { active: false });',
+    "    req.session.flash = { type: 'success', message: 'Popup deactivated.' };",
+    "  } catch (error) { req.session.flash = { type: 'error', message: error.message }; }",
+    "  res.redirect('/admin/popups');",
+    '});'
+  ].join('\n');
+
+  const popupDeleteNew = [
+    "app.post('/admin/popups/:id/delete', requireAdmin, async (req, res) => {",
+    '  try {',
+    '    const popup = await Popup.findByIdAndDelete(req.params.id);',
+    '',
+    '    if (cloudinaryReady() && popup?.image?.publicId) {',
+    '      await cloudinary.uploader.destroy(popup.image.publicId).catch(error =>',
+    "        console.error('Popup image delete failed:', error.message)",
+    '      );',
+    '    }',
+    '',
+    "    req.session.flash = { type: 'success', message: 'Popup deleted permanently.' };",
+    "  } catch (error) { req.session.flash = { type: 'error', message: error.message }; }",
+    "  res.redirect(303, '/admin/popups');",
+    '});'
+  ].join('\n');
+
+  return replaceRequired(source, popupDeleteOld, popupDeleteNew, 'popup permanent delete');
+}
+
 require.extensions['.js'] = function compileWholesalePatchedApp(module, filename) {
   if (filename !== appModulePath) {
     return originalJsLoader(module, filename);
@@ -314,6 +529,8 @@ require.extensions['.js'] = function compileWholesalePatchedApp(module, filename
       'function parseBangladeshDateTime(value) {'
     );
   }
+
+  patchedSource = patchPopupAdminSource(patchedSource);
 
   return module._compile(patchedSource, filename);
 };
