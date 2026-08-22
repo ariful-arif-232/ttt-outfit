@@ -1,6 +1,14 @@
 (() => {
   'use strict';
 
+  // Disable the legacy delayed popup opener before DOMContentLoaded fires.
+  // The new square popup below controls the only open-on-entry behavior.
+  try {
+    sessionStorage.setItem('tttSitePopupShown', '1');
+  } catch {
+    // Continue normally when sessionStorage is unavailable.
+  }
+
   const initSquarePopup = () => {
     const modal = document.getElementById('siteOfferModal');
     if (!modal) return;
@@ -17,8 +25,7 @@
 
     cta?.remove();
 
-    // Use a fresh key so visitors who saw the old CTA popup can still see
-    // the new square image-only popup once after this update.
+    // Fresh key lets visitors see the redesigned square popup once.
     const storageKey = 'tttSiteSquarePopupShownV1';
     let alreadyShown = false;
 
