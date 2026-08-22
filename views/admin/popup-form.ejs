@@ -1,7 +1,7 @@
 <%- include('../partials/header') %>
 <div class="container admin-layout"><%- include('../partials/admin-nav') %><section class="panel">
-<div class="admin-form-heading"><div><span class="section-kicker">HOMEPAGE MANAGEMENT</span><h1><%= popup ? 'Replace popup card' : 'Upload popup card' %></h1><p class="small">Upload one square popup image. Recommended size: <strong>1080 × 1080 px</strong> (1:1). The card will appear automatically when a customer first enters the site.</p></div></div>
-<form method="post" enctype="multipart/form-data" action="<%= popup ? '/admin/popups/' + popup._id : '/admin/popups' %>">
+<div class="admin-form-heading"><div><span class="section-kicker">HOMEPAGE MANAGEMENT</span><h1><%= popup ? 'Replace popup card' : 'Upload popup card' %></h1><p class="small">Upload one square popup image. Recommended size: <strong>1080 × 1080 px</strong> (1:1). Replacing an image updates the same popup card.</p></div></div>
+<form id="popupUploadForm" method="post" enctype="multipart/form-data" action="<%= popup ? '/admin/popups/' + popup._id : '/admin/popups' %>">
 <input type="hidden" name="active" value="on">
 <div class="field">
   <label>Square popup card</label>
@@ -13,5 +13,26 @@
     <img src="<%= popup.image.url %>" alt="Current popup card" style="width:100%;height:100%;object-fit:cover;display:block;">
   </div>
 <% } %>
-<div class="form-actions"><button class="btn gold-btn" type="submit"><%= popup ? 'Replace popup card' : 'Upload popup card' %></button><a class="btn ghost-btn" href="/admin/popups">Cancel</a></div>
-</form></section></div><%- include('../partials/footer') %>
+<div class="form-actions"><button id="popupSubmitButton" class="btn gold-btn" type="submit"><span class="popup-submit-label"><%= popup ? 'Replace popup card' : 'Upload popup card' %></span></button><a class="btn ghost-btn" href="/admin/popups">Cancel</a></div>
+</form>
+<script>
+(() => {
+  const form = document.getElementById('popupUploadForm');
+  const button = document.getElementById('popupSubmitButton');
+  if (!form || !button) return;
+
+  let submitting = false;
+  form.addEventListener('submit', event => {
+    if (submitting) {
+      event.preventDefault();
+      return;
+    }
+
+    submitting = true;
+    button.disabled = true;
+    button.setAttribute('aria-busy', 'true');
+    button.innerHTML = '<span class="spinner-border spinner-border-sm" aria-hidden="true"></span> Saving...';
+  });
+})();
+</script>
+</section></div><%- include('../partials/footer') %>
