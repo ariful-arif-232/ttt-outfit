@@ -1,4 +1,4 @@
-/* TTT Outfit - v11 final Choose size / Size guide alignment. */
+/* TTT Outfit - final product size/share micro alignment. */
 
 /*
  * Keep the left label and the right Size guide control on the exact same
@@ -31,6 +31,41 @@ html body .professional-product-page .product-size-heading .size-guide-open {
   margin-top: 4px !important;
 }
 
+/*
+ * Share controls must use the same centering model. This fixes the visual
+ * baseline mismatch where Facebook/WhatsApp sat slightly above Copy link.
+ */
+.professional-product-page .product-share-buttons > a,
+.professional-product-page .product-share-buttons > button {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  line-height: 1 !important;
+  vertical-align: middle !important;
+}
+
+.professional-product-page .product-share-buttons > a > i,
+.professional-product-page .product-share-buttons > button > i {
+  width: 1em !important;
+  height: 1em !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex: 0 0 1em !important;
+  line-height: 1 !important;
+  vertical-align: middle !important;
+  transform: none !important;
+}
+
+.professional-product-page .product-share-buttons > a > span,
+.professional-product-page .product-share-buttons > button > span {
+  display: inline-flex !important;
+  align-items: center !important;
+  line-height: 1 !important;
+  vertical-align: middle !important;
+}
+
 @media (max-width: 700px) {
   .professional-product-page .product-size-heading > strong {
     min-height: var(--ttt-option-control-height, 30px) !important;
@@ -38,8 +73,14 @@ html body .professional-product-page .product-size-heading .size-guide-open {
     transform: none !important;
   }
 
-  html body .professional-product-page .product-size-heading .size-guide-open {
-    align-self: center !important;
+  /*
+   * Move only the two compact right-side controls down together. Their
+   * dimensions and the left-side size buttons remain unchanged.
+   */
+  html body .professional-product-page .product-size-heading .size-guide-open,
+  html body .professional-product-page .product-size-availability-layout .product-availability-box {
+    position: relative !important;
+    top: 6px !important;
   }
 
   .professional-product-page .product-size-availability-layout {
