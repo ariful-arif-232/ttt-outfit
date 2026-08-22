@@ -17,7 +17,9 @@
 
     cta?.remove();
 
-    const storageKey = 'tttSitePopupShown';
+    // Use a fresh key so visitors who saw the old CTA popup can still see
+    // the new square image-only popup once after this update.
+    const storageKey = 'tttSiteSquarePopupShownV1';
     let alreadyShown = false;
 
     try {
