@@ -1,20 +1,23 @@
 <%- include('../partials/header') %>
 <div class="container admin-layout"><%- include('../partials/admin-nav') %><section class="panel">
-<div class="admin-form-heading"><div><span class="section-kicker">HOMEPAGE MANAGEMENT</span><h1><%= popup ? 'Replace popup card' : 'Upload popup card' %></h1><p class="small">Upload one square popup image. Recommended size: <strong>1080 × 1080 px</strong> (1:1). Replacing an image updates the same popup card.</p></div></div>
+<div class="admin-form-heading"><div><span class="section-kicker">HOMEPAGE MANAGEMENT</span><h1><%= popup ? 'Replace popup image' : 'Upload popup image' %></h1><p class="small">Upload a JPG, PNG or WebP in any aspect ratio. The storefront popup will preserve the image's original shape and display it in a compact responsive size.</p></div></div>
 <form id="popupUploadForm" method="post" enctype="multipart/form-data" action="<%= popup ? '/admin/popups/' + popup._id : '/admin/popups' %>">
 <input type="hidden" name="active" value="on">
 <div class="field">
-  <label>Square popup card</label>
+  <label>Popup image</label>
   <input type="file" name="imageFile" accept="image/png,image/jpeg,image/webp" <%= cloudinaryReady ? '' : 'disabled' %> <%= popup?.image?.url ? '' : 'required' %>>
-  <p class="small"><%= cloudinaryReady ? 'Use a square JPG, PNG or WebP. Best result: 1080 × 1080 px.' : 'Cloudinary is not configured, so popup upload is currently unavailable.' %></p>
+  <p class="small"><%= cloudinaryReady ? 'Original aspect ratio is preserved. For best quality, use a clear image with at least 800 px on its longest side.' : 'Cloudinary is not configured, so popup upload is currently unavailable.' %></p>
 </div>
 <% if (popup?.image?.url) { %>
-  <div style="width:min(360px,100%);aspect-ratio:1/1;margin:18px 0 22px;overflow:hidden;border-radius:10px;border:1px solid var(--line);background:#f4f1e8;">
-    <img src="<%= popup.image.url %>" alt="Current popup card" style="width:100%;height:100%;object-fit:cover;display:block;">
+  <div class="popup-current-preview">
+    <img src="<%= popup.image.url %>" alt="Current popup image">
   </div>
 <% } %>
-<div class="form-actions"><button id="popupSubmitButton" class="btn gold-btn" type="submit"><span class="popup-submit-label"><%= popup ? 'Replace popup card' : 'Upload popup card' %></span></button><a class="btn ghost-btn" href="/admin/popups">Cancel</a></div>
+<div class="form-actions"><button id="popupSubmitButton" class="btn gold-btn" type="submit"><span class="popup-submit-label"><%= popup ? 'Replace popup image' : 'Upload popup image' %></span></button><a class="btn ghost-btn" href="/admin/popups">Cancel</a></div>
 </form>
+<style>
+.popup-current-preview{display:inline-flex;align-items:center;justify-content:center;max-width:100%;margin:18px 0 22px;padding:8px;overflow:hidden;border-radius:12px;border:1px solid var(--line);background:#f4f1e8}.popup-current-preview img{display:block;width:auto;height:auto;max-width:min(320px,100%);max-height:420px;object-fit:contain;aspect-ratio:auto;border-radius:8px}
+</style>
 <script>
 (() => {
   const form = document.getElementById('popupUploadForm');

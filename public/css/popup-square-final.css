@@ -1,4 +1,4 @@
-/* TTT Outfit - final square site popup */
+/* TTT Outfit - compact responsive site popup, original image ratio */
 
 html body.offer-modal-open {
   overflow: hidden !important;
@@ -11,7 +11,7 @@ html body .site-offer-modal {
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  padding: 16px !important;
+  padding: 20px !important;
 }
 
 html body .site-offer-backdrop {
@@ -23,36 +23,41 @@ html body .site-offer-backdrop {
 html body .site-offer-card {
   position: relative !important;
   z-index: 1 !important;
-  width: min(520px, 90vw) !important;
-  max-width: 520px !important;
-  aspect-ratio: 1 / 1 !important;
+  width: auto !important;
+  height: auto !important;
+  max-width: min(440px, 90vw) !important;
+  max-height: 78vh !important;
+  aspect-ratio: auto !important;
   overflow: visible !important;
   background: transparent !important;
   border: 0 !important;
-  border-radius: 8px !important;
+  border-radius: 12px !important;
   box-shadow: 0 22px 65px rgba(0, 0, 0, 0.30) !important;
 }
 
 html body .site-offer-image-link {
-  width: 100% !important;
-  height: 100% !important;
   display: block !important;
+  width: auto !important;
+  height: auto !important;
+  max-width: 100% !important;
+  max-height: 78vh !important;
   overflow: hidden !important;
-  border-radius: 8px !important;
-  background: #ffffff !important;
+  border-radius: 12px !important;
+  background: transparent !important;
   pointer-events: none !important;
   cursor: default !important;
 }
 
 html body .site-offer-image-link img {
-  width: 100% !important;
-  height: 100% !important;
-  max-height: none !important;
-  aspect-ratio: 1 / 1 !important;
   display: block !important;
-  object-fit: cover !important;
+  width: auto !important;
+  height: auto !important;
+  max-width: min(440px, 90vw) !important;
+  max-height: 78vh !important;
+  aspect-ratio: auto !important;
+  object-fit: contain !important;
   object-position: center !important;
-  border-radius: 8px !important;
+  border-radius: 12px !important;
 }
 
 html body .site-offer-card .offer-shop-button {
@@ -61,13 +66,13 @@ html body .site-offer-card .offer-shop-button {
 
 html body .site-offer-close {
   position: absolute !important;
-  top: 12px !important;
-  right: 12px !important;
+  top: 10px !important;
+  right: 10px !important;
   z-index: 4 !important;
-  width: 42px !important;
-  height: 42px !important;
-  min-width: 42px !important;
-  min-height: 42px !important;
+  width: 38px !important;
+  height: 38px !important;
+  min-width: 38px !important;
+  min-height: 38px !important;
   padding: 0 !important;
   display: inline-flex !important;
   align-items: center !important;
@@ -83,27 +88,36 @@ html body .site-offer-close {
 
 html body .site-offer-close i {
   margin: 0 !important;
-  font-size: 20px !important;
+  font-size: 18px !important;
   line-height: 1 !important;
 }
 
 @media (max-width: 560px) {
   html body .site-offer-modal {
-    padding: 12px !important;
+    padding: 14px !important;
   }
 
-  html body .site-offer-card {
-    width: min(520px, 92vw) !important;
-    max-width: 92vw !important;
-    aspect-ratio: 1 / 1 !important;
+  html body .site-offer-card,
+  html body .site-offer-image-link img {
+    max-width: 88vw !important;
+    max-height: 72vh !important;
+    aspect-ratio: auto !important;
+  }
+
+  html body .site-offer-image-link {
+    max-height: 72vh !important;
   }
 
   html body .site-offer-close {
-    top: 10px !important;
-    right: 10px !important;
-    width: 38px !important;
-    height: 38px !important;
-    min-width: 38px !important;
-    min-height: 38px !important;
+    top: 8px !important;
+    right: 8px !important;
+    width: 34px !important;
+    height: 34px !important;
+    min-width: 34px !important;
+    min-height: 34px !important;
+  }
+
+  html body .site-offer-close i {
+    font-size: 16px !important;
   }
 }
