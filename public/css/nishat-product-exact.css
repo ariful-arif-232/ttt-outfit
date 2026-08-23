@@ -25,13 +25,13 @@
 }
 
 .professional-product-page .product-detail-info > h1 {
-  margin: 0 0 13px !important;
+  margin: 0 0 14px !important;
   color: #111 !important;
   font-family: 'Poppins', Arial, sans-serif !important;
-  font-size: 23px !important;
-  font-weight: 500 !important;
+  font-size: 25px !important;
+  font-weight: 600 !important;
   line-height: 1.28 !important;
-  letter-spacing: -.02em !important;
+  letter-spacing: -.025em !important;
 }
 
 .professional-product-page .product-detail-price {
@@ -96,10 +96,10 @@
   }
 
   .professional-product-page .product-detail-info > h1 {
-    margin: 0 0 12px !important;
-    font-size: 21px !important;
-    font-weight: 500 !important;
-    line-height: 1.28 !important;
+    margin: 0 0 13px !important;
+    font-size: 24px !important;
+    font-weight: 600 !important;
+    line-height: 1.3 !important;
   }
 
   .professional-product-page .product-detail-price {
@@ -122,7 +122,7 @@
 
 @media (max-width: 390px) {
   .professional-product-page .product-detail-info > h1 {
-    font-size: 20px !important;
+    font-size: 23px !important;
   }
 
   .professional-product-page .product-detail-price {
