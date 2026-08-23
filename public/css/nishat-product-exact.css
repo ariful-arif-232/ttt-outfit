@@ -1,0 +1,130 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+
+/* Final Nishat-reference override for product heading and price only. */
+.professional-product-page .product-title-top {
+  margin: 0 0 7px !important;
+  align-items: flex-start !important;
+}
+
+.professional-product-page .product-title-top .section-kicker {
+  width: fit-content !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding: 5px 10px 4px !important;
+  border: 1px solid rgba(195, 155, 65, .42) !important;
+  border-radius: 999px !important;
+  background: rgba(255, 250, 239, .88) !important;
+  color: #8b6b2e !important;
+  box-shadow: none !important;
+  font-family: 'Poppins', Arial, sans-serif !important;
+  font-size: 9px !important;
+  font-weight: 600 !important;
+  line-height: 1.1 !important;
+  letter-spacing: .08em !important;
+  text-transform: uppercase !important;
+}
+
+.professional-product-page .product-detail-info > h1 {
+  margin: 0 0 14px !important;
+  color: #111 !important;
+  font-family: 'Poppins', Arial, sans-serif !important;
+  font-size: 25px !important;
+  font-weight: 600 !important;
+  line-height: 1.28 !important;
+  letter-spacing: -.025em !important;
+}
+
+.professional-product-page .product-detail-price {
+  display: flex !important;
+  align-items: baseline !important;
+  flex-wrap: wrap !important;
+  gap: 14px !important;
+  margin: 0 0 19px !important;
+  font-family: 'Poppins', Arial, sans-serif !important;
+}
+
+.professional-product-page .product-detail-price > strong,
+.professional-product-page .product-detail-price > del {
+  font-family: 'Poppins', Arial, sans-serif !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+  font-variant-numeric: lining-nums tabular-nums !important;
+}
+
+.professional-product-page .product-detail-price > strong {
+  order: 2 !important;
+  margin: 0 !important;
+  color: #111 !important;
+  font-size: 31px !important;
+  font-weight: 400 !important;
+  letter-spacing: -.035em !important;
+}
+
+.professional-product-page .product-detail-price:has(del) > strong {
+  color: #dc201b !important;
+}
+
+.professional-product-page .product-detail-price > del {
+  order: 1 !important;
+  margin: 0 !important;
+  color: #777 !important;
+  font-size: 25px !important;
+  font-weight: 400 !important;
+  letter-spacing: -.035em !important;
+  text-decoration-line: line-through !important;
+  text-decoration-thickness: 1.5px !important;
+  text-decoration-color: #777 !important;
+}
+
+.professional-product-page .product-detail-price > .product-price-saving {
+  order: 3 !important;
+}
+
+@media (max-width: 700px) {
+  .professional-product-page .product-title-top {
+    margin-bottom: 6px !important;
+  }
+
+  .professional-product-page .product-title-top .section-kicker {
+    padding: 4px 9px !important;
+    font-size: 8.5px !important;
+  }
+
+  .professional-product-page .product-detail-info > h1 {
+    margin: 0 0 13px !important;
+    font-size: 24px !important;
+    font-weight: 600 !important;
+    line-height: 1.3 !important;
+  }
+
+  .professional-product-page .product-detail-price {
+    gap: 13px !important;
+    margin-bottom: 18px !important;
+  }
+
+  .professional-product-page .product-detail-price > strong {
+    font-size: 30px !important;
+  }
+
+  .professional-product-page .product-detail-price > del {
+    font-size: 24px !important;
+  }
+}
+
+@media (max-width: 390px) {
+  .professional-product-page .product-detail-info > h1 {
+    font-size: 23px !important;
+  }
+
+  .professional-product-page .product-detail-price {
+    gap: 11px !important;
+  }
+
+  .professional-product-page .product-detail-price > strong {
+    font-size: 28px !important;
+  }
+
+  .professional-product-page .product-detail-price > del {
+    font-size: 22px !important;
+  }
+}
