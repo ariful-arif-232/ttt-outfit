@@ -1,11 +1,9 @@
 require('dotenv').config();
 
-const fs = require('fs');
 const http = require('http');
 const express = require('express');
 const MongoStore = require('connect-mongo');
 const connectDB = require('./config/db');
-const patchWholesaleAppSource = require('./utils/wholesale-app-source-patch');
 
 /*
   Product-detail purchases include the product id in the request URL as a
@@ -76,34 +74,11 @@ express.application.post = function postWithProductCartFallback(routePath, ...ha
 };
 
 /*
-  Public assets have long browser cache lifetimes. Keep the current asset keys
-  deterministic at render time so phones cannot stay on a stale product UI.
-  Product pages also start with an explicit "nothing selected" state before
+  Product pages start with an explicit "nothing selected" state before
   client scripts run.
 */
-const purchaseAssetReplacements = [
-  ['/js/product-page-submit-fix.js?v=20260820-2', '/js/product-page-submit-fix.js?v=20260821-6'],
-  ['/js/product-page-submit-fix.js?v=20260820-4', '/js/product-page-submit-fix.js?v=20260821-6'],
-  ['/js/product-page-submit-fix.js?v=20260821-5', '/js/product-page-submit-fix.js?v=20260821-6'],
-  ['/js/product-detail-polish.js?v=20260821-4', '/js/product-detail-polish.js?v=20260821-6'],
-  ['/js/product-detail-polish.js?v=20260821-5', '/js/product-detail-polish.js?v=20260821-6'],
-  ['/css/product-page-hotfix.css?v=20260820-7', '/css/product-page-hotfix.css?v=20260821-1'],
-  ['/css/wholesale-final-ui.css?v=20260821-4', '/css/wholesale-final-ui.css?v=20260821-6'],
-  ['/css/wholesale-final-ui.css?v=20260821-5', '/css/wholesale-final-ui.css?v=20260821-6'],
-  ['/js/quick-cart-polish.js?v=20260820-5', '/js/quick-cart-polish.js?v=20260821-1'],
-  ['/js/cart-page-fix.js?v=20260820-1', '/js/cart-page-fix.js?v=20260821-1']
-];
-
-function rewritePurchaseMarkup(body, { productView = false } = {}) {
+function rewritePurchaseMarkup(body) {
   if (typeof body !== 'string') return body;
-
-  purchaseAssetReplacements.forEach(([from, to]) => {
-    if (body.includes(from)) {
-      body = body.replaceAll(from, to);
-    }
-  });
-
-  if (!productView) return body;
 
   return body
     .replace(
@@ -145,9 +120,6 @@ function rewritePurchaseMarkup(body, { productView = false } = {}) {
 }
 
 const originalSend = express.response.send;
-express.response.send = function sendWithFreshPurchaseFlow(body) {
-  return originalSend.call(this, rewritePurchaseMarkup(body));
-};
 
 /*
   Reuse Mongoose's MongoClient for the session store on Vercel.
@@ -246,9 +218,8 @@ express.response.render = function renderWithSeo(view, options, callback) {
     enriched.ogType = enriched.ogType || 'product';
 
     /*
-      Use an explicit render callback for product pages. Express' default send
-      path is not guaranteed to pass through our prototype send wrapper on all
-      Vercel/Express combinations, so rewrite the final HTML before sending it.
+      Use an explicit render callback for product pages so the final HTML is
+      rewritten before sending it.
     */
     const suppliedCallback = typeof callback === 'function'
       ? callback
@@ -265,9 +236,7 @@ express.response.render = function renderWithSeo(view, options, callback) {
         throw error;
       }
 
-      const finalHtml = rewritePurchaseMarkup(html, {
-        productView: true
-      });
+      const finalHtml = rewritePurchaseMarkup(html);
 
       if (suppliedCallback) {
         return suppliedCallback(null, finalHtml);
@@ -280,267 +249,7 @@ express.response.render = function renderWithSeo(view, options, callback) {
   return originalRender.call(this, view, enriched, callback);
 };
 
-/*
-  app.js is still a large legacy monolith. Apply focused guarded patches only
-  while Node compiles that one module. The source file on disk is untouched;
-  marker mismatches fail loudly instead of serving partially patched behavior.
-*/
-const appModulePath = require.resolve('./app');
-const originalJsLoader = require.extensions['.js'];
-
-const couponRemoveLegacyPricing = `    const subtotal =
-      cart.reduce(
-        (sum, item) =>
-          sum +
-          Number(item.price || 0) *
-          Number(item.quantity || 0),
-        0
-      );
-
-    const deliveryFee =
-      subtotal >= 3000
-        ? 0
-        : 80;
-
-    const wholesale =
-      getWholesaleSummary(cart);`;
-
-const couponRemoveNormalizedPricing = `      const subtotal =
-        cart.reduce(
-          (sum, item) =>
-            sum +
-            Number(item.price || 0) *
-            Number(item.quantity || 0),
-          0
-        );
-
-      const deliveryFee =
-        subtotal >= 3000
-          ? 0
-          : 80;
-
-      const wholesale =
-        getWholesaleSummary(cart);`;
-
-const duplicatedPatchBoundary =
-  'function parseBangladeshDateTime(value) {function parseBangladeshDateTime(value) {';
-
-function replaceRequired(source, from, to, label) {
-  if (!source.includes(from)) {
-    throw new Error(`Popup source patch marker missing: ${label}`);
-  }
-  return source.replace(from, to);
-}
-
-function patchPopupAdminSource(source) {
-  source = replaceRequired(
-    source,
-    "const { uploadBuffer, cloudinaryReady } = require('./config/cloudinary');",
-    "const { uploadBuffer, cloudinaryReady, cloudinary } = require('./config/cloudinary');",
-    'cloudinary import'
-  );
-
-  const popupListOld = [
-    "app.get('/admin/popups', requireAdmin, async (req, res, next) => {",
-    '  try {',
-    '    const popups = await Popup.find().sort({ createdAt: -1 }).lean();',
-    "    res.render('admin/popups', { title: 'Site popup', popups });",
-    '  } catch (error) { next(error); }',
-    '});'
-  ].join('\n');
-
-  const popupListNew = [
-    "app.get('/admin/popups', requireAdmin, async (req, res, next) => {",
-    '  try {',
-    '    let popups = await Popup.find().sort({ updatedAt: -1, createdAt: -1 }).lean();',
-    '',
-    '    if (popups.length > 1) {',
-    '      const [keeper, ...duplicates] = popups;',
-    '      const duplicateIds = duplicates.map(popup => popup._id);',
-    '      const keeperPublicId = String(keeper.image?.publicId || "");',
-    '      const stalePublicIds = [...new Set(',
-    '        duplicates',
-    '          .map(popup => String(popup.image?.publicId || ""))',
-    '          .filter(publicId => publicId && publicId !== keeperPublicId)',
-    '      )];',
-    '',
-    '      await Popup.deleteMany({ _id: { $in: duplicateIds } });',
-    '',
-    '      if (cloudinaryReady() && stalePublicIds.length) {',
-    '        await Promise.allSettled(',
-    '          stalePublicIds.map(publicId => cloudinary.uploader.destroy(publicId))',
-    '        );',
-    '      }',
-    '',
-    '      popups = [keeper];',
-    '    }',
-    '',
-    "    res.render('admin/popups', { title: 'Site popup', popups });",
-    '  } catch (error) { next(error); }',
-    '});'
-  ].join('\n');
-
-  source = replaceRequired(source, popupListOld, popupListNew, 'popup list singleton cleanup');
-
-  const popupCreateOld = [
-    "app.post('/admin/popups', requireAdmin, popupUpload, async (req, res) => {",
-    '  try {',
-    '    await Popup.create(await popupPayload(req));',
-    "    req.session.flash = { type: 'success', message: 'Popup created.' };",
-    "    res.redirect('/admin/popups');",
-    '  } catch (error) {',
-    "    req.session.flash = { type: 'error', message: error.message };",
-    "    res.redirect('/admin/popups/new');",
-    '  }',
-    '});'
-  ].join('\n');
-
-  const popupCreateNew = [
-    "app.post('/admin/popups', requireAdmin, popupUpload, async (req, res) => {",
-    '  try {',
-    '    const payload = await popupPayload(req);',
-    '    let popup = await Popup.findOne().sort({ updatedAt: -1, createdAt: -1 });',
-    '    const previousPublicId = String(popup?.image?.publicId || "");',
-    '',
-    '    if (popup) {',
-    '      Object.assign(popup, payload);',
-    '      await popup.save();',
-    '    } else {',
-    '      popup = await Popup.create(payload);',
-    '    }',
-    '',
-    '    const currentPublicId = String(popup.image?.publicId || "");',
-    '    if (',
-    '      cloudinaryReady() &&',
-    '      previousPublicId &&',
-    '      previousPublicId !== currentPublicId',
-    '    ) {',
-    '      await cloudinary.uploader.destroy(previousPublicId).catch(error =>',
-    "        console.error('Old popup image cleanup failed:', error.message)",
-    '      );',
-    '    }',
-    '',
-    "    req.session.flash = { type: 'success', message: 'Popup saved.' };",
-    "    res.redirect(303, '/admin/popups');",
-    '  } catch (error) {',
-    "    req.session.flash = { type: 'error', message: error.message };",
-    "    res.redirect(303, '/admin/popups/new');",
-    '  }',
-    '});'
-  ].join('\n');
-
-  source = replaceRequired(source, popupCreateOld, popupCreateNew, 'popup create singleton');
-
-  const popupEditOld = [
-    "app.post('/admin/popups/:id', requireAdmin, popupUpload, async (req, res) => {",
-    '  try {',
-    '    const popup = await Popup.findById(req.params.id);',
-    "    if (!popup) throw new Error('Popup not found.');",
-    '    Object.assign(popup, await popupPayload(req, popup));',
-    '    await popup.save();',
-    "    req.session.flash = { type: 'success', message: 'Popup updated.' };",
-    "    res.redirect('/admin/popups');",
-    '  } catch (error) {',
-    "    req.session.flash = { type: 'error', message: error.message };",
-    '    res.redirect(`/admin/popups/${req.params.id}/edit`);',
-    '  }',
-    '});'
-  ].join('\n');
-
-  const popupEditNew = [
-    "app.post('/admin/popups/:id', requireAdmin, popupUpload, async (req, res) => {",
-    '  try {',
-    '    const popup = await Popup.findById(req.params.id);',
-    "    if (!popup) throw new Error('Popup not found.');",
-    '    const previousPublicId = String(popup.image?.publicId || "");',
-    '    Object.assign(popup, await popupPayload(req, popup));',
-    '    await popup.save();',
-    '    const currentPublicId = String(popup.image?.publicId || "");',
-    '',
-    '    if (',
-    '      cloudinaryReady() &&',
-    '      previousPublicId &&',
-    '      previousPublicId !== currentPublicId',
-    '    ) {',
-    '      await cloudinary.uploader.destroy(previousPublicId).catch(error =>',
-    "        console.error('Old popup image cleanup failed:', error.message)",
-    '      );',
-    '    }',
-    '',
-    "    req.session.flash = { type: 'success', message: 'Popup updated.' };",
-    "    res.redirect(303, '/admin/popups');",
-    '  } catch (error) {',
-    "    req.session.flash = { type: 'error', message: error.message };",
-    '    res.redirect(303, `/admin/popups/${req.params.id}/edit`);',
-    '  }',
-    '});'
-  ].join('\n');
-
-  source = replaceRequired(source, popupEditOld, popupEditNew, 'popup edit redirect and cleanup');
-
-  const popupDeleteOld = [
-    "app.post('/admin/popups/:id/delete', requireAdmin, async (req, res) => {",
-    '  try {',
-    '    await Popup.findByIdAndUpdate(req.params.id, { active: false });',
-    "    req.session.flash = { type: 'success', message: 'Popup deactivated.' };",
-    "  } catch (error) { req.session.flash = { type: 'error', message: error.message }; }",
-    "  res.redirect('/admin/popups');",
-    '});'
-  ].join('\n');
-
-  const popupDeleteNew = [
-    "app.post('/admin/popups/:id/delete', requireAdmin, async (req, res) => {",
-    '  try {',
-    '    const popup = await Popup.findByIdAndDelete(req.params.id);',
-    '',
-    '    if (cloudinaryReady() && popup?.image?.publicId) {',
-    '      await cloudinary.uploader.destroy(popup.image.publicId).catch(error =>',
-    "        console.error('Popup image delete failed:', error.message)",
-    '      );',
-    '    }',
-    '',
-    "    req.session.flash = { type: 'success', message: 'Popup deleted permanently.' };",
-    "  } catch (error) { req.session.flash = { type: 'error', message: error.message }; }",
-    "  res.redirect(303, '/admin/popups');",
-    '});'
-  ].join('\n');
-
-  return replaceRequired(source, popupDeleteOld, popupDeleteNew, 'popup permanent delete');
-}
-
-require.extensions['.js'] = function compileWholesalePatchedApp(module, filename) {
-  if (filename !== appModulePath) {
-    return originalJsLoader(module, filename);
-  }
-
-  const originalSource = fs.readFileSync(filename, 'utf8');
-  const normalizedSource = originalSource.includes(couponRemoveLegacyPricing)
-    ? originalSource.replace(
-        couponRemoveLegacyPricing,
-        couponRemoveNormalizedPricing
-      )
-    : originalSource;
-
-  let patchedSource = patchWholesaleAppSource(normalizedSource);
-
-  if (patchedSource.includes(duplicatedPatchBoundary)) {
-    patchedSource = patchedSource.replace(
-      duplicatedPatchBoundary,
-      'function parseBangladeshDateTime(value) {'
-    );
-  }
-
-  patchedSource = patchPopupAdminSource(patchedSource);
-
-  return module._compile(patchedSource, filename);
-};
-
-let app;
-try {
-  app = require('./app');
-} finally {
-  require.extensions['.js'] = originalJsLoader;
-}
+const app = require('./app');
 
 function handler(req, res) {
   const startedAt = Date.now();
