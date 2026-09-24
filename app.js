@@ -8,7 +8,7 @@ const multer = require('multer');
 const helmet = require('helmet');
 
 const connectDB = require('./config/db');
-const { uploadBuffer, cloudinaryReady } = require('./config/cloudinary');
+const { uploadBuffer, cloudinaryReady, cloudinary } = require('./config/cloudinary');
 const User = require('./models/User');
 const Product = require('./models/Product');
 const Order = require('./models/Order');
@@ -834,7 +834,7 @@ app.get('/register', (req, res) => {
     tab: 'register'
   });
 });
-app.post('/register', async (req, res, next) => {
+app.post('/register', async (req, res) => {
   try {
     const { name, email, phone, password, confirmPassword, address, city } = req.body;
     if (!name || !email || !phone || !password || password.length < 8) throw new Error('Complete all required fields. Password must be at least 8 characters.');
@@ -860,7 +860,7 @@ app.get('/login', (req, res) => {
     tab: 'login'
   });
 });
-app.post('/login', async (req, res, next) => {
+app.post('/login', async (req, res) => {
   try {
     const identity = String(req.body.identity || '').trim();
     const user = await User.findOne({ $or: [{ email: identity.toLowerCase() }, { phone: identity }], isActive: true });
@@ -1239,23 +1239,275 @@ function wantsJsonResponse(req) {
   );
 }
 
-function buildCartPayload(req) {
+/* =========================================
+   WHOLESALE + CART PRICING HELPERS
+========================================= */
+
+const DEFAULT_WHOLESALE_MINIMUM_QUANTITY = 10;
+
+function roundMoney(value) {
+  return Math.round((Number(value || 0) + Number.EPSILON) * 100) / 100;
+}
+
+function getWholesaleProductKey(item, index) {
+  return String(
+    item.productId ||
+    item.product?._id ||
+    item.product ||
+    `line-${index}`
+  );
+}
+
+function getWholesaleSummary(items = []) {
+  const normalizedItems = items.map((item, index) => {
+    const quantity = Math.max(
+      0,
+      Math.floor(Number(item.quantity || 0))
+    );
+
+    const retailPrice = Math.max(
+      0,
+      Number(
+        item.retailPrice ??
+        item.price ??
+        item.unitPrice ??
+        0
+      )
+    );
+
+    const wholesalePrice = Math.max(
+      0,
+      Number(item.wholesalePrice || 0)
+    );
+
+    const wholesaleMinimumQuantity = Math.max(
+      1,
+      Math.floor(
+        Number(
+          item.wholesaleMinimumQuantity ||
+          DEFAULT_WHOLESALE_MINIMUM_QUANTITY
+        )
+      )
+    );
+
+    return {
+      ...item,
+      productKey: getWholesaleProductKey(item, index),
+      quantity,
+      price: retailPrice,
+      retailPrice,
+      wholesalePrice,
+      wholesaleMinimumQuantity,
+      lineTotal: roundMoney(retailPrice * quantity)
+    };
+  });
+
+  const quantityByProduct = new Map();
+
+  normalizedItems.forEach(item => {
+    quantityByProduct.set(
+      item.productKey,
+      Number(quantityByProduct.get(item.productKey) || 0) + item.quantity
+    );
+  });
+
+  const pricedItems = normalizedItems.map(item => {
+    const productQuantity = Number(
+      quantityByProduct.get(item.productKey) || 0
+    );
+
+    const wholesaleApplied =
+      item.wholesalePrice > 0 &&
+      item.wholesalePrice < item.retailPrice &&
+      productQuantity >= item.wholesaleMinimumQuantity;
+
+    const effectiveUnitPrice = wholesaleApplied
+      ? item.wholesalePrice
+      : item.retailPrice;
+
+    return {
+      ...item,
+      productQuantity,
+      wholesaleApplied,
+      effectiveUnitPrice: roundMoney(effectiveUnitPrice),
+      effectiveLineTotal: roundMoney(effectiveUnitPrice * item.quantity)
+    };
+  });
+
+  const itemCount = pricedItems.reduce(
+    (sum, item) => sum + item.quantity,
+    0
+  );
+
+  const subtotal = roundMoney(
+    pricedItems.reduce(
+      (sum, item) => sum + item.lineTotal,
+      0
+    )
+  );
+
+  const subtotalAfterWholesale = roundMoney(
+    pricedItems.reduce(
+      (sum, item) => sum + item.effectiveLineTotal,
+      0
+    )
+  );
+
+  const wholesaleDiscount = roundMoney(
+    Math.max(0, subtotal - subtotalAfterWholesale)
+  );
+
+  return {
+    items: pricedItems,
+    itemCount,
+    wholesaleEligible: wholesaleDiscount > 0,
+    wholesaleDiscount,
+    subtotal,
+    subtotalAfterWholesale
+  };
+}
+
+async function getCartPricing(cart = []) {
+  if (!cart.length) {
+    return getWholesaleSummary([]);
+  }
+
+  const productIds = [
+    ...new Set(
+      cart
+        .map(item => String(item.productId || '').trim())
+        .filter(id => /^[a-f0-9]{24}$/i.test(id))
+    )
+  ];
+
+  const products = productIds.length
+    ? await Product.find({
+        _id: { $in: productIds },
+        active: true
+      })
+        .select(
+          '_id name slug price wholesalePrice wholesaleMinimumQuantity stock variants'
+        )
+        .lean()
+    : [];
+
+  const productMap = new Map(
+    products.map(product => [
+      product._id.toString(),
+      product
+    ])
+  );
+
+  const items = cart.map((item, index) => {
+    const product = productMap.get(
+      String(item.productId || '')
+    );
+
+    const retailPrice = Math.max(
+      0,
+      Number(product?.price ?? item.price ?? 0)
+    );
+
+    const quantity = Math.max(
+      0,
+      Math.floor(Number(item.quantity || 0))
+    );
+
+    const variant = product?.variants?.find(
+      option => option.color === item.color
+    );
+
+    const availableStock = product
+      ? variant
+        ? Math.max(0, Number(variant.stock || 0))
+        : Math.max(0, Number(product.stock || 0))
+      : Math.max(0, Number(item.quantity || 0));
+
+    return {
+      ...item,
+      index,
+      name: product?.name || item.name,
+      slug: product?.slug || item.slug,
+      price: retailPrice,
+      retailPrice,
+      wholesalePrice: Math.max(
+        0,
+        Number(product?.wholesalePrice || 0)
+      ),
+      wholesaleMinimumQuantity: Math.max(
+        1,
+        Math.floor(
+          Number(
+            product?.wholesaleMinimumQuantity ||
+            DEFAULT_WHOLESALE_MINIMUM_QUANTITY
+          )
+        )
+      ),
+      quantity,
+      availableStock,
+      lineTotal: roundMoney(retailPrice * quantity)
+    };
+  });
+
+  return getWholesaleSummary(items);
+}
+
+async function buildCartPayload(req) {
   const cart = req.session.cart || [];
-  const items = cart.map((item, index) => ({
-    index,
-    productId: item.productId,
-    name: item.name,
-    slug: item.slug,
-    image: item.image,
-    price: item.price,
-    size: item.size,
-    color: item.color,
-    quantity: item.quantity,
-    lineTotal: Number(item.price || 0) * Number(item.quantity || 0)
-  }));
-  const subtotal = items.reduce((sum, i) => sum + i.lineTotal, 0);
-  const count = items.reduce((sum, i) => sum + i.quantity, 0);
-  return { items, subtotal, count };
+
+  try {
+    const pricing = await getCartPricing(cart);
+
+    return {
+      items: pricing.items.map(item => ({
+        index: item.index,
+        productId: item.productId,
+        name: item.name,
+        slug: item.slug,
+        image: item.image,
+        price: item.effectiveUnitPrice,
+        retailPrice: item.retailPrice,
+        wholesaleApplied: item.wholesaleApplied,
+        size: item.size,
+        color: item.color,
+        quantity: item.quantity,
+        lineTotal: item.effectiveLineTotal
+      })),
+      subtotal: pricing.subtotalAfterWholesale,
+      retailSubtotal: pricing.subtotal,
+      wholesaleDiscount: pricing.wholesaleDiscount,
+      count: pricing.itemCount
+    };
+  } catch (error) {
+    console.error('Cart pricing lookup failed:', error.message);
+
+    const items = cart.map((item, index) => ({
+      index,
+      productId: item.productId,
+      name: item.name,
+      slug: item.slug,
+      image: item.image,
+      price: Number(item.price || 0),
+      size: item.size,
+      color: item.color,
+      quantity: Number(item.quantity || 0),
+      lineTotal: roundMoney(
+        Number(item.price || 0) * Number(item.quantity || 0)
+      )
+    }));
+
+    const subtotal = roundMoney(
+      items.reduce((sum, item) => sum + item.lineTotal, 0)
+    );
+
+    return {
+      items,
+      subtotal,
+      retailSubtotal: subtotal,
+      wholesaleDiscount: 0,
+      count: items.reduce((sum, item) => sum + item.quantity, 0)
+    };
+  }
 }
 
 app.post('/cart/add', async (req, res) => {
@@ -1323,6 +1575,16 @@ app.post('/cart/add', async (req, res) => {
       product.images?.[0]?.url ||
       '';
 
+    const retailPrice = Number(product.price || 0);
+    const wholesalePrice = Number(product.wholesalePrice || 0);
+    const wholesaleMinimumQuantity = Math.max(
+      1,
+      Number(
+        product.wholesaleMinimumQuantity ||
+        DEFAULT_WHOLESALE_MINIMUM_QUANTITY
+      )
+    );
+
     req.session.cart ||= [];
 
     const existing =
@@ -1339,20 +1601,26 @@ app.post('/cart/add', async (req, res) => {
       );
 
       existing.image = selectedImage;
+      existing.price = retailPrice;
+      existing.wholesalePrice = wholesalePrice;
+      existing.wholesaleMinimumQuantity = wholesaleMinimumQuantity;
     } else {
       req.session.cart.push({
         productId: product._id.toString(),
         name: product.name,
         slug: product.slug,
         image: selectedImage,
-        price: product.price,
+        price: retailPrice,
+        wholesalePrice,
+        wholesaleMinimumQuantity,
         size,
         color,
         quantity
       });
     }
 
-    const successMessage = `${product.name} (${color}, ${size}) added to cart.`;
+    const successMessage =
+      `${product.name} (${color}, ${size}) added to cart.`;
 
     req.session.flash = {
       type: 'success',
@@ -1363,25 +1631,20 @@ app.post('/cart/add', async (req, res) => {
       return res.json({
         success: true,
         message: successMessage,
-        cart: buildCartPayload(req)
+        cart: await buildCartPayload(req)
       });
     }
 
-const requestedRedirect =
-  String(req.body.redirectTo || '').trim();
+    const requestedRedirect =
+      String(req.body.redirectTo || '').trim();
 
-if (requestedRedirect === '/checkout') {
-  return res.redirect('/checkout');
-}
+    if (requestedRedirect === '/checkout') {
+      return res.redirect('/checkout');
+    }
 
-/*
-  Add to Cart from Home / Shop / Product
-  Stay on the same page.
-*/
-
-return res.redirect(
-  req.get('referer') || '/shop'
-);
+    return res.redirect(
+      req.get('referer') || '/shop'
+    );
   } catch (error) {
     req.session.flash = {
       type: 'error',
@@ -1392,7 +1655,7 @@ return res.redirect(
       return res.status(400).json({
         success: false,
         message: error.message,
-        cart: buildCartPayload(req)
+        cart: await buildCartPayload(req)
       });
     }
 
@@ -1402,64 +1665,92 @@ return res.redirect(
   }
 });
 
-app.get('/cart', (req, res) => {
-  const subtotal = (req.session.cart || []).reduce((sum, i) => sum + i.price * i.quantity, 0);
-  res.render('cart', { title: 'Your cart', subtotal });
+app.get('/cart', async (req, res, next) => {
+  try {
+    const pricing = await getCartPricing(req.session.cart || []);
+
+    res.render('cart', {
+      title: 'Your cart',
+      cart: pricing.items,
+      subtotal: pricing.subtotal,
+      wholesaleDiscount: pricing.wholesaleDiscount,
+      subtotalAfterWholesale: pricing.subtotalAfterWholesale
+    });
+  } catch (error) {
+    next(error);
+  }
 });
-app.post('/cart/update', (req, res) => {
-  const index = Number(req.body.index); const qty = Number(req.body.quantity);
-  if (req.session.cart?.[index]) qty <= 0 ? req.session.cart.splice(index, 1) : req.session.cart[index].quantity = Math.min(20, Math.max(1, qty));
-  if (wantsJsonResponse(req)) return res.json({ success: true, cart: buildCartPayload(req) });
-  res.redirect('/cart');
-});
-app.post('/cart/remove', (req, res) => {
-  req.session.cart?.splice(Number(req.body.index), 1);
-  if (wantsJsonResponse(req)) return res.json({ success: true, cart: buildCartPayload(req) });
-  res.redirect('/cart');
-});
-/* =========================================
-   WHOLESALE HELPERS
-========================================= */
 
-const DEFAULT_WHOLESALE_MINIMUM_QUANTITY = 10;
-const DEFAULT_WHOLESALE_DISCOUNT_RATE = 0.20;
+app.post('/cart/update', async (req, res) => {
+  try {
+    const index = Number(req.body.index);
+    const qty = Number(req.body.quantity);
+    const cart = req.session.cart || [];
+    const item = cart[index];
 
-function getWholesaleSummary(items = []) {
-  const itemCount = items.reduce(
-    (sum, item) => sum + Math.max(0, Number(item.quantity || 0)),
-    0
-  );
+    if (!item) {
+      throw new Error('Cart item not found.');
+    }
 
-  const subtotal = items.reduce(
-    (sum, item) => {
-      const lineTotal = Number(item.lineTotal);
+    if (qty <= 0) {
+      cart.splice(index, 1);
+    } else {
+      const pricing = await getCartPricing(cart);
+      const pricedItem = pricing.items[index];
+      const availableStock = Math.max(
+        0,
+        Number(pricedItem?.availableStock || 0)
+      );
 
-      if (Number.isFinite(lineTotal)) {
-        return sum + lineTotal;
+      if (availableStock < 1) {
+        throw new Error('This product option is currently out of stock.');
       }
 
-      return sum +
-        Number(item.price || item.unitPrice || 0) *
-        Math.max(0, Number(item.quantity || 0));
-    },
-    0
-  );
+      item.quantity = Math.min(
+        availableStock,
+        Math.max(1, Math.floor(qty || 1))
+      );
+    }
 
-  // Wholesale/bulk-discount feature disabled — always non-eligible, zero discount.
-  const wholesaleEligible = false;
+    if (wantsJsonResponse(req)) {
+      return res.json({
+        success: true,
+        cart: await buildCartPayload(req)
+      });
+    }
 
-  const wholesaleDiscount = 0;
+    res.redirect('/cart');
+  } catch (error) {
+    if (wantsJsonResponse(req)) {
+      return res.status(400).json({
+        success: false,
+        message: error.message,
+        cart: await buildCartPayload(req)
+      });
+    }
 
-  return {
-    itemCount,
-    wholesaleEligible,
-    wholesaleDiscount,
-    subtotalAfterWholesale: Math.max(
-      0,
-      subtotal - wholesaleDiscount
-    )
-  };
-}
+    req.session.flash = {
+      type: 'error',
+      message: error.message
+    };
+
+    res.redirect('/cart');
+  }
+});
+
+app.post('/cart/remove', async (req, res) => {
+  req.session.cart?.splice(Number(req.body.index), 1);
+
+  if (wantsJsonResponse(req)) {
+    return res.json({
+      success: true,
+      cart: await buildCartPayload(req)
+    });
+  }
+
+  res.redirect('/cart');
+});
+
 function parseBangladeshDateTime(value) {
   const rawValue =
     String(value || '').trim();
@@ -1663,14 +1954,11 @@ app.post(
         );
       }
 
+      const cartPricing =
+        await getCartPricing(cart);
+
       const subtotal =
-        cart.reduce(
-          (sum, item) =>
-            sum +
-            Number(item.price || 0) *
-            Number(item.quantity || 0),
-          0
-        );
+        cartPricing.subtotal;
 
       const deliveryFee =
         subtotal >= 3000
@@ -1678,7 +1966,7 @@ app.post(
           : 80;
 
       const wholesale =
-        getWholesaleSummary(cart);
+        cartPricing;
 
       const couponResult =
         await getValidCoupon(
@@ -1778,7 +2066,7 @@ app.post(
 
 app.post(
   '/coupon/remove',
-  (req, res) => {
+  async (req, res) => {
     const wantsJson =
       req.xhr ||
       req.get('accept')?.includes(
@@ -1788,22 +2076,19 @@ app.post(
     const cart =
       req.session.cart || [];
 
-    const subtotal =
-      cart.reduce(
-        (sum, item) =>
-          sum +
-          Number(item.price || 0) *
-          Number(item.quantity || 0),
-        0
-      );
+      const cartPricing =
+        await getCartPricing(cart);
 
-    const deliveryFee =
-      subtotal >= 3000
-        ? 0
-        : 80;
+      const subtotal =
+        cartPricing.subtotal;
 
-    const wholesale =
-      getWholesaleSummary(cart);
+      const deliveryFee =
+        subtotal >= 3000
+          ? 0
+          : 80;
+
+      const wholesale =
+        cartPricing;
 
     const discount =
       wholesale.wholesaleDiscount;
@@ -1870,14 +2155,11 @@ app.get(
           ).lean();
       }
 
+      const cartPricing =
+        await getCartPricing(cart);
+
       const subtotal =
-        cart.reduce(
-          (sum, item) =>
-            sum +
-            Number(item.price || 0) *
-            Number(item.quantity || 0),
-          0
-        );
+        cartPricing.subtotal;
 
       const deliveryFee =
         subtotal >= 3000
@@ -1885,7 +2167,7 @@ app.get(
           : 80;
 
       const wholesale =
-        getWholesaleSummary(cart);
+        cartPricing;
 
       const wholesaleDiscount =
         wholesale.wholesaleDiscount;
@@ -1929,6 +2211,7 @@ app.get(
       res.render('checkout', {
         title: 'Checkout',
         user,
+        cart: cartPricing.items,
         subtotal,
         deliveryFee,
         discount,
@@ -2164,19 +2447,36 @@ app.post(
           product.images?.[0]?.url ||
           '';
 
+        const retailPrice =
+          Number(product.price || 0);
+
         items.push({
           product: product._id,
+          productId: product._id.toString(),
           name: product.name,
           sku: product.sku,
           image: selectedImage,
           size: cartItem.size,
           color: cartItem.color,
           quantity,
-          unitPrice:
-            Number(product.price),
+          price: retailPrice,
+          retailPrice,
+          wholesalePrice:
+            Math.max(
+              0,
+              Number(product.wholesalePrice || 0)
+            ),
+          wholesaleMinimumQuantity:
+            Math.max(
+              1,
+              Number(
+                product.wholesaleMinimumQuantity ||
+                DEFAULT_WHOLESALE_MINIMUM_QUANTITY
+              )
+            ),
+          unitPrice: retailPrice,
           lineTotal:
-            Number(product.price) *
-            quantity
+            retailPrice * quantity
         });
       }
 
@@ -3730,7 +4030,29 @@ app.post('/admin/sliders/:id/delete', requireAdmin, async (req, res) => {
 
 app.get('/admin/popups', requireAdmin, async (req, res, next) => {
   try {
-    const popups = await Popup.find().sort({ createdAt: -1 }).lean();
+    let popups = await Popup.find().sort({ updatedAt: -1, createdAt: -1 }).lean();
+
+    if (popups.length > 1) {
+      const [keeper, ...duplicates] = popups;
+      const duplicateIds = duplicates.map(popup => popup._id);
+      const keeperPublicId = String(keeper.image?.publicId || "");
+      const stalePublicIds = [...new Set(
+        duplicates
+          .map(popup => String(popup.image?.publicId || ""))
+          .filter(publicId => publicId && publicId !== keeperPublicId)
+      )];
+
+      await Popup.deleteMany({ _id: { $in: duplicateIds } });
+
+      if (cloudinaryReady() && stalePublicIds.length) {
+        await Promise.allSettled(
+          stalePublicIds.map(publicId => cloudinary.uploader.destroy(publicId))
+        );
+      }
+
+      popups = [keeper];
+    }
+
     res.render('admin/popups', { title: 'Site popup', popups });
   } catch (error) { next(error); }
 });
@@ -3769,12 +4091,33 @@ const popupUpload = upload.fields([{ name: 'imageFile', maxCount: 1 }]);
 
 app.post('/admin/popups', requireAdmin, popupUpload, async (req, res) => {
   try {
-    await Popup.create(await popupPayload(req));
-    req.session.flash = { type: 'success', message: 'Popup created.' };
-    res.redirect('/admin/popups');
+    const payload = await popupPayload(req);
+    let popup = await Popup.findOne().sort({ updatedAt: -1, createdAt: -1 });
+    const previousPublicId = String(popup?.image?.publicId || "");
+
+    if (popup) {
+      Object.assign(popup, payload);
+      await popup.save();
+    } else {
+      popup = await Popup.create(payload);
+    }
+
+    const currentPublicId = String(popup.image?.publicId || "");
+    if (
+      cloudinaryReady() &&
+      previousPublicId &&
+      previousPublicId !== currentPublicId
+    ) {
+      await cloudinary.uploader.destroy(previousPublicId).catch(error =>
+        console.error('Old popup image cleanup failed:', error.message)
+      );
+    }
+
+    req.session.flash = { type: 'success', message: 'Popup saved.' };
+    res.redirect(303, '/admin/popups');
   } catch (error) {
     req.session.flash = { type: 'error', message: error.message };
-    res.redirect('/admin/popups/new');
+    res.redirect(303, '/admin/popups/new');
   }
 });
 
@@ -3782,22 +4125,42 @@ app.post('/admin/popups/:id', requireAdmin, popupUpload, async (req, res) => {
   try {
     const popup = await Popup.findById(req.params.id);
     if (!popup) throw new Error('Popup not found.');
+    const previousPublicId = String(popup.image?.publicId || "");
     Object.assign(popup, await popupPayload(req, popup));
     await popup.save();
+    const currentPublicId = String(popup.image?.publicId || "");
+
+    if (
+      cloudinaryReady() &&
+      previousPublicId &&
+      previousPublicId !== currentPublicId
+    ) {
+      await cloudinary.uploader.destroy(previousPublicId).catch(error =>
+        console.error('Old popup image cleanup failed:', error.message)
+      );
+    }
+
     req.session.flash = { type: 'success', message: 'Popup updated.' };
-    res.redirect('/admin/popups');
+    res.redirect(303, '/admin/popups');
   } catch (error) {
     req.session.flash = { type: 'error', message: error.message };
-    res.redirect(`/admin/popups/${req.params.id}/edit`);
+    res.redirect(303, `/admin/popups/${req.params.id}/edit`);
   }
 });
 
 app.post('/admin/popups/:id/delete', requireAdmin, async (req, res) => {
   try {
-    await Popup.findByIdAndUpdate(req.params.id, { active: false });
-    req.session.flash = { type: 'success', message: 'Popup deactivated.' };
+    const popup = await Popup.findByIdAndDelete(req.params.id);
+
+    if (cloudinaryReady() && popup?.image?.publicId) {
+      await cloudinary.uploader.destroy(popup.image.publicId).catch(error =>
+        console.error('Popup image delete failed:', error.message)
+      );
+    }
+
+    req.session.flash = { type: 'success', message: 'Popup deleted permanently.' };
   } catch (error) { req.session.flash = { type: 'error', message: error.message }; }
-  res.redirect('/admin/popups');
+  res.redirect(303, '/admin/popups');
 });
 
 app.get('/admin/subscribers', requireAdmin, async (req, res, next) => {
