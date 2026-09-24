@@ -834,7 +834,7 @@ app.get('/register', (req, res) => {
     tab: 'register'
   });
 });
-app.post('/register', async (req, res, next) => {
+app.post('/register', async (req, res) => {
   try {
     const { name, email, phone, password, confirmPassword, address, city } = req.body;
     if (!name || !email || !phone || !password || password.length < 8) throw new Error('Complete all required fields. Password must be at least 8 characters.');
@@ -860,7 +860,7 @@ app.get('/login', (req, res) => {
     tab: 'login'
   });
 });
-app.post('/login', async (req, res, next) => {
+app.post('/login', async (req, res) => {
   try {
     const identity = String(req.body.identity || '').trim();
     const user = await User.findOne({ $or: [{ email: identity.toLowerCase() }, { phone: identity }], isActive: true });

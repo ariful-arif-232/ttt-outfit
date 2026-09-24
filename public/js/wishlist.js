@@ -1,11 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
   const STORAGE_KEY = 'ttt-outfit-wishlist';
 
-  const wishlistButtons =
-    document.querySelectorAll(
-      '.product-wishlist-button'
-    );
-
   const wishlistCountElements =
     document.querySelectorAll(
       '[data-wishlist-count]'
@@ -280,18 +275,11 @@ if (currentUserLoggedIn) {
   const isCurrentlySaved =
     savedProductIds.has(productId);
 
-  const result =
-    isCurrentlySaved
-      ? await removeAccountWishlist(
-          productId
-        )
-      : await addAccountWishlist(
-          productId
-        );
-
   if (isCurrentlySaved) {
+    await removeAccountWishlist(productId);
     savedProductIds.delete(productId);
   } else {
+    await addAccountWishlist(productId);
     savedProductIds.add(productId);
   }
 
