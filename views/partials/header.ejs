@@ -314,7 +314,7 @@
   >
 
   <link
-    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=Instrument+Sans:wght@400;500;600;700&family=Hind+Siliguri:wght@400;500;600&display=swap"
     rel="stylesheet"
   >
 
@@ -338,9 +338,15 @@
     rel="stylesheet"
     href="/css/style.css?v=hero-fix-20260723-1"
   >
+  <link
+    rel="stylesheet"
+    href="/css/studio.css?v=20261008-1"
+  >
 </head>
 
 <body
+  id="tttStudio"
+  class="ttt-studio"
   data-logged-in="<%= currentUser ? 'true' : 'false' %>"
 >
 
@@ -349,6 +355,14 @@
   class="ttt-header"
   id="siteHeader"
 >
+  <div class="ttt-announce" role="note">
+    <span>Cash on Delivery all over Bangladesh</span>
+    <span class="ttt-announce-dot" aria-hidden="true">·</span>
+    <span>bKash &amp; Nagad accepted</span>
+    <span class="ttt-announce-dot ttt-announce-wide" aria-hidden="true">·</span>
+    <span class="ttt-announce-wide">Free delivery on orders over ৳3,000</span>
+  </div>
+
   <div class="ttt-header-inner">
 
     <button
@@ -364,6 +378,13 @@
         Menu
       </span>
     </button>
+
+    <nav class="ttt-desk-nav" aria-label="Main">
+      <a href="/shop">Shop All</a>
+      <a href="/shop?sort=newest">New Arrivals</a>
+      <a href="/shop?sort=popular">Top Selling</a>
+      <a href="/track-order">Track Order</a>
+    </nav>
 
 
     <a

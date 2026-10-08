@@ -1,1 +1,37 @@
-<%- include('partials/header') %><section class="section"><div class="container"><h1>Welcome, <%= user.name %></h1><div class="two-col"><div><h2>Recent orders</h2><% if(!orders.length){ %><div class="panel">No orders yet.</div><% } orders.forEach(o=>{ %><a class="order-card" style="display:block" href="/orders/<%= o._id %>"><strong><%= o.orderNumber %></strong><span style="float:right" class="status"><%= o.status %></span><p class="small"><%= new Date(o.createdAt).toLocaleDateString() %> · ৳<%= money(o.total) %></p></a><% }) %></div><aside class="panel"><h2>Profile</h2><p><strong><%= user.name %></strong></p><p><%= user.email %></p><p><%= user.phone %></p><a href="/orders"><u>View all orders</u></a></aside></div></div></section><%- include('partials/footer') %>
+<%- include('partials/header') %>
+<section class="section studio-page">
+  <div class="container">
+    <header class="studio-page-head">
+      <span class="section-kicker">My Account</span>
+      <h1>Welcome, <%= user.name %></h1>
+    </header>
+
+    <div class="two-col studio-account-grid">
+      <div class="studio-account-orders">
+        <h2 class="studio-subhead">Recent orders</h2>
+        <% if(!orders.length){ %>
+          <div class="panel studio-empty-panel">No orders yet.</div>
+        <% } %>
+        <% orders.forEach(o=>{ %>
+          <a class="order-card studio-order-row" href="/orders/<%= o._id %>">
+            <span class="studio-order-row-main">
+              <strong><%= o.orderNumber %></strong>
+              <p class="small"><%= new Date(o.createdAt).toLocaleDateString() %> · ৳<%= money(o.total) %></p>
+            </span>
+            <span class="status professional-order-status order-status-<%= String(o.status || '').toLowerCase().replace(/\s+/g, '-') %>"><%= o.status %></span>
+            <i class="bi bi-arrow-right studio-order-row-arrow" aria-hidden="true"></i>
+          </a>
+        <% }) %>
+      </div>
+
+      <aside class="panel studio-profile-card">
+        <h2 class="studio-subhead">Profile</h2>
+        <p><strong><%= user.name %></strong></p>
+        <p><%= user.email %></p>
+        <p><%= user.phone %></p>
+        <a class="studio-text-link" href="/orders"><u>View all orders</u></a>
+      </aside>
+    </div>
+  </div>
+</section>
+<%- include('partials/footer') %>

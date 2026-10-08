@@ -1,113 +1,78 @@
 <%- include('partials/header') %>
 
-<section class="section">
+<%
+  const trackSteps = ['Pending', 'Confirmed', 'Processing', 'Shipped', 'Delivered'];
+  const trackStatus = order ? String(order.status || '') : '';
+  const trackIndex = trackSteps.indexOf(trackStatus);
+  const trackStopped = order && trackIndex === -1;
+%>
 
-<div class="container">
+<section class="section studio-page studio-track-page">
 
-<h1>Track Your Order</h1>
+  <div class="studio-track-band">
+    <div class="container studio-track-band-inner">
+      <div class="studio-track-intro">
+        <span class="section-kicker">Order tracking</span>
+        <h1>Track Your Order</h1>
+        <p>Enter your Order Number and Phone Number.</p>
+      </div>
 
-<p>
-Enter your Order Number and Phone Number.
-</p>
+      <form action="/track-order" method="POST" class="track-form studio-track-form">
+        <label class="studio-field">
+          <span>Order Number</span>
+          <input type="text" name="orderNumber" placeholder="Order Number" required>
+        </label>
+        <label class="studio-field">
+          <span>Phone Number</span>
+          <input type="text" name="phone" placeholder="Phone Number" required>
+        </label>
+        <button class="btn">Track Order</button>
+      </form>
+    </div>
+  </div>
 
-<form
-action="/track-order"
-method="POST"
-class="track-form"
->
+  <div class="container studio-track-body">
 
-<input
-type="text"
-name="orderNumber"
-placeholder="Order Number"
-required
->
+    <% if(error){ %>
+      <div class="flash error studio-track-error"><%= error %></div>
+    <% } %>
 
-<input
-type="text"
-name="phone"
-placeholder="Phone Number"
-required
->
+    <% if(order){ %>
 
-<button class="btn">
-Track Order
-</button>
+      <div class="studio-track-result">
+        <div class="studio-track-main">
+          <h2>Order <%= order.orderNumber %></h2>
 
-</form>
+          <% if (!trackStopped) { %>
+            <ol class="studio-timeline" aria-label="Order progress">
+              <% trackSteps.forEach(function(step, index) { %>
+                <li class="<%= index <= trackIndex ? 'is-done' : '' %> <%= index === trackIndex ? 'is-current' : '' %>">
+                  <span class="studio-timeline-dot" aria-hidden="true"><% if (index <= trackIndex) { %><i class="bi bi-check-lg"></i><% } %></span>
+                  <span class="studio-timeline-label"><%= step %></span>
+                </li>
+              <% }); %>
+            </ol>
+          <% } %>
 
-<% if(error){ %>
+          <dl class="studio-track-facts">
+            <div><dt><b>Status:</b></dt><dd><span class="professional-order-status order-status-<%= trackStatus.toLowerCase().replace(/\s+/g, '-') %>"><%= order.status %></span></dd></div>
+            <div><dt><b>Payment:</b></dt><dd><%= order.paymentMethod %></dd></div>
+            <div><dt><b>Total:</b></dt><dd>৳<%= money(order.total) %></dd></div>
+            <div><dt><b>Date:</b></dt><dd><%= new Date(order.createdAt).toLocaleString() %></dd></div>
+          </dl>
+        </div>
 
-<div class="flash error">
-<%= error %>
-</div>
+        <aside class="studio-track-address">
+          <h3>Shipping Address</h3>
+          <p><%= order.shippingAddress.address %></p>
+          <p><%= order.shippingAddress.area %></p>
+          <p><%= order.shippingAddress.city %></p>
+        </aside>
+      </div>
 
-<% } %>
+    <% } %>
 
-<% if(order){ %>
-
-<hr>
-
-<h2>
-Order
-<%= order.orderNumber %>
-</h2>
-
-<p>
-
-<b>Status:</b>
-
-<%= order.status %>
-
-</p>
-
-<p>
-
-<b>Payment:</b>
-
-<%= order.paymentMethod %>
-
-</p>
-
-<p>
-
-<b>Total:</b>
-
-৳<%= money(order.total) %>
-
-</p>
-
-<p>
-
-<b>Date:</b>
-
-<%= new Date(order.createdAt).toLocaleString() %>
-
-</p>
-
-<h3>Shipping Address</h3>
-
-<p>
-
-<%= order.shippingAddress.address %>
-
-</p>
-
-<p>
-
-<%= order.shippingAddress.area %>
-
-</p>
-
-<p>
-
-<%= order.shippingAddress.city %>
-
-</p>
-
-<% } %>
-
-</div>
+  </div>
 
 </section>
 

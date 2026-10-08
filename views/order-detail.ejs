@@ -1,1 +1,34 @@
-<%- include('partials/header') %><section class="section"><div class="container two-col"><div class="panel"><h1><%= order.orderNumber %></h1><p>Status: <strong><%= order.status %></strong> · Payment: <strong><%= order.paymentStatus %></strong></p><% order.items.forEach(i=>{ %><div class="cart-row"><img src="<%= i.image %>"><div><strong><%= i.name %></strong><p class="small"><%= i.size %> / <%= i.color %> · Qty <%= i.quantity %></p></div><strong>৳<%= money(i.lineTotal) %></strong></div><% }) %></div><aside class="panel"><h2>Delivery</h2><p><%= order.shippingAddress.address %><br><%= order.shippingAddress.city %> <%= order.shippingAddress.postalCode %></p><h2>Total</h2><p>Subtotal <span style="float:right">৳<%= money(order.subtotal) %></span></p><p>Delivery <span style="float:right">৳<%= money(order.deliveryFee) %></span></p><hr><p class="price">৳<%= money(order.total) %></p></aside></div></section><%- include('partials/footer') %>
+<%- include('partials/header') %>
+<section class="section studio-page">
+  <div class="container two-col studio-order-detail">
+    <div class="panel studio-order-items">
+      <span class="section-kicker">Order details</span>
+      <h1><%= order.orderNumber %></h1>
+      <p class="studio-order-status-line">
+        Status: <strong class="professional-order-status order-status-<%= String(order.status || '').toLowerCase().replace(/\s+/g, '-') %>"><%= order.status %></strong>
+        · Payment: <strong class="professional-payment-status payment-status-<%= String(order.paymentStatus || '').toLowerCase().replace(/\s+/g, '-') %>"><%= order.paymentStatus %></strong>
+      </p>
+      <% order.items.forEach(i=>{ %>
+        <div class="cart-row studio-line-item">
+          <img src="<%= i.image %>" alt="<%= i.name %>">
+          <div>
+            <strong><%= i.name %></strong>
+            <p class="small"><%= i.size %> / <%= i.color %> · Qty <%= i.quantity %></p>
+          </div>
+          <strong>৳<%= money(i.lineTotal) %></strong>
+        </div>
+      <% }) %>
+    </div>
+
+    <aside class="panel studio-order-summary">
+      <h2 class="studio-subhead">Delivery</h2>
+      <p><%= order.shippingAddress.address %><br><%= order.shippingAddress.city %> <%= order.shippingAddress.postalCode %></p>
+      <h2 class="studio-subhead">Total</h2>
+      <p class="studio-sum-row">Subtotal <span>৳<%= money(order.subtotal) %></span></p>
+      <p class="studio-sum-row">Delivery <span>৳<%= money(order.deliveryFee) %></span></p>
+      <hr>
+      <p class="price studio-sum-total">৳<%= money(order.total) %></p>
+    </aside>
+  </div>
+</section>
+<%- include('partials/footer') %>

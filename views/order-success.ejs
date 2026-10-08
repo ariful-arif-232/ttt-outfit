@@ -1,81 +1,35 @@
 <%- include('partials/header') %>
 
-<section class="section">
+<section class="section studio-page">
+  <div class="container">
+    <div class="panel studio-success-card">
+      <span class="studio-success-icon" aria-hidden="true"><i class="bi bi-check-lg"></i></span>
 
-<div class="container">
+      <h1>Order Placed Successfully</h1>
 
-<div class="panel" style="max-width:700px;margin:auto;text-align:center;padding:40px;">
+      <p class="studio-success-lead">
+        Thank you.
+        Your order has been received.
+      </p>
 
-<h1 style="color:#198754;">
-✅ Order Placed Successfully
-</h1>
+      <h2 class="studio-success-number">
+        <span>Order Number</span>
+        <strong><%= order.orderNumber %></strong>
+      </h2>
 
-<p>
+      <p>We will contact you soon.</p>
 
-Thank you.
+      <hr>
 
-Your order has been received.
-
-</p>
-
-<h2>
-
-Order Number
-
-<br>
-
-<%= order.orderNumber %>
-
-</h2>
-
-<p>
-
-We will contact you soon.
-
-</p>
-
-<hr>
-
-<% if(!currentUser){ %>
-
-<p>
-
-Want to track your order?
-
-</p>
-
-<p>
-
-Login or Register using the same phone number.
-
-</p>
-
-<a href="/login" class="btn btn-primary">
-
-Login / Register
-
-</a>
-
-<% } else { %>
-
-<a
-
-href="/orders/<%= order._id %>"
-
-class="btn btn-primary"
-
->
-
-View My Order
-
-</a>
-
-<% } %>
-
-</div>
-
-</div>
-
+      <% if(!currentUser){ %>
+        <p>Want to track your order?</p>
+        <p>Login or Register using the same phone number.</p>
+        <a href="/login" class="btn btn-primary">Login / Register</a>
+      <% } else { %>
+        <a href="/orders/<%= order._id %>" class="btn btn-primary">View My Order</a>
+      <% } %>
+    </div>
+  </div>
 </section>
 
 <%- include('partials/footer') %>
